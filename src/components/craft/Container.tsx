@@ -1,43 +1,113 @@
 import { useNode, type UserComponent } from '@craftjs/core'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Resizable } from 'react-resizable'
-import 'react-resizable/css/styles.css'
+import { EnhancedResizable } from './EnhancedResizable'
 
 interface ContainerProps {
   background?: string
+  backgroundColor?: string
   padding?: string
   margin?: string
-  width?: number
-  height?: number
-  minWidth?: number
+  width?: number | string
+  height?: number | string
+  minWidth?: number | string
   minHeight?: number
+  borderRadius?: string
+  borderColor?: string
+  borderWidth?: string
+  isResponsive?: boolean
   children?: React.ReactNode
 }
 
 export const Container: UserComponent<ContainerProps> = ({
   background = 'transparent',
+  backgroundColor = '#ffffff',
   padding = '16',
   margin = '0',
   width = 400,
   height = 300,
   minWidth = 100,
   minHeight = 50,
+  borderRadius = '8',
+  borderColor = '#e5e7eb',
+  borderWidth = '1',
+  isResponsive = false,
   children,
 }) => {
   const {
     connectors: { connect, drag },
     isActive,
+    actions: { setProp },
   } = useNode((state) => ({
     isActive: state.events.selected,
   }))
 
+  const containerStyle = {
+    background: background !== 'transparent' ? background : backgroundColor,
+    padding: `${padding}px`,
+    margin: `${margin}px`,
+    width: isResponsive ? '100%' : typeof width === 'number' ? `${width}px` : width,
+    height: height === 'auto' ? 'auto' : typeof height === 'number' ? `${height}px` : height,
+    minWidth: `${minWidth}px`,
+    minHeight: `${minHeight}px`,
+    border: isActive 
+      ? '2px solid #3b82f6' 
+      : `${borderWidth}px solid ${borderColor}`,
+    borderRadius: `${borderRadius}px`,
+    position: 'relative' as const,
+    overflow: 'visible',
+  }
+
+  if (isResponsive) {
+    return (
+      <div
+        ref={(ref: HTMLDivElement | null) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        style={containerStyle}
+        className="relative transition-all duration-200 hover:shadow-md w-full"
+      >
+        {children}
+        {!children && (
+          <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
+            Drop components here
+          </div>
+        )}
+        {isActive && (
+          <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
+            Container
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <Resizable
-      width={width}
+    <EnhancedResizable
+      onResize={(width: number, height: number) => {
+        setProp((props: ContainerProps) => {
+          props.width = width
+          props.height = height
+        })
+      }}
+      minWidth={minWidth}
+      minHeight={minHeight}
+      maxWidth={1200}
+      maxHeight={height === 'auto' ? 2000 : 800}
+      width={typeof width === 'number' ? width : 400}
       height={height}
-      minConstraints={[minWidth, minHeight]}
-      resizeHandles={['se', 'e', 's']}
+      enable={{
+        top: false,
+        right: true,
+        bottom: true,
+        left: false,
+        topRight: false,
+        bottomRight: true,
+        bottomLeft: false,
+        topLeft: false,
+      }}
     >
       <div
         ref={(ref: HTMLDivElement | null) => {
@@ -45,37 +115,42 @@ export const Container: UserComponent<ContainerProps> = ({
             connect(drag(ref))
           }
         }}
-        style={{
-          background,
-          padding: `${padding}px`,
-          margin: `${margin}px`,
-          width: `${width}px`,
-          height: `${height}px`,
-          border: isActive ? '2px solid #3b82f6' : children ? 'none' : '2px dashed #e5e7eb',
-          borderRadius: '4px',
-          position: 'relative',
-        }}
-        className="relative transition-all duration-200 hover:shadow-md"
+        style={containerStyle}
+        className="relative transition-all duration-200 hover:shadow-md w-full h-full"
       >
-        {children || (
-          <div className="text-gray-400 text-center py-8">
+        {children}
+        {!children && (
+          <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
             Drop components here
           </div>
         )}
         {isActive && (
-          <div className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-br">
+          <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Container
           </div>
         )}
       </div>
-    </Resizable>
+    </EnhancedResizable>
   )
 }
 
 const ContainerSettings = () => {
   const {
     actions: { setProp },
-    props: { background, padding, margin, width, height, minWidth, minHeight },
+    props: { 
+      background, 
+      backgroundColor, 
+      padding, 
+      margin, 
+      width, 
+      height, 
+      minWidth, 
+      minHeight,
+      borderRadius,
+      borderColor,
+      borderWidth,
+      isResponsive
+    },
   } = useNode((node) => ({
     props: node.data.props,
   }))
@@ -83,15 +158,50 @@ const ContainerSettings = () => {
   return (
     <div className="space-y-4 p-4">
       <div>
-        <Label htmlFor="background">Background</Label>
+        <Label htmlFor="backgroundColor">Background Color</Label>
+        <div className="flex gap-2">
+          <Input
+            id="backgroundColor"
+            type="color"
+            value={backgroundColor || '#ffffff'}
+            onChange={(e) => setProp((props: ContainerProps) => {
+              props.backgroundColor = e.target.value
+            })}
+            className="w-16 h-10"
+          />
+          <Input
+            value={backgroundColor || '#ffffff'}
+            onChange={(e) => setProp((props: ContainerProps) => {
+              props.backgroundColor = e.target.value
+            })}
+            placeholder="#ffffff"
+            className="flex-1"
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="background">Background (CSS)</Label>
         <Input
           id="background"
           value={background || ''}
           onChange={(e) => setProp((props: ContainerProps) => {
             props.background = e.target.value
           })}
-          placeholder="transparent, #ffffff, etc."
+          placeholder="linear-gradient(45deg, #ff0000, #00ff00)"
         />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="isResponsive"
+          checked={isResponsive || false}
+          onChange={(e) => setProp((props: ContainerProps) => {
+            props.isResponsive = e.target.checked
+          })}
+        />
+        <Label htmlFor="isResponsive">Responsive Width</Label>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -124,31 +234,85 @@ const ContainerSettings = () => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="width">Width (px)</Label>
+          <Label htmlFor="borderRadius">Border Radius (px)</Label>
           <Input
-            id="width"
+            id="borderRadius"
             type="number"
-            value={width || ''}
+            value={borderRadius || ''}
             onChange={(e) => setProp((props: ContainerProps) => {
-              props.width = parseInt(e.target.value)
+              props.borderRadius = e.target.value
             })}
-            placeholder="400"
+            placeholder="8"
           />
         </div>
 
         <div>
-          <Label htmlFor="height">Height (px)</Label>
+          <Label htmlFor="borderWidth">Border Width (px)</Label>
           <Input
-            id="height"
+            id="borderWidth"
             type="number"
-            value={height || ''}
+            value={borderWidth || ''}
             onChange={(e) => setProp((props: ContainerProps) => {
-              props.height = parseInt(e.target.value)
+              props.borderWidth = e.target.value
             })}
-            placeholder="300"
+            placeholder="1"
           />
         </div>
       </div>
+
+      <div>
+        <Label htmlFor="borderColor">Border Color</Label>
+        <div className="flex gap-2">
+          <Input
+            type="color"
+            value={borderColor || '#e5e7eb'}
+            onChange={(e) => setProp((props: ContainerProps) => {
+              props.borderColor = e.target.value
+            })}
+            className="w-16 h-10"
+          />
+          <Input
+            value={borderColor || '#e5e7eb'}
+            onChange={(e) => setProp((props: ContainerProps) => {
+              props.borderColor = e.target.value
+            })}
+            placeholder="#e5e7eb"
+            className="flex-1"
+          />
+        </div>
+      </div>
+
+      {!isResponsive && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="width">Width (px)</Label>
+            <Input
+              id="width"
+              type="number"
+              value={typeof width === 'number' ? width : ''}
+              onChange={(e) => setProp((props: ContainerProps) => {
+                const value = e.target.value
+                props.width = value ? parseInt(value) : '100%'
+              })}
+              placeholder="400"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="height">Height (px)</Label>
+            <Input
+              id="height"
+              type="number"
+              value={typeof height === 'number' ? height : ''}
+              onChange={(e) => setProp((props: ContainerProps) => {
+                const value = e.target.value
+                props.height = value ? parseInt(value) : 'auto'
+              })}
+              placeholder="300"
+            />
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -156,9 +320,10 @@ const ContainerSettings = () => {
           <Input
             id="minWidth"
             type="number"
-            value={minWidth || ''}
+            value={typeof minWidth === 'number' ? minWidth : ''}
             onChange={(e) => setProp((props: ContainerProps) => {
-              props.minWidth = parseInt(e.target.value)
+              const value = e.target.value
+              props.minWidth = value ? parseInt(value) : '100%'
             })}
             placeholder="100"
           />
@@ -184,14 +349,25 @@ const ContainerSettings = () => {
 Container.craft = {
   props: {
     background: 'transparent',
+    backgroundColor: '#ffffff',
     padding: '16',
     margin: '0',
     width: 400,
     height: 300,
     minWidth: 100,
     minHeight: 50,
+    borderRadius: '8',
+    borderColor: '#e5e7eb',
+    borderWidth: '1',
+    isResponsive: false,
   },
   related: {
     settings: ContainerSettings,
+  },
+  rules: {
+    canDrag: () => true,
+    canDrop: () => true,
+    canMoveIn: () => true,
+    canMoveOut: () => true,
   },
 }

@@ -1,8 +1,7 @@
 import { useNode, type UserComponent } from '@craftjs/core'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Resizable } from 'react-resizable'
-import 'react-resizable/css/styles.css'
+import { EnhancedResizable } from './EnhancedResizable'
 
 interface ImageBlockProps {
   src?: string
@@ -11,6 +10,7 @@ interface ImageBlockProps {
   height?: number
   objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
   borderRadius?: string
+  isResponsive?: boolean
 }
 
 export const ImageBlock: UserComponent<ImageBlockProps> = ({
@@ -20,20 +20,81 @@ export const ImageBlock: UserComponent<ImageBlockProps> = ({
   height = 300,
   objectFit = 'cover',
   borderRadius = '8',
+  isResponsive = false,
 }) => {
   const {
     connectors: { connect, drag },
     isActive,
+    actions: { setProp },
   } = useNode((state) => ({
     isActive: state.events.selected,
   }))
 
+  const containerStyle = {
+    width: isResponsive ? '100%' : `${width}px`,
+    height: isResponsive ? 'auto' : `${height}px`,
+    border: isActive ? '2px solid #3b82f6' : '1px solid transparent',
+    borderRadius: `${borderRadius}px`,
+    overflow: 'hidden',
+    position: 'relative' as const,
+  }
+
+  const imageStyle = {
+    width: '100%',
+    height: isResponsive ? 'auto' : '100%',
+    objectFit: objectFit,
+    display: 'block',
+  }
+
+  if (isResponsive) {
+    return (
+      <div
+        ref={(ref: HTMLDivElement | null) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        style={containerStyle}
+        className="hover:shadow-md transition-shadow duration-200"
+      >
+        <img
+          src={src}
+          alt={alt}
+          style={imageStyle}
+        />
+        {isActive && (
+          <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
+            Image Block
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <Resizable
+    <EnhancedResizable
+      onResize={(width: number, height: number) => {
+        setProp((props: ImageBlockProps) => {
+          props.width = width
+          props.height = height
+        })
+      }}
+      minWidth={100}
+      minHeight={100}
+      maxWidth={800}
+      maxHeight={600}
       width={width}
       height={height}
-      minConstraints={[100, 100]}
-      resizeHandles={['se', 'e', 's']}
+      enable={{
+        top: false,
+        right: true,
+        bottom: true,
+        left: false,
+        topRight: false,
+        bottomRight: true,
+        bottomLeft: false,
+        topLeft: false,
+      }}
     >
       <div
         ref={(ref: HTMLDivElement | null) => {
@@ -41,33 +102,21 @@ export const ImageBlock: UserComponent<ImageBlockProps> = ({
             connect(drag(ref))
           }
         }}
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          border: isActive ? '2px solid #3b82f6' : '1px solid transparent',
-          borderRadius: '4px',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-        className="p-2 bg-white hover:shadow-md transition-shadow duration-200"
+        style={containerStyle}
+        className="hover:shadow-md transition-shadow duration-200 w-full h-full"
       >
         <img
           src={src}
           alt={alt}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit,
-            borderRadius: `${borderRadius}px`,
-          }}
+          style={imageStyle}
         />
         {isActive && (
-          <div className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-br">
+          <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Image Block
           </div>
         )}
       </div>
-    </Resizable>
+    </EnhancedResizable>
   )
 }
 
@@ -174,6 +223,7 @@ ImageBlock.craft = {
     height: 300,
     objectFit: 'cover',
     borderRadius: '8',
+    isResponsive: false,
   },
   related: {
     settings: ImageBlockSettings,

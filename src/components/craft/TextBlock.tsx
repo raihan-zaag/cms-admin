@@ -2,18 +2,21 @@ import { useNode, type UserComponent } from '@craftjs/core'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Resizable } from 'react-resizable'
-import 'react-resizable/css/styles.css'
+import { EnhancedResizable } from './EnhancedResizable'
 
 interface TextBlockProps {
   text?: string
   fontSize?: string
   textAlign?: 'left' | 'center' | 'right'
   color?: string
+  backgroundColor?: string
   width?: number
   height?: number
   fontWeight?: 'normal' | 'bold' | '500' | '600' | '700'
   lineHeight?: string
+  padding?: string
+  borderRadius?: string
+  isResponsive?: boolean
 }
 
 export const TextBlock: UserComponent<TextBlockProps> = ({
@@ -21,24 +24,95 @@ export const TextBlock: UserComponent<TextBlockProps> = ({
   fontSize = '16',
   textAlign = 'left',
   color = '#000000',
+  backgroundColor = 'transparent',
   width = 300,
   height = 100,
   fontWeight = 'normal',
   lineHeight = '1.5',
+  padding = '16',
+  borderRadius = '4',
+  isResponsive = false,
 }) => {
   const {
     connectors: { connect, drag },
     isActive,
+    actions: { setProp },
   } = useNode((state) => ({
     isActive: state.events.selected,
   }))
 
+  const containerStyle = {
+    width: isResponsive ? '100%' : `${width}px`,
+    height: isResponsive ? 'auto' : `${height}px`,
+    minHeight: isResponsive ? '50px' : `${height}px`,
+    backgroundColor: backgroundColor !== 'transparent' ? backgroundColor : 'transparent',
+    padding: `${padding}px`,
+    borderRadius: `${borderRadius}px`,
+    border: isActive ? '2px solid #3b82f6' : '1px solid transparent',
+    overflow: 'visible',
+    position: 'relative' as const,
+  }
+
+  const textStyle = {
+    fontSize: `${fontSize}px`,
+    textAlign: textAlign as 'left' | 'center' | 'right',
+    color,
+    fontWeight,
+    lineHeight,
+    margin: 0,
+    wordWrap: 'break-word' as const,
+    overflow: 'visible',
+    width: '100%',
+    height: isResponsive ? 'auto' : '100%',
+  }
+
+  if (isResponsive) {
+    return (
+      <div
+        ref={(ref: HTMLDivElement | null) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        style={containerStyle}
+        className="hover:shadow-md transition-shadow duration-200 w-full"
+      >
+        <p style={textStyle}>
+          {text}
+        </p>
+        {isActive && (
+          <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
+            Text Block
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <Resizable
+    <EnhancedResizable
+      onResize={(width: number, height: number) => {
+        setProp((props: TextBlockProps) => {
+          props.width = width
+          props.height = height
+        })
+      }}
+      minWidth={50}
+      minHeight={30}
+      maxWidth={800}
+      maxHeight={400}
       width={width}
       height={height}
-      minConstraints={[100, 30]}
-      resizeHandles={['se', 'e', 's']}
+      enable={{
+        top: false,
+        right: true,
+        bottom: true,
+        left: false,
+        topRight: false,
+        bottomRight: true,
+        bottomLeft: false,
+        topLeft: false,
+      }}
     >
       <div
         ref={(ref: HTMLDivElement | null) => {
@@ -46,45 +120,39 @@ export const TextBlock: UserComponent<TextBlockProps> = ({
             connect(drag(ref))
           }
         }}
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          border: isActive ? '2px solid #3b82f6' : '1px solid transparent',
-          borderRadius: '4px',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-        className="p-4 bg-white hover:shadow-md transition-shadow duration-200"
+        style={containerStyle}
+        className="hover:shadow-md transition-shadow duration-200 w-full h-full"
       >
-        <p
-          style={{
-            fontSize: `${fontSize}px`,
-            textAlign,
-            color,
-            fontWeight,
-            lineHeight,
-            margin: 0,
-            wordWrap: 'break-word',
-            overflow: 'hidden',
-            height: '100%',
-          }}
-        >
+        <p style={textStyle}>
           {text}
         </p>
         {isActive && (
-          <div className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-br">
+          <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Text Block
           </div>
         )}
       </div>
-    </Resizable>
+    </EnhancedResizable>
   )
 }
 
 const TextBlockSettings = () => {
   const {
     actions: { setProp },
-    props: { text, fontSize, textAlign, color, width, height, fontWeight, lineHeight },
+    props: { 
+      text, 
+      fontSize, 
+      textAlign, 
+      color, 
+      backgroundColor, 
+      width, 
+      height, 
+      fontWeight, 
+      lineHeight, 
+      padding, 
+      borderRadius, 
+      isResponsive 
+    },
   } = useNode((node) => ({
     props: node.data.props,
   }))
@@ -103,30 +171,116 @@ const TextBlockSettings = () => {
         />
       </div>
 
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="isResponsive"
+          checked={isResponsive || false}
+          onChange={(e) => setProp((props: TextBlockProps) => {
+            props.isResponsive = e.target.checked
+          })}
+        />
+        <Label htmlFor="isResponsive">Responsive Width</Label>
+      </div>
+
+      <div>
+        <Label htmlFor="backgroundColor">Background Color</Label>
+        <div className="flex gap-2">
+          <Input
+            type="color"
+            value={backgroundColor !== 'transparent' ? backgroundColor : '#ffffff'}
+            onChange={(e) => setProp((props: TextBlockProps) => {
+              props.backgroundColor = e.target.value
+            })}
+            className="w-16 h-10"
+          />
+          <Input
+            value={backgroundColor || 'transparent'}
+            onChange={(e) => setProp((props: TextBlockProps) => {
+              props.backgroundColor = e.target.value
+            })}
+            placeholder="transparent"
+            className="flex-1"
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="color">Text Color</Label>
+        <div className="flex gap-2">
+          <Input
+            type="color"
+            value={color || '#000000'}
+            onChange={(e) => setProp((props: TextBlockProps) => {
+              props.color = e.target.value
+            })}
+            className="w-16 h-10"
+          />
+          <Input
+            value={color || '#000000'}
+            onChange={(e) => setProp((props: TextBlockProps) => {
+              props.color = e.target.value
+            })}
+            placeholder="#000000"
+            className="flex-1"
+          />
+        </div>
+      </div>
+
+      {!isResponsive && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="width">Width (px)</Label>
+            <Input
+              id="width"
+              type="number"
+              value={width || ''}
+              onChange={(e) => setProp((props: TextBlockProps) => {
+                props.width = parseInt(e.target.value)
+              })}
+              placeholder="300"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="height">Height (px)</Label>
+            <Input
+              id="height"
+              type="number"
+              value={height || ''}
+              onChange={(e) => setProp((props: TextBlockProps) => {
+                props.height = parseInt(e.target.value)
+              })}
+              placeholder="100"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="width">Width (px)</Label>
+          <Label htmlFor="padding">Padding (px)</Label>
           <Input
-            id="width"
+            id="padding"
             type="number"
-            value={width || ''}
+            value={padding || ''}
             onChange={(e) => setProp((props: TextBlockProps) => {
-              props.width = parseInt(e.target.value)
+              props.padding = e.target.value
             })}
-            placeholder="300"
+            placeholder="16"
           />
         </div>
 
         <div>
-          <Label htmlFor="height">Height (px)</Label>
+          <Label htmlFor="borderRadius">Border Radius (px)</Label>
           <Input
-            id="height"
+            id="borderRadius"
             type="number"
-            value={height || ''}
+            value={borderRadius || ''}
             onChange={(e) => setProp((props: TextBlockProps) => {
-              props.height = parseInt(e.target.value)
+              props.borderRadius = e.target.value
             })}
-            placeholder="100"
+            placeholder="4"
           />
         </div>
       </div>
@@ -163,7 +317,7 @@ const TextBlockSettings = () => {
           id="fontWeight"
           value={fontWeight}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setProp((props: TextBlockProps) => {
-            props.fontWeight = e.target.value as 'normal' | 'bold' | '500' | '600' | '700'
+            props.fontWeight = e.target.value as TextBlockProps['fontWeight']
           })}
           className="w-full p-2 border rounded"
         >
@@ -181,7 +335,7 @@ const TextBlockSettings = () => {
           id="textAlign"
           value={textAlign}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setProp((props: TextBlockProps) => {
-            props.textAlign = e.target.value as 'left' | 'center' | 'right'
+            props.textAlign = e.target.value as TextBlockProps['textAlign']
           })}
           className="w-full p-2 border rounded"
         >
@@ -189,18 +343,6 @@ const TextBlockSettings = () => {
           <option value="center">Center</option>
           <option value="right">Right</option>
         </select>
-      </div>
-
-      <div>
-        <Label htmlFor="color">Text Color</Label>
-        <Input
-          id="color"
-          type="color"
-          value={color}
-          onChange={(e) => setProp((props: TextBlockProps) => {
-            props.color = e.target.value
-          })}
-        />
       </div>
     </div>
   )
@@ -212,10 +354,14 @@ TextBlock.craft = {
     fontSize: '16',
     textAlign: 'left',
     color: '#000000',
+    backgroundColor: 'transparent',
     width: 300,
     height: 100,
     fontWeight: 'normal',
     lineHeight: '1.5',
+    padding: '16',
+    borderRadius: '4',
+    isResponsive: false,
   },
   related: {
     settings: TextBlockSettings,

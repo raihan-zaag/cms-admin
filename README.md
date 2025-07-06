@@ -15,9 +15,19 @@ This is the **Admin Portal** for the Multi-Tenant CMS built with **React**, **Cr
   - **HeroSection** - Editable title, subtitle, background image, and CTA button
   - **TextBlock** - Customizable text with font size, alignment, and color
   - **ImageBlock** - Responsive images with size controls
+  - **ButtonBlock** - Interactive buttons with customizable styling
+  - **CardBlock** - Content cards with title and description
+  - **Container** - Flexible container for organizing components
+  - **GridLayout** - Responsive grid system for layouts
 - **Real-time preview mode** toggle
 - **Component settings panel** for property editing
 - **JSON serialization** for saving page data to backend
+- **Enhanced resizing** with visual resize handles
+- **Component deletion** with multiple methods:
+  - Click trash icon in properties panel
+  - Press Delete/Backspace keys
+  - Multi-select mode for bulk deletion
+- **Keyboard shortcuts** for better UX
 
 ### 🖼️ Media Manager
 - **File upload with drag & drop** support
@@ -40,6 +50,21 @@ This is the **Admin Portal** for the Multi-Tenant CMS built with **React**, **Cr
 - **localStorage persistence** for user session
 - **Automatic state hydration** on app load
 - **Type-safe user data** with role management
+
+## 🔧 Recent Fixes
+
+### Component Deletion Issues Fixed:
+- **Less restrictive deletion logic** - Now allows deleting components when there are more than 1 node (just keep root)
+- **Improved multi-select deletion** - Better handling of bulk deletion operations
+- **Keyboard shortcuts** - Delete/Backspace keys now work for component deletion
+- **Visual feedback** - Clear indicators for deletable components and deletion methods
+
+### Resizable Issues Fixed:
+- **Enhanced resize handles** - Better styling and positioning with proper z-index
+- **Improved event handling** - More responsive resize operations
+- **CSS imports** - Proper import of re-resizable library styles
+- **Visual improvements** - Better handle visibility and hover effects
+- **Text selection prevention** - Prevents text selection during resize operations
 
 ### 🎯 Tech Stack
 
