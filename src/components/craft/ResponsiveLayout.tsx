@@ -35,6 +35,13 @@ interface SectionProps {
   children?: React.ReactNode
 }
 
+// Helper for empty drop zone
+const DropZone = ({ message }: { message: string }) => (
+  <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
+    {message}
+  </div>
+)
+
 export const GridLayout: UserComponent<GridLayoutProps> = ({
   columns = 2,
   gap = '16',
@@ -103,9 +110,7 @@ export const GridLayout: UserComponent<GridLayoutProps> = ({
       >
         {children}
         {!children && (
-          <div className="col-span-full text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
-            Drop components or grid columns here
-          </div>
+          <DropZone message="Drop components or grid columns here" />
         )}
         {isActive && (
           <div className="absolute -top-6 left-0 bg-green-500 text-white text-xs px-2 py-1 rounded z-10">
@@ -153,9 +158,7 @@ export const GridColumn: UserComponent<GridColumnProps> = ({
     >
       {children}
       {!children && (
-        <div className="text-gray-400 text-center py-4 min-h-[80px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
-          Drop components here
-        </div>
+        <DropZone message="Drop components here" />
       )}
       {isActive && (
         <div className="absolute -top-6 left-0 bg-green-500 text-white text-xs px-2 py-1 rounded z-10">
@@ -235,9 +238,7 @@ export const Section: UserComponent<SectionProps> = ({
       >
         {children}
         {!children && (
-          <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
-            Drop grid layouts or components here
-          </div>
+          <DropZone message="Drop grid layouts or components here" />
         )}
         {isActive && (
           <div className="absolute -top-6 left-0 bg-purple-500 text-white text-xs px-2 py-1 rounded z-10">

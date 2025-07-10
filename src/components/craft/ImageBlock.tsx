@@ -13,6 +13,12 @@ interface ImageBlockProps {
   isResponsive?: boolean
 }
 
+// Helper for responsive style
+const getResponsiveStyle = (isResponsive: boolean, width: number, height: number) => ({
+  width: isResponsive ? '100%' : `${width}px`,
+  height: isResponsive ? 'auto' : `${height}px`,
+})
+
 export const ImageBlock: UserComponent<ImageBlockProps> = ({
   src = 'https://via.placeholder.com/400x300',
   alt = 'Image',
@@ -22,6 +28,7 @@ export const ImageBlock: UserComponent<ImageBlockProps> = ({
   borderRadius = '8',
   isResponsive = false,
 }) => {
+  // Craft.js connectors and selection state
   const {
     connectors: { connect, drag },
     isActive,
@@ -30,9 +37,9 @@ export const ImageBlock: UserComponent<ImageBlockProps> = ({
     isActive: state.events.selected,
   }))
 
+  // Unified style logic
   const containerStyle = {
-    width: isResponsive ? '100%' : `${width}px`,
-    height: isResponsive ? 'auto' : `${height}px`,
+    ...getResponsiveStyle(isResponsive, width, height),
     border: isActive ? '2px solid #3b82f6' : '1px solid transparent',
     borderRadius: `${borderRadius}px`,
     overflow: 'hidden',
@@ -46,22 +53,15 @@ export const ImageBlock: UserComponent<ImageBlockProps> = ({
     display: 'block',
   }
 
+  // Responsive or resizable rendering
   if (isResponsive) {
     return (
       <div
-        ref={(ref: HTMLDivElement | null) => {
-          if (ref) {
-            connect(drag(ref))
-          }
-        }}
+        ref={(ref: HTMLDivElement | null) => { if (ref) connect(drag(ref)); }}
         style={containerStyle}
         className="hover:shadow-md transition-shadow duration-200"
       >
-        <img
-          src={src}
-          alt={alt}
-          style={imageStyle}
-        />
+        <img src={src} alt={alt} style={imageStyle} />
         {isActive && (
           <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Image Block
@@ -97,19 +97,11 @@ export const ImageBlock: UserComponent<ImageBlockProps> = ({
       }}
     >
       <div
-        ref={(ref: HTMLDivElement | null) => {
-          if (ref) {
-            connect(drag(ref))
-          }
-        }}
+        ref={(ref: HTMLDivElement | null) => { if (ref) connect(drag(ref)); }}
         style={containerStyle}
         className="hover:shadow-md transition-shadow duration-200 w-full h-full"
       >
-        <img
-          src={src}
-          alt={alt}
-          style={imageStyle}
-        />
+        <img src={src} alt={alt} style={imageStyle} />
         {isActive && (
           <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Image Block

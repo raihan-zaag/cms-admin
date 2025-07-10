@@ -1,13 +1,10 @@
 import { useState } from 'react'
 import { Editor } from '@craftjs/core'
-import { HeroSection } from '@/components/craft/HeroSection'
 import { TextBlock } from '@/components/craft/TextBlock'
 import { ImageBlock } from '@/components/craft/ImageBlock'
 import { Container } from '@/components/craft/Container'
-import { CardBlock } from '@/components/craft/CardBlock'
 import { ButtonBlock } from '@/components/craft/ButtonBlock'
 import { GridLayout, GridColumn, Section } from '@/components/craft/ResponsiveLayout'
-import { TestResizableBlock } from '@/components/craft/TestResizableBlock'
 import {
   EditorHeader,
   EditorToolbar,
@@ -32,16 +29,13 @@ export function PageEditor() {
     <div className="h-screen flex flex-col bg-gray-50">
       <Editor
         resolver={{
-          HeroSection,
           TextBlock,
           ImageBlock,
           Container,
-          CardBlock,
           ButtonBlock,
           GridLayout,
           GridColumn,
           Section,
-          TestResizableBlock,
         }}
         onRender={RenderNode}
       >

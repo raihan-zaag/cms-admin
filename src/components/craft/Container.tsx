@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label'
 import { EnhancedResizable } from './EnhancedResizable'
 
 interface ContainerProps {
-  background?: string
   backgroundColor?: string
   padding?: string
   margin?: string
@@ -19,8 +18,14 @@ interface ContainerProps {
   children?: React.ReactNode
 }
 
-export const Container: UserComponent<ContainerProps> = ({
-  background = 'transparent',
+// Helper for empty drop zone
+const DropZone = ({ message }: { message: string }) => (
+  <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
+    {message}
+  </div>
+)
+
+export const Container: UserComponent<Omit<ContainerProps, 'background'>> = ({
   backgroundColor = '#ffffff',
   padding = '16',
   margin = '0',
@@ -34,6 +39,7 @@ export const Container: UserComponent<ContainerProps> = ({
   isResponsive = false,
   children,
 }) => {
+  // Craft.js connectors and selection state
   const {
     connectors: { connect, drag },
     isActive,
@@ -42,8 +48,9 @@ export const Container: UserComponent<ContainerProps> = ({
     isActive: state.events.selected,
   }))
 
+  // Unified style logic
   const containerStyle = {
-    background: background !== 'transparent' ? background : backgroundColor,
+    background: backgroundColor,
     padding: `${padding}px`,
     margin: `${margin}px`,
     width: isResponsive ? '100%' : typeof width === 'number' ? `${width}px` : width,
@@ -58,23 +65,16 @@ export const Container: UserComponent<ContainerProps> = ({
     overflow: 'visible',
   }
 
+  // Responsive or resizable rendering
   if (isResponsive) {
     return (
       <div
-        ref={(ref: HTMLDivElement | null) => {
-          if (ref) {
-            connect(drag(ref))
-          }
-        }}
+        ref={(ref: HTMLDivElement | null) => { if (ref) connect(drag(ref)); }}
         style={containerStyle}
         className="relative transition-all duration-200 hover:shadow-md w-full"
       >
         {children}
-        {!children && (
-          <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
-            Drop components here
-          </div>
-        )}
+        {!children && <DropZone message="Drop components here" />}
         {isActive && (
           <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Container
@@ -110,20 +110,12 @@ export const Container: UserComponent<ContainerProps> = ({
       }}
     >
       <div
-        ref={(ref: HTMLDivElement | null) => {
-          if (ref) {
-            connect(drag(ref))
-          }
-        }}
+        ref={(ref: HTMLDivElement | null) => { if (ref) connect(drag(ref)); }}
         style={containerStyle}
         className="relative transition-all duration-200 hover:shadow-md w-full h-full"
       >
         {children}
-        {!children && (
-          <div className="text-gray-400 text-center py-8 min-h-[100px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
-            Drop components here
-          </div>
-        )}
+        {!children && <DropZone message="Drop components here" />}
         {isActive && (
           <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Container
@@ -138,7 +130,6 @@ const ContainerSettings = () => {
   const {
     actions: { setProp },
     props: { 
-      background, 
       backgroundColor, 
       padding, 
       margin, 
@@ -178,18 +169,6 @@ const ContainerSettings = () => {
             className="flex-1"
           />
         </div>
-      </div>
-
-      <div>
-        <Label htmlFor="background">Background (CSS)</Label>
-        <Input
-          id="background"
-          value={background || ''}
-          onChange={(e) => setProp((props: ContainerProps) => {
-            props.background = e.target.value
-          })}
-          placeholder="linear-gradient(45deg, #ff0000, #00ff00)"
-        />
       </div>
 
       <div className="flex items-center space-x-2">
@@ -348,7 +327,6 @@ const ContainerSettings = () => {
 
 Container.craft = {
   props: {
-    background: 'transparent',
     backgroundColor: '#ffffff',
     padding: '16',
     margin: '0',

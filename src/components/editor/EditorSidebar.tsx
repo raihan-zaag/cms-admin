@@ -1,14 +1,11 @@
 import { useEditor, Element } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
 import { Layers, Copy, CheckSquare, Trash2 } from 'lucide-react'
-import { HeroSection } from '@/components/craft/HeroSection'
 import { TextBlock } from '@/components/craft/TextBlock'
 import { ImageBlock } from '@/components/craft/ImageBlock'
 import { Container } from '@/components/craft/Container'
-import { CardBlock } from '@/components/craft/CardBlock'
 import { ButtonBlock } from '@/components/craft/ButtonBlock'
 import { GridLayout, GridColumn, Section } from '@/components/craft/ResponsiveLayout'
-import { TestResizableBlock } from '@/components/craft/TestResizableBlock'
 
 interface EditorSidebarProps {
   isMultiSelectMode: boolean
@@ -78,7 +75,6 @@ function ComponentButton({ component, label, icon }: { component: string; label:
       ref={(ref: HTMLButtonElement | null) => {
         if (ref) {
           const componentElement = 
-            component === 'HeroSection' ? <HeroSection /> :
             component === 'TextBlock' ? (
               <Element is={TextBlock} isResponsive={true} width={600} height={100} />
             ) :
@@ -91,7 +87,6 @@ function ComponentButton({ component, label, icon }: { component: string; label:
             component === 'Section' ? (
               <Element is={Section} width={800} height={300} canvas />
             ) :
-            component === 'CardBlock' ? <CardBlock /> :
             component === 'ButtonBlock' ? (
               <Element is={ButtonBlock} isResizable={true} width={120} height={40} />
             ) :
@@ -101,7 +96,6 @@ function ComponentButton({ component, label, icon }: { component: string; label:
             component === 'GridColumn' ? (
               <Element is={GridColumn} span={1} canvas />
             ) :
-            component === 'TestResizableBlock' ? <TestResizableBlock /> :
             <div>Unknown Component</div>
 
           connectors.create(ref, componentElement)

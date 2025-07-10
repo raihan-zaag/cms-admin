@@ -33,7 +33,6 @@ export function EditorCanvas({ viewportMode, zoom, isPreview = false }: EditorCa
           <Frame>
             <Element 
               is={Container}
-              background="transparent"
               backgroundColor="#ffffff"
               padding="20"
               margin="0"

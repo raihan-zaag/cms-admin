@@ -119,7 +119,7 @@ src/
 └── main.tsx                        # App entry point
 ```
 
-## � Setup Instructions
+## 📝 Setup Instructions
 
 ### 1️⃣ Prerequisites
 - Node.js v18+
@@ -146,7 +146,7 @@ npm run dev
 
 The application will be available at `http://localhost:5174/`
 
-## � API Integration
+## 📝 API Integration
 
 The application expects the following NestJS API endpoints:
 
@@ -257,3 +257,23 @@ To complete the CMS, you would need to:
 ## 📄 License
 
 This project is licensed under the MIT License.
+
+# Minimal Page Builder: Extending & Customizing
+
+This project uses a minimal, effective page builder based on Craft.js. Only essential blocks are included for clarity and maintainability:
+- Container
+- Section
+- GridLayout
+- GridColumn
+- TextBlock
+- ImageBlock
+- ButtonBlock
+
+**Resizable and draggable logic is unified**: All blocks use the `EnhancedResizable` component for resizing, and Craft.js connectors for drag-and-drop.
+
+**To add a new block:**
+1. Create your block in `src/components/craft/` following the pattern of existing blocks (see `TextBlock.tsx` or `ButtonBlock.tsx`).
+2. Use `EnhancedResizable` for resizing if needed.
+3. Add your block to the sidebar in `EditorSidebar.tsx` if you want it to be available for drag-and-drop.
+
+This setup ensures a clean, minimal, and easily extensible builder UI.

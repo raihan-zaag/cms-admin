@@ -19,6 +19,13 @@ interface TextBlockProps {
   isResponsive?: boolean
 }
 
+// Helper for responsive style
+const getResponsiveStyle = (isResponsive: boolean, width: number, height: number) => ({
+  width: isResponsive ? '100%' : `${width}px`,
+  height: isResponsive ? 'auto' : `${height}px`,
+  minHeight: isResponsive ? '50px' : `${height}px`,
+})
+
 export const TextBlock: UserComponent<TextBlockProps> = ({
   text = 'Edit this text',
   fontSize = '16',
@@ -33,6 +40,7 @@ export const TextBlock: UserComponent<TextBlockProps> = ({
   borderRadius = '4',
   isResponsive = false,
 }) => {
+  // Craft.js connectors and selection state
   const {
     connectors: { connect, drag },
     isActive,
@@ -41,10 +49,9 @@ export const TextBlock: UserComponent<TextBlockProps> = ({
     isActive: state.events.selected,
   }))
 
+  // Unified style logic
   const containerStyle = {
-    width: isResponsive ? '100%' : `${width}px`,
-    height: isResponsive ? 'auto' : `${height}px`,
-    minHeight: isResponsive ? '50px' : `${height}px`,
+    ...getResponsiveStyle(isResponsive, width, height),
     backgroundColor: backgroundColor !== 'transparent' ? backgroundColor : 'transparent',
     padding: `${padding}px`,
     borderRadius: `${borderRadius}px`,
@@ -66,20 +73,15 @@ export const TextBlock: UserComponent<TextBlockProps> = ({
     height: isResponsive ? 'auto' : '100%',
   }
 
+  // Responsive or resizable rendering
   if (isResponsive) {
     return (
       <div
-        ref={(ref: HTMLDivElement | null) => {
-          if (ref) {
-            connect(drag(ref))
-          }
-        }}
+        ref={(ref: HTMLDivElement | null) => { if (ref) connect(drag(ref)); }}
         style={containerStyle}
         className="hover:shadow-md transition-shadow duration-200 w-full"
       >
-        <p style={textStyle}>
-          {text}
-        </p>
+        <p style={textStyle}>{text}</p>
         {isActive && (
           <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Text Block
@@ -115,17 +117,11 @@ export const TextBlock: UserComponent<TextBlockProps> = ({
       }}
     >
       <div
-        ref={(ref: HTMLDivElement | null) => {
-          if (ref) {
-            connect(drag(ref))
-          }
-        }}
+        ref={(ref: HTMLDivElement | null) => { if (ref) connect(drag(ref)); }}
         style={containerStyle}
         className="hover:shadow-md transition-shadow duration-200 w-full h-full"
       >
-        <p style={textStyle}>
-          {text}
-        </p>
+        <p style={textStyle}>{text}</p>
         {isActive && (
           <div className="absolute -top-6 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
             Text Block

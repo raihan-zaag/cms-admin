@@ -18,6 +18,12 @@ interface ButtonBlockProps {
   isResizable?: boolean
 }
 
+// Helper for responsive style
+const getResponsiveStyle = (isResizable: boolean, width: number, height: number) => ({
+  width: isResizable ? `${width}px` : '100%',
+  height: isResizable ? `${height}px` : 'auto',
+})
+
 export const ButtonBlock: UserComponent<ButtonBlockProps> = ({
   text = 'Button',
   backgroundColor = '#3b82f6',
@@ -32,6 +38,7 @@ export const ButtonBlock: UserComponent<ButtonBlockProps> = ({
   href = '',
   isResizable = false,
 }) => {
+  // Craft.js connectors and selection state
   const {
     connectors: { connect, drag },
     isActive,
@@ -40,15 +47,15 @@ export const ButtonBlock: UserComponent<ButtonBlockProps> = ({
     isActive: state.events.selected,
   }))
 
+  // Unified style logic
   const buttonStyle = {
+    ...getResponsiveStyle(isResizable, width, height),
     backgroundColor: variant === 'default' ? backgroundColor : undefined,
     color: textColor,
     borderRadius: `${borderRadius}px`,
     padding: `${padding}px`,
     fontSize: `${fontSize}px`,
     fontWeight,
-    width: isResizable ? `${width}px` : '100%',
-    height: isResizable ? `${height}px` : 'auto',
     minWidth: isResizable ? undefined : 'fit-content',
     border: isActive ? '2px solid #3b82f6' : variant === 'outline' ? `1px solid ${backgroundColor}` : 'none',
     cursor: 'pointer',
@@ -58,13 +65,10 @@ export const ButtonBlock: UserComponent<ButtonBlockProps> = ({
     position: 'relative' as const,
   }
 
+  // Button element with drag/connect
   const ButtonComponent = () => (
     <button
-      ref={(ref: HTMLButtonElement | null) => {
-        if (ref) {
-          connect(drag(ref))
-        }
-      }}
+      ref={(ref: HTMLButtonElement | null) => { if (ref) connect(drag(ref)); }}
       style={buttonStyle}
       className="transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       onClick={(e) => {
@@ -83,6 +87,7 @@ export const ButtonBlock: UserComponent<ButtonBlockProps> = ({
     </button>
   )
 
+  // Resizable or full-width rendering
   if (isResizable) {
     return (
       <EnhancedResizable
