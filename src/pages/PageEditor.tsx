@@ -3,6 +3,7 @@ import { Editor, Frame, Element } from '@craftjs/core';
 import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
+import { SimpleLayersPanel } from '../components/editor/SimpleLayersPanel';
 import { Container } from '../components/editor/Container';
 import { Text } from '../components/editor/Text';
 import { Button } from '../components/editor/Button';
@@ -17,7 +18,7 @@ export const PageEditor: React.FC = () => {
           Button,
         }}
       >
-        <div className="h-full">
+        <div className="h-screen">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -55,11 +56,10 @@ export const PageEditor: React.FC = () => {
                       background="#ddebf0"
                       padding={20}
                       width="100%"
-                      height="800px"
+                      height="100%"
                       minWidth={200}
                       minHeight={200}
                     >
-                      
                     </Element>
                   </Frame>
                 </div>
@@ -67,8 +67,8 @@ export const PageEditor: React.FC = () => {
             </div>
 
             {/* Right sidebar - Layers and Settings */}
-            <div className="flex">
-              <LayersPanel />
+            <div className="space-y-4">
+              <SimpleLayersPanel />
               <SettingsPanel />
             </div>
           </div>

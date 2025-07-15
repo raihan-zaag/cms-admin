@@ -23,6 +23,7 @@ interface ButtonComponent extends React.FC<ButtonProps> {
     related: {
       settings: React.FC;
     };
+    displayName?: string;
   };
 }
 
@@ -301,4 +302,5 @@ Button.craft = {
   related: {
     settings: ButtonSettings,
   },
+  displayName: 'Button',
 };

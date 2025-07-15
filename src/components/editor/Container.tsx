@@ -88,7 +88,7 @@ export const Container: ContainerComponent = ({
                     padding: `${padding}px`,
                     background: background,
                     width: '100%',
-                    height: '200px',
+                    height: '100%',
                 }}
             >
                 {children}

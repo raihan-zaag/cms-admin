@@ -277,4 +277,5 @@ Text.craft = {
   related: {
     settings: TextSettings,
   },
+  displayName: 'Text',
 };
