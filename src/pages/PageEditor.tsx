@@ -1,94 +1,80 @@
-import { useState } from 'react'
-import { Editor } from '@craftjs/core'
-import { TextBlock } from '@/components/craft/TextBlock'
-import { ImageBlock } from '@/components/craft/ImageBlock'
-import { Container } from '@/components/craft/Container'
-import { ButtonBlock } from '@/components/craft/ButtonBlock'
-import { GridLayout, GridColumn, Section } from '@/components/craft/ResponsiveLayout'
-import {
-  EditorHeader,
-  EditorToolbar,
-  EditorSidebar,
-  EditorCanvas,
-  SettingsPanel,
-  EditorShortcuts,
-  RenderNode,
-} from '@/components/editor'
-import '@/components/craft/craft-styles.css'
+import React from 'react';
+import { Editor, Frame, Element } from '@craftjs/core';
+import { Toolbox } from '../components/editor/Toolbox';
+import { SettingsPanel } from '../components/editor/SettingsPanel';
+import { LayersPanel } from '../components/editor/LayersPanel';
+import { Container } from '../components/editor/Container';
+import { Text } from '../components/editor/Text';
+import { Button } from '../components/editor/Button';
 
-export function PageEditor() {
-  const [pageTitle, setPageTitle] = useState('')
-  const [pageSlug, setPageSlug] = useState('')
-  const [isPreview, setPreview] = useState(false)
-  const [viewportMode, setViewportMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
-  const [zoom, setZoom] = useState(100)
-  const [selectedElements, setSelectedElements] = useState<Set<string>>(new Set())
-  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false)
-
+export const PageEditor: React.FC = () => {
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen bg-gray-100">
       <Editor
         resolver={{
-          TextBlock,
-          ImageBlock,
           Container,
-          ButtonBlock,
-          GridLayout,
-          GridColumn,
-          Section,
+          Text,
+          Button,
         }}
-        onRender={RenderNode}
       >
-        {/* Header */}
-        <EditorHeader
-          pageTitle={pageTitle}
-          setPageTitle={setPageTitle}
-          pageSlug={pageSlug}
-          setPageSlug={setPageSlug}
-          isPreview={isPreview}
-          setPreview={setPreview}
-        />
+        <div className="h-full">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-xl font-semibold text-gray-900">
+                Page Builder
+              </h1>
+              <div className="flex items-center space-x-4">
+                <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                  Preview
+                </button>
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
 
-        {/* Toolbar */}
-        {!isPreview && (
-          <EditorToolbar
-            viewportMode={viewportMode}
-            setViewportMode={setViewportMode}
-            zoom={zoom}
-            setZoom={setZoom}
-            isMultiSelectMode={isMultiSelectMode}
-            setIsMultiSelectMode={setIsMultiSelectMode}
-            selectedElements={selectedElements}
-            setSelectedElements={setSelectedElements}
-          />
-        )}
+          {/* Main content */}
+          <div className="flex h-full">
+            {/* Left sidebar - Toolbox */}
+            <Toolbox />
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          {!isPreview && (
-            <EditorSidebar
-              isMultiSelectMode={isMultiSelectMode}
-              setIsMultiSelectMode={setIsMultiSelectMode}
-              selectedElements={selectedElements}
-              setSelectedElements={setSelectedElements}
-            />
-          )}
+            {/* Center - Canvas */}
+            <div className="flex-1 p-4">
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden h-full">
+                <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
+                  <h3 className="text-sm font-medium text-gray-700">Canvas</h3>
+                </div>
+                
+                <div className="h-full  bg-gray-50 relative overflow-auto p-4">
+                  <Frame>
+                    <Element 
+                      is={Container} 
+                      canvas 
+                      background="#ddebf0"
+                      padding={20}
+                      width="100%"
+                      height="800px"
+                      minWidth={200}
+                      minHeight={200}
+                    >
+                      
+                    </Element>
+                  </Frame>
+                </div>
+              </div>
+            </div>
 
-          {/* Main Canvas */}
-          <EditorCanvas
-            viewportMode={viewportMode}
-            zoom={zoom}
-            isPreview={isPreview}
-          />
-
-          {/* Settings Panel */}
-          {!isPreview && <SettingsPanel />}
+            {/* Right sidebar - Layers and Settings */}
+            <div className="flex">
+              <LayersPanel />
+              <SettingsPanel />
+            </div>
+          </div>
         </div>
-
-        {/* Keyboard Shortcuts */}
-        <EditorShortcuts isPreview={isPreview} />
-        {/* <DragDropHandler /> */}
       </Editor>
     </div>
-  )
-}
+  );
+};
+
