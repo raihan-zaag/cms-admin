@@ -7,6 +7,7 @@ interface TextProps {
   fontSize?: number;
   fontWeight?: string;
   color?: string;
+  backgroundColor?: string;
   textAlign?: string;
   width?: string;
   height?: string;
@@ -17,6 +18,12 @@ interface TextProps {
 interface TextComponent extends React.FC<TextProps> {
   craft?: {
     props: TextProps;
+    rules?: {
+      canDrag?: () => boolean;
+      canDrop?: () => boolean;
+      canMoveIn?: () => boolean;
+      canMoveOut?: () => boolean;
+    };
     related: {
       settings: React.FC;
     };
@@ -29,6 +36,7 @@ export const Text: TextComponent = ({
   fontSize = 16,
   fontWeight = 'normal',
   color = '#000000',
+  backgroundColor = 'transparent',
   textAlign = 'left',
   width = 'auto',
   height = 'auto',
@@ -47,83 +55,80 @@ export const Text: TextComponent = ({
   const [isEditing, setIsEditing] = React.useState(false);
 
   return (
-    <div
-      ref={(ref) => {
-        if (ref) {
-          connect(drag(ref));
-        }
+    <Resizable
+      size={{
+        width: width,
+        height: height,
       }}
-      className={`relative transition-all duration-200 ${
-        selected ? 'ring-2 ring-green-500 ring-opacity-50' : ''
-      } ${selected ? 'z-10' : ''}`}
-      onClick={() => setIsEditing(true)}
-      onBlur={() => setIsEditing(false)}
+      onResizeStop={(_, __, ref) => {
+        setProp((props: TextProps) => {
+          props.width = ref.style.width;
+          props.height = ref.style.height;
+        });
+      }}
+      minWidth={minWidth}
+      minHeight={minHeight}
+      bounds="parent"
+      handleStyles={{
+        top: { zIndex: 1000 },
+        right: { zIndex: 1000 },
+        bottom: { zIndex: 1000 },
+        left: { zIndex: 1000 },
+        topRight: { zIndex: 1000 },
+        bottomRight: { zIndex: 1000 },
+        bottomLeft: { zIndex: 1000 },
+        topLeft: { zIndex: 1000 },
+      }}
+      style={{
+        border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
+        borderRadius: '4px',
+      }}
     >
-      <Resizable
-        size={{
-          width: width,
-          height: height,
+      <div
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref));
+          }
         }}
-        onResizeStop={(_, __, ref) => {
-          setProp((props: TextProps) => {
-            props.width = ref.style.width;
-            props.height = ref.style.height;
-          });
+        className="w-full h-full cursor-text"
+        style={{
+          backgroundColor: backgroundColor,
         }}
-        minWidth={minWidth}
-        minHeight={minHeight}
-        bounds="parent"
-        handleStyles={{
-          top: { zIndex: 1000 },
-          right: { zIndex: 1000 },
-          bottom: { zIndex: 1000 },
-          left: { zIndex: 1000 },
-          topRight: { zIndex: 1000 },
-          bottomRight: { zIndex: 1000 },
-          bottomLeft: { zIndex: 1000 },
-          topLeft: { zIndex: 1000 },
-        }}
+        onClick={() => setIsEditing(true)}
+        onBlur={() => setIsEditing(false)}
       >
-        <div
-          className="w-full h-full relative"
-          style={{
-            border: selected ? '2px dashed #10b981' : '1px solid transparent',
-            borderRadius: '4px',
-            padding: selected ? '2px' : '0px',
-          }}
-        >
-          {isEditing ? (
-            <textarea
-              value={text}
-              onChange={(e) =>
-                setProp((props: TextProps) => (props.text = e.target.value))
-              }
-              autoFocus
-              className="w-full h-full resize-none border-none outline-none bg-transparent"
-              style={{
-                fontSize: `${fontSize}px`,
-                fontWeight,
-                color,
-                textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
-              }}
-            />
-          ) : (
-            <div
-              className="w-full h-full cursor-text"
-              style={{
-                fontSize: `${fontSize}px`,
-                fontWeight,
-                color,
-                textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {text}
-            </div>
-          )}
-        </div>
-      </Resizable>
-    </div>
+        {isEditing ? (
+          <textarea
+            value={text}
+            onChange={(e) =>
+              setProp((props: TextProps) => (props.text = e.target.value))
+            }
+            autoFocus
+            className="w-full h-full resize-none border-none outline-none bg-transparent"
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight,
+              color,
+              textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+              backgroundColor: 'transparent',
+            }}
+          />
+        ) : (
+          <div
+            className="w-full h-full"
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight,
+              color,
+              textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {text}
+          </div>
+        )}
+      </div>
+    </Resizable>
   );
 };
 
@@ -135,6 +140,7 @@ export const TextSettings: React.FC = () => {
     fontSize,
     fontWeight,
     color,
+    backgroundColor,
     textAlign,
     minWidth,
     minHeight,
@@ -143,6 +149,7 @@ export const TextSettings: React.FC = () => {
     fontSize: node.data.props.fontSize,
     fontWeight: node.data.props.fontWeight,
     color: node.data.props.color,
+    backgroundColor: node.data.props.backgroundColor,
     textAlign: node.data.props.textAlign,
     minWidth: node.data.props.minWidth,
     minHeight: node.data.props.minHeight,
@@ -215,6 +222,31 @@ export const TextSettings: React.FC = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
+          Background Color
+        </label>
+        <input
+          type="color"
+          value={backgroundColor === 'transparent' ? '#ffffff' : backgroundColor}
+          onChange={(e) =>
+            setProp((props: TextProps) => (props.backgroundColor = e.target.value))
+          }
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+        />
+        <label className="flex items-center mt-2">
+          <input
+            type="checkbox"
+            checked={backgroundColor === 'transparent'}
+            onChange={(e) =>
+              setProp((props: TextProps) => (props.backgroundColor = e.target.checked ? 'transparent' : '#ffffff'))
+            }
+            className="mr-2"
+          />
+          <span className="text-sm text-gray-600">Transparent background</span>
+        </label>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
           Text Align
         </label>
         <select
@@ -268,11 +300,18 @@ Text.craft = {
     fontSize: 16,
     fontWeight: 'normal',
     color: '#000000',
+    backgroundColor: 'transparent',
     textAlign: 'left',
     width: 'auto',
     height: 'auto',
     minWidth: 50,
     minHeight: 20,
+  },
+  rules: {
+    canDrag: () => true,
+    canDrop: () => true,
+    canMoveIn: () => false,
+    canMoveOut: () => true,
   },
   related: {
     settings: TextSettings,

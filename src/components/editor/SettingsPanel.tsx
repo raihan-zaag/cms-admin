@@ -10,7 +10,7 @@ export const SettingsPanel: React.FC = () => {
   });
 
   return (
-    <div className="w-64 bg-gray-50 border-l border-gray-200 p-4">
+    <div className=" bg-gray-50  border-gray-200 p-4">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Settings</h3>
       
       {selected && (
@@ -29,7 +29,7 @@ export const SettingsPanel: React.FC = () => {
             })()}
           </div>
 
-          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 ">
             <h4 className="font-medium text-gray-700 mb-2">Actions</h4>
             <div className="space-y-2">
               <button

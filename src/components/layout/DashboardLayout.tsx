@@ -42,9 +42,9 @@ export function DashboardLayout() {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex h-[calc(100vh-70px)] overflow-hidden">
         {/* Sidebar */}
-        <nav className="w-64 bg-white shadow-sm min-h-screen border-r">
+        <nav className="w-64 bg-white shadow-sm h-screen border-r">
           <div className="p-4">
             <div className="space-y-2">
               <Link
@@ -83,7 +83,7 @@ export function DashboardLayout() {
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

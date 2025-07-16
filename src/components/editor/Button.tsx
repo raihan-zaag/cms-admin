@@ -20,6 +20,12 @@ interface ButtonProps {
 interface ButtonComponent extends React.FC<ButtonProps> {
   craft?: {
     props: ButtonProps;
+    rules?: {
+      canDrag?: () => boolean;
+      canDrop?: () => boolean;
+      canMoveIn?: () => boolean;
+      canMoveOut?: () => boolean;
+    };
     related: {
       settings: React.FC;
     };
@@ -51,68 +57,57 @@ export const Button: ButtonComponent = ({
   }));
 
   return (
-    <div
-      ref={(ref) => {
-        if (ref) {
-          connect(drag(ref));
-        }
+    <Resizable
+      size={{
+        width: width,
+        height: height,
       }}
-      className={`relative transition-all duration-200 ${
-        selected ? 'ring-2 ring-purple-500 ring-opacity-50' : ''
-      } ${selected ? 'z-10' : ''}`}
+      onResizeStop={(_, __, ref) => {
+        setProp((props: ButtonProps) => {
+          props.width = ref.style.width;
+          props.height = ref.style.height;
+        });
+      }}
+      minWidth={minWidth}
+      minHeight={minHeight}
+      bounds="parent"
+      handleStyles={{
+        top: { zIndex: 1000 },
+        right: { zIndex: 1000 },
+        bottom: { zIndex: 1000 },
+        left: { zIndex: 1000 },
+        topRight: { zIndex: 1000 },
+        bottomRight: { zIndex: 1000 },
+        bottomLeft: { zIndex: 1000 },
+        topLeft: { zIndex: 1000 },
+      }}
+      style={{
+        border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
+        borderRadius: '4px',
+      }}
     >
-      <Resizable
-        size={{
-          width: width,
-          height: height,
+      <button
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref));
+          }
         }}
-        onResizeStop={(_, __, ref) => {
-          setProp((props: ButtonProps) => {
-            props.width = ref.style.width;
-            props.height = ref.style.height;
-          });
+        className="w-full h-full transition-all duration-200 hover:opacity-80"
+        style={{
+          backgroundColor,
+          color,
+          borderRadius: `${borderRadius}px`,
+          padding: `${padding}px`,
+          fontSize: `${fontSize}px`,
+          fontWeight,
+          border: 'none',
+          cursor: 'pointer',
         }}
-        minWidth={minWidth}
-        minHeight={minHeight}
-        bounds="parent"
-        handleStyles={{
-          top: { zIndex: 1000 },
-          right: { zIndex: 1000 },
-          bottom: { zIndex: 1000 },
-          left: { zIndex: 1000 },
-          topRight: { zIndex: 1000 },
-          bottomRight: { zIndex: 1000 },
-          bottomLeft: { zIndex: 1000 },
-          topLeft: { zIndex: 1000 },
-        }}
+        onClick={onClick}
       >
-        <div
-          className="w-full h-full relative"
-          style={{
-            border: selected ? '2px dashed #8b5cf6' : '1px solid transparent',
-            borderRadius: '4px',
-            padding: selected ? '2px' : '0px',
-          }}
-        >
-          <button
-            className="w-full h-full transition-all duration-200 hover:opacity-80"
-            style={{
-              backgroundColor,
-              color,
-              borderRadius: `${borderRadius}px`,
-              padding: `${padding}px`,
-              fontSize: `${fontSize}px`,
-              fontWeight,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-            onClick={onClick}
-          >
-            {text}
-          </button>
-        </div>
-      </Resizable>
-    </div>
+        {text}
+      </button>
+    </Resizable>
   );
 };
 
@@ -298,6 +293,12 @@ Button.craft = {
     height: 'auto',
     minWidth: 80,
     minHeight: 40,
+  },
+  rules: {
+    canDrag: () => true,
+    canDrop: () => true,
+    canMoveIn: () => false,
+    canMoveOut: () => true,
   },
   related: {
     settings: ButtonSettings,

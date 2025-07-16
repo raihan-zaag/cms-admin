@@ -8,7 +8,7 @@ export const Toolbox: React.FC = () => {
   const { connectors } = useEditor();
 
   return (
-    <div className="w-64 bg-gray-50 border-r border-gray-200 p-4">
+    <div className="w-64 bg-gray-50 border-gray-200 p-4">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Components</h3>
       <div className="space-y-2">
         <div
