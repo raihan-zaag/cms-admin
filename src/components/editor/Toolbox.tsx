@@ -3,6 +3,7 @@ import { useEditor, Element } from '@craftjs/core';
 import { Container } from './Container';
 import { Text } from './Text';
 import { Button } from './Button';
+import { ImageComponent } from './Image';
 
 export const Toolbox: React.FC = () => {
   const { connectors } = useEditor();
@@ -31,7 +32,7 @@ export const Toolbox: React.FC = () => {
         <div
           ref={(ref) => {
             if (ref) {
-              connectors.create(ref, <Text text="Hello World!" />);
+              connectors.create(ref, <Element is={Text} text="Hello World!" />);
             }
           }}
           className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow"
@@ -48,7 +49,7 @@ export const Toolbox: React.FC = () => {
         <div
           ref={(ref) => {
             if (ref) {
-              connectors.create(ref, <Button text="Click me" />);
+              connectors.create(ref, <Element is={Button} text="Click me" />);
             }
           }}
           className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow"
@@ -59,6 +60,23 @@ export const Toolbox: React.FC = () => {
           </div>
           <p className="text-xs text-gray-500 mt-1">
             Interactive button element
+          </p>
+        </div>
+
+        <div
+          ref={(ref) => {
+            if (ref) {
+              connectors.create(ref, <Element is={ImageComponent} />);
+            }
+          }}
+          className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow"
+        >
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-pink-500 rounded"></div>
+            <span className="text-sm font-medium text-gray-700">Image</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Responsive image with background support
           </p>
         </div>
       </div>
