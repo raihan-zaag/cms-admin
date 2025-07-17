@@ -1,5 +1,5 @@
 import React from 'react';
-import { Editor, Frame, Element } from '@craftjs/core';
+import { Editor, Frame, Element,  } from '@craftjs/core';
 import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
@@ -7,11 +7,13 @@ import { Container } from '../components/editor/Container';
 import { Text } from '../components/editor/Text';
 import { Button } from '../components/editor/Button';
 import { ImageComponent } from '../components/editor/Image';
+import TopBar from '@/components/editor/TopBar';
 
 
 
 
 export const PageEditor: React.FC = () => {
+ 
   return (
     <Editor
       resolver={{
@@ -22,19 +24,7 @@ export const PageEditor: React.FC = () => {
       }}
     >
       <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-gray-900">
-            Page Builder
-          </h1>
-          <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-              Preview
-            </button>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-              Save
-            </button>
-          </div>
-        </div>
+        <TopBar/>
       </div>
 
       {/* Main content */}
