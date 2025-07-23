@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useNode, Element } from '@craftjs/core';
+import React from 'react';
+import { useNode } from '@craftjs/core';
 import { Resizable } from 're-resizable';
 import { Image as ImageIcon } from 'lucide-react';
-import { MediaPicker } from './MediaPicker';
 import { ImageSettings } from './settings/ImageSettings';
 
 interface ImageComponentProps {
@@ -72,13 +71,6 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
         selected: state.events.selected,
         dragged: state.events.dragged,
     }));
-
-    const [showMediaPicker, setShowMediaPicker] = useState(false);
-
-    const handleMediaSelect = (url: string) => {
-        setProp((props: ImageComponentProps) => (props.src = url));
-        setShowMediaPicker(false);
-    };
 
         const containerStyle = {
             width: '100%',
@@ -164,80 +156,82 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                             connect(drag(ref));
                         }
                     }}
-                    className="w-full h-full"
-                    style={containerStyle}
+                    style={{
+                        ...containerStyle,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        minHeight: '200px',
+                    }}
                 >
                     {/* Background image layer */}
                     {backgroundImage && (
                         <div style={backgroundStyle} />
                     )}
 
-                    {/* Foreground content */}
-                    {src ? (
-                        <img
-                            src={src}
-                            alt={alt}
-                            style={imageStyle}
-                            onError={(e) => {
-                                // Fallback to placeholder if image fails to load
-                                e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
-                            }}
-                        />
-                    ) : (
-                        <div
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: backgroundImage ? 'transparent' : '#f3f4f6',
-                                color: '#6b7280',
-                                fontSize: '14px',
-                                fontWeight: '500',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                position: 'relative',
-                                zIndex: 2,
-                            }}
-                            onClick={() => setShowMediaPicker(true)}
-                        >
-                            {!backgroundImage && <>
-                                <ImageIcon className="h-12 w-12 mb-2 text-gray-400" />
-                                <p className="text-center">
-                                    Click to select image
-                                </p>
-                                <p className="text-xs text-gray-400 mt-1">
-                                    Or paste image URL in settings
-                                </p>
-                            </>}
+                    {/* Image content area */}
+                    <div style={{
+                        position: 'relative',
+                        zIndex: 2,
+                        flex: children ? '0 0 auto' : '1',
+                        minHeight: children ? '120px' : '100%',
+                    }}>
+                        {src ? (
+                            <img
+                                src={src}
+                                alt={alt}
+                                style={{
+                                    ...imageStyle,
+                                    minHeight: children ? '120px' : '200px',
+                                }}
+                                onError={(e) => {
+                                    // Fallback to placeholder if image fails to load
+                                    e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                                }}
+                            />
+                        ) : (
+                            <div
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: backgroundImage ? 'transparent' : '#f3f4f6',
+                                    color: '#6b7280',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    position: 'relative',
+                                    zIndex: 2,
+                                    minHeight: children ? '120px' : '200px',
+                                }}
+                            >
+                                {!backgroundImage && <>
+                                    <ImageIcon className="h-12 w-12 mb-2 text-gray-400" />
+                                    <p className="text-center">
+                                        No image selected
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                        Configure image in settings panel
+                                    </p>
+                                </>}
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Children area - like Container */}
+                    {children && (
+                        <div style={{
+                            flex: '1',
+                            position: 'relative',
+                            zIndex: 3,
+                            padding: '10px',
+                            minHeight: '50px',
+                        }}>
+                            {children}
                         </div>
                     )}
-                    
-                    {/* Droppable area for nested elements */}
-                    <Element
-                        is="div"
-                        id="image-canvas"
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 3,
-                        }}
-                        canvas
-                    >
-                        {children}
-                    </Element>
                 </div>
-
-                <MediaPicker
-                    isOpen={showMediaPicker}
-                    onSelect={handleMediaSelect}
-                    onClose={() => setShowMediaPicker(false)}
-                />
             </Resizable>
         );
     };
@@ -275,3 +269,6 @@ ImageComponent.craft = {
     },
     displayName: 'ImageComponent',
 };
+
+
+// TODO: Put another component here that uses this ImageComponent is stretch example

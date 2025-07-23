@@ -140,3 +140,6 @@ Container.craft = {
     },
     displayName: 'Container',
 };
+
+
+// TODO: Add another settings to container that allows adding background transparent.

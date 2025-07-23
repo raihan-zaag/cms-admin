@@ -93,7 +93,7 @@ export const ImageSettings: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700">
                     Image Source
                 </label>
-                <div className="mt-1 flex gap-2">
+                <div className="mt-1 flex gap-2 flex-wrap">
                     <input
                         type="url"
                         value={src}
@@ -225,7 +225,7 @@ export const ImageSettings: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700">
                     Background Image
                 </label>
-                <div className="mt-1 flex gap-2">
+                <div className="mt-1 flex gap-2 flex-wrap">
                     <input
                         type="url"
                         value={backgroundImage}

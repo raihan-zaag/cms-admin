@@ -66,7 +66,7 @@ export const Toolbox: React.FC = () => {
         <div
           ref={(ref) => {
             if (ref) {
-              connectors.create(ref, <Element is={ImageComponent} />);
+              connectors.create(ref, <Element is={ImageComponent} canvas />);
             }
           }}
           className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow"
