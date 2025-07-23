@@ -25,15 +25,15 @@ const TopBar = () => {
                     {enabled ? 'Finish Editing' : 'Edit'}
                 </button>
                 <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                    // onClick={() => {
-                    //     const json = query.serialize();
-                    //     console.log(JSON.parse(json));
-                    //     const htmlOutput = convertCraftJsonToHtml(JSON.parse(json));
-                    //     console.log(htmlOutput);
-                    //     const fullHtml = generateFullHtmlDocument(htmlOutput);
-                    //     downloadHtmlFile('page.html', fullHtml);
+                    onClick={() => {
+                        const json = query.serialize();
+                        console.log(JSON.parse(json));
+                        // const htmlOutput = convertCraftJsonToHtml(JSON.parse(json));
+                        // console.log(htmlOutput);
+                        // const fullHtml = generateFullHtmlDocument(htmlOutput);
+                        // downloadHtmlFile('page.html', fullHtml);
 
-                    // }}
+                    }}
                 >
                     Save
                 </button>
