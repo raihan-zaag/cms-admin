@@ -1,16 +1,21 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
+import { SpacingSettings } from './SpacingSettings';
 
 interface ContainerProps {
     background?: string;
     isTransparent?: boolean;
-    padding?: number;
-    margin?: number;
+    paddingTop?: number;
+    paddingRight?: number;
+    paddingBottom?: number;
+    paddingLeft?: number;
+    marginTop?: number;
+    marginRight?: number;
+    marginBottom?: number;
+    marginLeft?: number;
     children?: React.ReactNode;
     width?: string;
     height?: string;
-    minWidth?: number;
-    minHeight?: number;
     flexDirection?: 'row' | 'column';
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
     alignItems?: 'stretch' | 'flex-start' | 'center' | 'flex-end';
@@ -23,10 +28,6 @@ export const ContainerSettings: React.FC = () => {
         actions: { setProp },
         background,
         isTransparent,
-        padding,
-        margin,
-        minWidth,
-        minHeight,
         flexDirection,
         justifyContent,
         alignItems,
@@ -35,10 +36,6 @@ export const ContainerSettings: React.FC = () => {
     } = useNode((node) => ({
         background: node.data.props.background,
         isTransparent: node.data.props.isTransparent,
-        padding: node.data.props.padding,
-        margin: node.data.props.margin,
-        minWidth: node.data.props.minWidth,
-        minHeight: node.data.props.minHeight,
         flexDirection: node.data.props.flexDirection,
         justifyContent: node.data.props.justifyContent,
         alignItems: node.data.props.alignItems,
@@ -77,67 +74,7 @@ export const ContainerSettings: React.FC = () => {
                 </label>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Padding
-                </label>
-                <input
-                    type="range"
-                    min="0"
-                    max="50"
-                    value={padding}
-                    onChange={(e) =>
-                        setProp((props: ContainerProps) => (props.padding = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full"
-                />
-                <span className="text-sm text-gray-500">{padding}px</span>
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Margin
-                </label>
-                <input
-                    type="range"
-                    min="0"
-                    max="50"
-                    value={margin}
-                    onChange={(e) =>
-                        setProp((props: ContainerProps) => (props.margin = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full"
-                />
-                <span className="text-sm text-gray-500">{margin}px</span>
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Min Width
-                </label>
-                <input
-                    type="number"
-                    value={minWidth}
-                    onChange={(e) =>
-                        setProp((props: ContainerProps) => (props.minWidth = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Min Height
-                </label>
-                <input
-                    type="number"
-                    value={minHeight}
-                    onChange={(e) =>
-                        setProp((props: ContainerProps) => (props.minHeight = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                />
-            </div>
+            <SpacingSettings />
 
             <div>
                 <label className="block text-sm font-medium text-gray-700">

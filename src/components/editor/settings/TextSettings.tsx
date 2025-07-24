@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
+import { SpacingSettings } from './SpacingSettings';
 
 interface TextProps {
   text?: string;
@@ -171,6 +172,8 @@ export const TextSettings: React.FC = () => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
         />
       </div>
+
+      <SpacingSettings />
     </div>
   );
 };

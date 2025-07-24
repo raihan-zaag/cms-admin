@@ -2,17 +2,18 @@ import React from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizable } from 're-resizable';
 import { ContainerSettings } from './settings/ContainerSettings';
+import { 
+    type SpacingProps, 
+    getContentStyles, 
+    getDefaultCraftSpacing 
+} from '../../lib/spacingUtils';
 
-interface ContainerProps {
+interface ContainerProps extends SpacingProps {
     background?: string;
     isTransparent?: boolean;
-    padding?: number;
-    margin?: number;
     children?: React.ReactNode;
     width?: string;
     height?: string;
-    minWidth?: number;
-    minHeight?: number;
     flexDirection?: 'row' | 'column';
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
     alignItems?: 'stretch' | 'flex-start' | 'center' | 'flex-end';
@@ -39,9 +40,14 @@ interface ContainerComponent extends React.FC<ContainerProps> {
 export const Container: ContainerComponent = ({
     background = '#ffffff',
     isTransparent = false,
-    padding = 10,
-    margin = 10,
-    children,
+    paddingTop = 10,
+    paddingRight = 10,
+    paddingBottom = 10,
+    paddingLeft = 10,
+    marginTop = 0,
+    marginRight = 0,
+    marginBottom = 0,
+    marginLeft = 0,
     width = '100%',
     height = 'auto',
     flexDirection = 'column',
@@ -49,6 +55,7 @@ export const Container: ContainerComponent = ({
     alignItems = 'stretch',
     flexWrap = 'nowrap',
     gap = 0,
+    children,
 }) => {
     const {
         connectors: { connect, drag },
@@ -82,37 +89,38 @@ export const Container: ContainerComponent = ({
                 bottomLeft: { zIndex: 1000 },
                 topLeft: { zIndex: 1000 },
             }}
-
             style={{
                 border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
                 borderRadius: '4px',
+                overflow: 'hidden',
             }}
         >
-            <div
-                ref={(ref) => {
-                    if (ref) {
-                        connect(drag(ref));
-                    }
-                }}
-                style={{
-                    margin: `${margin}px`,
-                    padding: `${padding}px`,
-                    background: isTransparent ? 'transparent' : background,
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: flexDirection,
-                    justifyContent: justifyContent,
-                    alignItems: alignItems,
-                    flexWrap: flexWrap,
-                    gap: `${gap}px`,
-                }}
-            >
-                {children}
-            </div>
-
-        </Resizable>
-
+                <div
+                    ref={(ref) => {
+                        if (ref) {
+                            connect(drag(ref));
+                        }
+                    }}
+                    style={{
+                        ...getContentStyles(
+                            { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
+                            height,
+                            {
+                                background: isTransparent ? 'transparent' : background,
+                                minHeight: height === 'auto' ? 'fit-content' : 'auto',
+                                display: 'flex',
+                                flexDirection: flexDirection,
+                                justifyContent: justifyContent,
+                                alignItems: alignItems,
+                                flexWrap: flexWrap,
+                                gap: `${gap}px`,
+                            }
+                        ),
+                    }}
+                >
+                    {children}
+                </div>
+            </Resizable>
     );
 };
 
@@ -120,12 +128,9 @@ Container.craft = {
     props: {
         background: '#ffffff',
         isTransparent: false,
-        padding: 10,
-        margin: 0,
+        ...getDefaultCraftSpacing(),
         width: '100%',
         height: 'auto',
-        minWidth: 100,
-        minHeight: 50,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'stretch',

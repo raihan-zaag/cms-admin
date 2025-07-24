@@ -3,14 +3,17 @@ import { useNode } from '@craftjs/core';
 import { Resizable } from 're-resizable';
 import { Image as ImageIcon } from 'lucide-react';
 import { ImageSettings } from './settings/ImageSettings';
+import { 
+    type SpacingProps, 
+    getContentStyles,
+    getDefaultCraftSpacing 
+} from '../../lib/spacingUtils';
 
-interface ImageComponentProps {
+interface ImageComponentProps extends SpacingProps {
     src?: string;
     alt?: string;
     width?: string;
     height?: string;
-    minWidth?: number;
-    minHeight?: number;
     objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
     objectPosition?: string;
     borderRadius?: number;
@@ -19,8 +22,6 @@ interface ImageComponentProps {
     backgroundSize?: 'cover' | 'contain' | 'auto' | '100% 100%';
     backgroundPosition?: string;
     backgroundRepeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
-    padding?: number;
-    margin?: number;
     border?: string;
     boxShadow?: string;
     isFullWidth?: boolean;
@@ -46,8 +47,6 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
     alt = 'Image',
     width = '300px',
     height = '200px',
-    minWidth = 50,
-    minHeight = 50,
     objectFit = 'cover',
     objectPosition = 'center',
     borderRadius = 0,
@@ -56,12 +55,18 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
     backgroundSize = 'cover',
     backgroundPosition = 'center',
     backgroundRepeat = 'no-repeat',
-    padding = 0,
-    margin = 0,
     border = 'none',
     boxShadow = 'none',
     isFullWidth = false,
     children,
+    paddingTop = 0,
+    paddingRight = 0,
+    paddingBottom = 0,
+    paddingLeft = 0,
+    marginTop = 0,
+    marginRight = 0,
+    marginBottom = 0,
+    marginLeft = 0,
 }) => {
         const {
             connectors: { connect, drag },
@@ -73,15 +78,12 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
         }));
 
         const containerStyle = {
-            width: '100%',
-            height: '100%',
-            margin: `${margin}px`,
-            padding: `${padding}px`,
             border: border,
             boxShadow: boxShadow,
             borderRadius: `${borderRadius}px`,
             position: 'relative' as const,
             overflow: 'hidden' as const,
+            boxSizing: 'border-box' as const,
         };
 
         const imageStyle = {
@@ -106,8 +108,6 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                         props.height = ref.style.height;
                     });
                 }}
-                minWidth={minWidth}
-                minHeight={minHeight}
                 bounds="parent"
                 handleStyles={{
                     top: { zIndex: 1000 },
@@ -122,6 +122,7 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                 style={{
                     border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
                     borderRadius: '4px',
+                    overflow: 'hidden',
                 }}
                 enable={{
                     left: !isFullWidth,
@@ -142,6 +143,7 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                     }}
                     style={{
                         ...containerStyle,
+                        ...getContentStyles({ paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft }),
                         backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
                         backgroundSize: backgroundSize,
                         backgroundPosition: backgroundPosition,
@@ -197,7 +199,7 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                     {/* Children section */}
                     {children && (
                         <div style={{ 
-                            padding: '10px',
+                            padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
                             flex: '1',
                             position: 'relative',
                             minHeight: '50px',
@@ -231,8 +233,6 @@ ImageComponent.craft = {
         alt: 'Image',
         width: '300px',
         height: '200px',
-        minWidth: 50,
-        minHeight: 50,
         objectFit: 'cover',
         objectPosition: 'center',
         borderRadius: 0,
@@ -241,11 +241,10 @@ ImageComponent.craft = {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        padding: 0,
-        margin: 0,
         border: 'none',
         boxShadow: 'none',
         isFullWidth: false,
+        ...getDefaultCraftSpacing(),
     },
     rules: {
         canDrag: () => true,

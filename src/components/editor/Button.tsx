@@ -2,20 +2,22 @@ import React from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizable } from 're-resizable';
 import { ButtonSettings } from './settings/ButtonSettings';
+import { 
+    type SpacingProps, 
+    getContentStyles, 
+    getDefaultCraftSpacing 
+} from '../../lib/spacingUtils';
 
-interface ButtonProps {
+interface ButtonProps extends SpacingProps {
   text?: string;
   backgroundColor?: string;
   isTransparent?: boolean;
   color?: string;
   borderRadius?: number;
-  padding?: number;
   fontSize?: number;
   fontWeight?: string;
   width?: string;
   height?: string;
-  minWidth?: number;
-  minHeight?: number;
   onClick?: () => void;
 }
 
@@ -41,14 +43,19 @@ export const Button: ButtonComponent = ({
   isTransparent = false,
   color = '#ffffff',
   borderRadius = 8,
-  padding = 12,
   fontSize = 16,
   fontWeight = 'normal',
   width = 'auto',
   height = 'auto',
-  minWidth = 80,
-  minHeight = 40,
   onClick,
+  paddingTop = 12,
+  paddingRight = 12,
+  paddingBottom = 12,
+  paddingLeft = 12,
+  marginTop = 0,
+  marginRight = 0,
+  marginBottom = 0,
+  marginLeft = 0,
 }) => {
   const {
     connectors: { connect, drag },
@@ -71,8 +78,6 @@ export const Button: ButtonComponent = ({
           props.height = ref.style.height;
         });
       }}
-      minWidth={minWidth}
-      minHeight={minHeight}
       bounds="parent"
       handleStyles={{
         top: { zIndex: 1000 },
@@ -87,6 +92,7 @@ export const Button: ButtonComponent = ({
       style={{
         border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
         borderRadius: '4px',
+        overflow: 'hidden',
       }}
     >
       <button
@@ -95,16 +101,21 @@ export const Button: ButtonComponent = ({
             connect(drag(ref));
           }
         }}
-        className="w-full h-full transition-all duration-200 hover:opacity-80"
+        className="transition-all duration-200 hover:opacity-80"
         style={{
-          backgroundColor: isTransparent ? 'transparent' : backgroundColor,
-          color,
-          borderRadius: `${borderRadius}px`,
-          padding: `${padding}px`,
-          fontSize: `${fontSize}px`,
-          fontWeight,
-          border: 'none',
-          cursor: 'pointer',
+          ...getContentStyles(
+            { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
+            height,
+            {
+              backgroundColor: isTransparent ? 'transparent' : backgroundColor,
+              color,
+              borderRadius: `${borderRadius}px`,
+              fontSize: `${fontSize}px`,
+              fontWeight,
+              border: 'none',
+              cursor: 'pointer',
+            }
+          ),
         }}
         onClick={onClick}
       >
@@ -121,13 +132,11 @@ Button.craft = {
     isTransparent: false,
     color: '#ffffff',
     borderRadius: 8,
-    padding: 12,
     fontSize: 16,
     fontWeight: 'normal',
     width: 'auto',
     height: 'auto',
-    minWidth: 80,
-    minHeight: 40,
+    ...getDefaultCraftSpacing(),
   },
   rules: {
     canDrag: () => true,

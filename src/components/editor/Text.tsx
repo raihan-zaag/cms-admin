@@ -2,8 +2,13 @@ import React from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizable } from 're-resizable';
 import { TextSettings } from './settings/TextSettings';
+import { 
+    type SpacingProps, 
+    getContentStyles, 
+    getDefaultCraftSpacing 
+} from '../../lib/spacingUtils';
 
-interface TextProps {
+interface TextProps extends SpacingProps {
   text?: string;
   fontSize?: number;
   fontWeight?: string;
@@ -12,8 +17,6 @@ interface TextProps {
   textAlign?: string;
   width?: string;
   height?: string;
-  minWidth?: number;
-  minHeight?: number;
 }
 
 interface TextComponent extends React.FC<TextProps> {
@@ -41,8 +44,14 @@ export const Text: TextComponent = ({
   textAlign = 'left',
   width = 'auto',
   height = 'auto',
-  minWidth = 50,
-  minHeight = 20,
+  paddingTop = 8,
+  paddingRight = 8,
+  paddingBottom = 8,
+  paddingLeft = 8,
+  marginTop = 0,
+  marginRight = 0,
+  marginBottom = 0,
+  marginLeft = 0,
 }) => {
   const {
     connectors: { connect, drag },
@@ -67,8 +76,6 @@ export const Text: TextComponent = ({
           props.height = ref.style.height;
         });
       }}
-      minWidth={minWidth}
-      minHeight={minHeight}
       bounds="parent"
       handleStyles={{
         top: { zIndex: 1000 },
@@ -83,6 +90,7 @@ export const Text: TextComponent = ({
       style={{
         border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
         borderRadius: '4px',
+        overflow: 'hidden',
       }}
     >
       <div
@@ -91,45 +99,51 @@ export const Text: TextComponent = ({
             connect(drag(ref));
           }
         }}
-        className="w-full h-full cursor-text"
+        className="cursor-text"
         style={{
-          backgroundColor: backgroundColor,
+          ...getContentStyles(
+            { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
+            height,
+            {
+              backgroundColor: backgroundColor,
+            }
+          ),
         }}
         onClick={() => setIsEditing(true)}
         onBlur={() => setIsEditing(false)}
       >
-        {isEditing ? (
-          <textarea
-            value={text}
-            onChange={(e) =>
-              setProp((props: TextProps) => (props.text = e.target.value))
-            }
-            autoFocus
-            className="w-full h-full resize-none border-none outline-none bg-transparent"
-            style={{
-              fontSize: `${fontSize}px`,
-              fontWeight,
-              color,
-              textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
-              backgroundColor: 'transparent',
-            }}
-          />
-        ) : (
-          <div
-            className="w-full h-full"
-            style={{
-              fontSize: `${fontSize}px`,
-              fontWeight,
-              color,
-              textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
-              whiteSpace: 'pre-wrap',
-            }}
-          >
-            {text}
-          </div>
-        )}
-      </div>
-    </Resizable>
+          {isEditing ? (
+            <textarea
+              value={text}
+              onChange={(e) =>
+                setProp((props: TextProps) => (props.text = e.target.value))
+              }
+              autoFocus
+              className="w-full h-full resize-none border-none outline-none bg-transparent"
+              style={{
+                fontSize: `${fontSize}px`,
+                fontWeight,
+                color,
+                textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+                backgroundColor: 'transparent',
+              }}
+            />
+          ) : (
+            <div
+              className="w-full h-full"
+              style={{
+                fontSize: `${fontSize}px`,
+                fontWeight,
+                color,
+                textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+                whiteSpace: 'pre-wrap',
+              }}
+            >
+              {text}
+            </div>
+          )}
+        </div>
+      </Resizable>
   );
 };
 
@@ -143,8 +157,7 @@ Text.craft = {
     textAlign: 'left',
     width: 'auto',
     height: 'auto',
-    minWidth: 50,
-    minHeight: 20,
+    ...getDefaultCraftSpacing(),
   },
   rules: {
     canDrag: () => true,

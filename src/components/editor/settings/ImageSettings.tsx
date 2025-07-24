@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { useNode } from '@craftjs/core';
 import { Folder } from 'lucide-react';
 import { MediaPicker } from '../MediaPicker';
+import { SpacingSettings } from './SpacingSettings';
 
 interface ImageComponentProps {
     src?: string;
     alt?: string;
     width?: string;
     height?: string;
-    minWidth?: number;
-    minHeight?: number;
     objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
     objectPosition?: string;
     borderRadius?: number;
@@ -18,8 +17,6 @@ interface ImageComponentProps {
     backgroundSize?: 'cover' | 'contain' | 'auto' | '100% 100%';
     backgroundPosition?: string;
     backgroundRepeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
-    padding?: number;
-    margin?: number;
     border?: string;
     boxShadow?: string;
     isFullWidth?: boolean;
@@ -33,8 +30,6 @@ export const ImageSettings: React.FC = () => {
         alt,
         width,
         height,
-        minWidth,
-        minHeight,
         objectFit,
         objectPosition,
         borderRadius,
@@ -43,8 +38,6 @@ export const ImageSettings: React.FC = () => {
         backgroundSize,
         backgroundPosition,
         backgroundRepeat,
-        padding,
-        margin,
         border,
         boxShadow,
         isFullWidth,
@@ -54,8 +47,6 @@ export const ImageSettings: React.FC = () => {
         alt: node.data.props.alt,
         width: node.data.props.width,
         height: node.data.props.height,
-        minWidth: node.data.props.minWidth,
-        minHeight: node.data.props.minHeight,
         objectFit: node.data.props.objectFit,
         objectPosition: node.data.props.objectPosition,
         borderRadius: node.data.props.borderRadius,
@@ -64,8 +55,6 @@ export const ImageSettings: React.FC = () => {
         backgroundSize: node.data.props.backgroundSize,
         backgroundPosition: node.data.props.backgroundPosition,
         backgroundRepeat: node.data.props.backgroundRepeat,
-        padding: node.data.props.padding,
-        margin: node.data.props.margin,
         border: node.data.props.border,
         boxShadow: node.data.props.boxShadow,
         isFullWidth: node.data.props.isFullWidth,
@@ -367,40 +356,6 @@ export const ImageSettings: React.FC = () => {
 
             <div>
                 <label className="block text-sm font-medium text-gray-700">
-                    Padding
-                </label>
-                <input
-                    type="range"
-                    min="0"
-                    max="50"
-                    value={padding}
-                    onChange={(e) =>
-                        setProp((props: ImageComponentProps) => (props.padding = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full"
-                />
-                <span className="text-sm text-gray-500">{padding}px</span>
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Margin
-                </label>
-                <input
-                    type="range"
-                    min="0"
-                    max="50"
-                    value={margin}
-                    onChange={(e) =>
-                        setProp((props: ImageComponentProps) => (props.margin = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full"
-                />
-                <span className="text-sm text-gray-500">{margin}px</span>
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
                     Border (CSS)
                 </label>
                 <input
@@ -429,33 +384,7 @@ export const ImageSettings: React.FC = () => {
                 />
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Min Width
-                </label>
-                <input
-                    type="number"
-                    value={minWidth}
-                    onChange={(e) =>
-                        setProp((props: ImageComponentProps) => (props.minWidth = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Min Height
-                </label>
-                <input
-                    type="number"
-                    value={minHeight}
-                    onChange={(e) =>
-                        setProp((props: ImageComponentProps) => (props.minHeight = parseInt(e.target.value)))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                />
-            </div>
+            <SpacingSettings />
         </div>
     );
 };
