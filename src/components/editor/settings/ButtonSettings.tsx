@@ -4,6 +4,7 @@ import { useNode } from '@craftjs/core';
 interface ButtonProps {
   text?: string;
   backgroundColor?: string;
+  isTransparent?: boolean;
   color?: string;
   borderRadius?: number;
   padding?: number;
@@ -21,6 +22,7 @@ export const ButtonSettings: React.FC = () => {
     actions: { setProp },
     text,
     backgroundColor,
+    isTransparent,
     color,
     borderRadius,
     padding,
@@ -31,6 +33,7 @@ export const ButtonSettings: React.FC = () => {
   } = useNode((node) => ({
     text: node.data.props.text,
     backgroundColor: node.data.props.backgroundColor,
+    isTransparent: node.data.props.isTransparent,
     color: node.data.props.color,
     borderRadius: node.data.props.borderRadius,
     padding: node.data.props.padding,
@@ -67,7 +70,22 @@ export const ButtonSettings: React.FC = () => {
             setProp((props: ButtonProps) => (props.backgroundColor = e.target.value))
           }
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          disabled={isTransparent}
         />
+      </div>
+
+      <div>
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={isTransparent}
+            onChange={(e) =>
+              setProp((props: ButtonProps) => (props.isTransparent = e.target.checked))
+            }
+            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          />
+          <span className="text-sm font-medium text-gray-700">Transparent Background</span>
+        </label>
       </div>
 
       <div>

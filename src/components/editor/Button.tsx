@@ -6,6 +6,7 @@ import { ButtonSettings } from './settings/ButtonSettings';
 interface ButtonProps {
   text?: string;
   backgroundColor?: string;
+  isTransparent?: boolean;
   color?: string;
   borderRadius?: number;
   padding?: number;
@@ -37,6 +38,7 @@ interface ButtonComponent extends React.FC<ButtonProps> {
 export const Button: ButtonComponent = ({
   text = 'Click me',
   backgroundColor = '#3b82f6',
+  isTransparent = false,
   color = '#ffffff',
   borderRadius = 8,
   padding = 12,
@@ -95,7 +97,7 @@ export const Button: ButtonComponent = ({
         }}
         className="w-full h-full transition-all duration-200 hover:opacity-80"
         style={{
-          backgroundColor,
+          backgroundColor: isTransparent ? 'transparent' : backgroundColor,
           color,
           borderRadius: `${borderRadius}px`,
           padding: `${padding}px`,
@@ -116,6 +118,7 @@ Button.craft = {
   props: {
     text: 'Click me',
     backgroundColor: '#3b82f6',
+    isTransparent: false,
     color: '#ffffff',
     borderRadius: 8,
     padding: 12,

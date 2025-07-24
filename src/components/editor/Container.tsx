@@ -5,6 +5,7 @@ import { ContainerSettings } from './settings/ContainerSettings';
 
 interface ContainerProps {
     background?: string;
+    isTransparent?: boolean;
     padding?: number;
     margin?: number;
     children?: React.ReactNode;
@@ -37,6 +38,7 @@ interface ContainerComponent extends React.FC<ContainerProps> {
 
 export const Container: ContainerComponent = ({
     background = '#ffffff',
+    isTransparent = false,
     padding = 10,
     margin = 10,
     children,
@@ -95,7 +97,7 @@ export const Container: ContainerComponent = ({
                 style={{
                     margin: `${margin}px`,
                     padding: `${padding}px`,
-                    background: background,
+                    background: isTransparent ? 'transparent' : background,
                     width: '100%',
                     height: '100%',
                     display: 'flex',
@@ -117,6 +119,7 @@ export const Container: ContainerComponent = ({
 Container.craft = {
     props: {
         background: '#ffffff',
+        isTransparent: false,
         padding: 10,
         margin: 0,
         width: '100%',
@@ -140,6 +143,3 @@ Container.craft = {
     },
     displayName: 'Container',
 };
-
-
-// TODO: Add another settings to container that allows adding background transparent.

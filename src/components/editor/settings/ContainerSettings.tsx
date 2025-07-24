@@ -3,6 +3,7 @@ import { useNode } from '@craftjs/core';
 
 interface ContainerProps {
     background?: string;
+    isTransparent?: boolean;
     padding?: number;
     margin?: number;
     children?: React.ReactNode;
@@ -21,6 +22,7 @@ export const ContainerSettings: React.FC = () => {
     const {
         actions: { setProp },
         background,
+        isTransparent,
         padding,
         margin,
         minWidth,
@@ -32,6 +34,7 @@ export const ContainerSettings: React.FC = () => {
         gap,
     } = useNode((node) => ({
         background: node.data.props.background,
+        isTransparent: node.data.props.isTransparent,
         padding: node.data.props.padding,
         margin: node.data.props.margin,
         minWidth: node.data.props.minWidth,
@@ -56,7 +59,22 @@ export const ContainerSettings: React.FC = () => {
                         setProp((props: ContainerProps) => (props.background = e.target.value))
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    disabled={isTransparent}
                 />
+            </div>
+
+            <div>
+                <label className="flex items-center space-x-2">
+                    <input
+                        type="checkbox"
+                        checked={isTransparent}
+                        onChange={(e) =>
+                            setProp((props: ContainerProps) => (props.isTransparent = e.target.checked))
+                        }
+                        className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Transparent Background</span>
+                </label>
             </div>
 
             <div>
