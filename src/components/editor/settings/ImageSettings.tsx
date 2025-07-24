@@ -48,6 +48,7 @@ export const ImageSettings: React.FC = () => {
         border,
         boxShadow,
         isFullWidth,
+        hasChildren,
     } = useNode((node) => ({
         src: node.data.props.src,
         alt: node.data.props.alt,
@@ -68,6 +69,7 @@ export const ImageSettings: React.FC = () => {
         border: node.data.props.border,
         boxShadow: node.data.props.boxShadow,
         isFullWidth: node.data.props.isFullWidth,
+        hasChildren: node.data.nodes && node.data.nodes.length > 0,
     }));
 
     const [showMediaPicker, setShowMediaPicker] = useState(false);
@@ -92,6 +94,11 @@ export const ImageSettings: React.FC = () => {
             <div>
                 <label className="block text-sm font-medium text-gray-700">
                     Image Source
+                    {hasChildren && (
+                        <span className="text-xs text-gray-500 ml-2">
+                            (Disabled when children are present)
+                        </span>
+                    )}
                 </label>
                 <div className="mt-1 flex gap-2 flex-wrap">
                     <input
@@ -102,10 +109,20 @@ export const ImageSettings: React.FC = () => {
                         }
                         className="flex-1 rounded-md border-gray-300 shadow-sm"
                         placeholder="https://example.com/image.jpg"
+                        disabled={hasChildren}
+                        style={{
+                            backgroundColor: hasChildren ? '#f3f4f6' : 'white',
+                            cursor: hasChildren ? 'not-allowed' : 'text'
+                        }}
                     />
                     <button
                         onClick={() => openMediaPicker('foreground')}
-                        className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm"
+                        className={`px-3 py-2 rounded-md transition-colors text-sm ${
+                            hasChildren 
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                : 'bg-blue-500 text-white hover:bg-blue-600'
+                        }`}
+                        disabled={hasChildren}
                     >
                         <Folder className="h-4 w-4" />
                     </button>
@@ -121,6 +138,11 @@ export const ImageSettings: React.FC = () => {
             <div>
                 <label className="block text-sm font-medium text-gray-700">
                     Alt Text
+                    {hasChildren && (
+                        <span className="text-xs text-gray-500 ml-2">
+                            (Disabled when children are present)
+                        </span>
+                    )}
                 </label>
                 <input
                     type="text"
@@ -130,6 +152,11 @@ export const ImageSettings: React.FC = () => {
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     placeholder="Describe the image"
+                    disabled={hasChildren}
+                    style={{
+                        backgroundColor: hasChildren ? '#f3f4f6' : 'white',
+                        cursor: hasChildren ? 'not-allowed' : 'text'
+                    }}
                 />
             </div>
 
