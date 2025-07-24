@@ -7,6 +7,7 @@ import { Dashboard } from '@/pages/Dashboard'
 import { PageEditor } from '@/pages/PageEditor'
 import { PagesList } from '@/pages/PagesList'
 import { MediaManager } from '@/pages/MediaManager'
+import SavedLayoutsList from '@/components/editor/SavedLayoutsList'
 import { useAuthStore } from '@/store/auth'
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="pages" element={<PagesList />} />
           <Route path="editor" element={<PageEditor />} />
           <Route path="media" element={<MediaManager />} />
+          <Route path="layouts" element={<SavedLayoutsList />} />
           <Route path="" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
@@ -47,8 +49,9 @@ function App() {
           element={
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-                <p className="text-gray-600">You don't have permission to access this resource.</p>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">401</h1>
+                <p className="text-gray-600 mb-4">You are not authorized to access this page.</p>
+                <Navigate to="/login" replace />
               </div>
             </div>
           } 

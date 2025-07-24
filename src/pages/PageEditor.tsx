@@ -8,9 +8,7 @@ import { Text } from '../components/editor/Text';
 import { Button } from '../components/editor/Button';
 import { ImageComponent } from '../components/editor/Image';
 import TopBar from '@/components/editor/TopBar';
-
-
-
+import KeyboardShortcutsHandler from '@/components/editor/KeyboardShortcutsHandler';
 
 export const PageEditor: React.FC = () => {
  
@@ -23,6 +21,9 @@ export const PageEditor: React.FC = () => {
         ImageComponent,
       }}
     >
+      {/* Enable keyboard shortcuts inside Editor context */}
+      <KeyboardShortcutsHandler />
+      
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <TopBar/>
       </div>
@@ -33,7 +34,14 @@ export const PageEditor: React.FC = () => {
 
         <div className="h-full w-full">
           <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700">Canvas</h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-700">Canvas</h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Keyboard shortcuts: Ctrl+Z (Undo), Ctrl+Y (Redo), Del (Delete)
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="h-full bg-white">

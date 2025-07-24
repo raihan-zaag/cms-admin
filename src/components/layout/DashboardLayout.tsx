@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
-import { LogOut, Home, FileText, Image, Settings } from 'lucide-react'
+import { LogOut, Home, FileText, Image, Settings, FolderOpen } from 'lucide-react'
 
 export function DashboardLayout() {
   const { user, logout } = useAuthStore()
@@ -69,6 +69,14 @@ export function DashboardLayout() {
               >
                 <Settings className="h-4 w-4" />
                 Page Builder
+              </Link>
+              
+              <Link
+                to="/layouts"
+                className="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                <FolderOpen className="h-4 w-4" />
+                Saved Layouts
               </Link>
               
               <Link

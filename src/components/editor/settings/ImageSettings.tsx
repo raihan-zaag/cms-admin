@@ -91,13 +91,17 @@ export const ImageSettings: React.FC = () => {
                 </label>
                 <div className="mt-1 flex gap-2 flex-wrap">
                     <input
-                        type="url"
-                        value={src}
+                        type="text"
+                        value={src || ''}
                         onChange={(e) =>
                             setProp((props: ImageComponentProps) => (props.src = e.target.value))
                         }
-                        className="flex-1 rounded-md border-gray-300 shadow-sm"
-                        placeholder="https://example.com/image.jpg"
+                        onPaste={(e) => {
+                            // Allow pasting without restrictions
+                            e.stopPropagation();
+                        }}
+                        className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="https://example.com/image.jpg or paste any URL"
                         disabled={hasChildren}
                         style={{
                             backgroundColor: hasChildren ? '#f3f4f6' : 'white',
@@ -243,13 +247,17 @@ export const ImageSettings: React.FC = () => {
                 </label>
                 <div className="mt-1 flex gap-2 flex-wrap">
                     <input
-                        type="url"
-                        value={backgroundImage}
+                        type="text"
+                        value={backgroundImage || ''}
                         onChange={(e) =>
                             setProp((props: ImageComponentProps) => (props.backgroundImage = e.target.value))
                         }
-                        className="flex-1 rounded-md border-gray-300 shadow-sm"
-                        placeholder="https://example.com/background.jpg"
+                        onPaste={(e) => {
+                            // Allow pasting without restrictions
+                            e.stopPropagation();
+                        }}
+                        className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="https://example.com/background.jpg or paste any URL"
                     />
                     <button
                         onClick={() => openMediaPicker('background')}
