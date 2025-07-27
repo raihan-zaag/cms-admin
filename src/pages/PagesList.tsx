@@ -92,6 +92,11 @@ export function PagesList() {
     }
   }
 
+  const handlePreviewPage = (id: string) => {
+    // Open preview in new tab
+    window.open(`/preview/${id}`, '_blank');
+  }
+
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
     setCurrentPage(1) // Reset to first page when searching
@@ -230,7 +235,12 @@ export function PagesList() {
                         </td>
                         <td className="p-4">
                           <div className="flex justify-end gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handlePreviewPage(page.id)}
+                              title="Preview in new tab"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
                             <Button variant="outline" size="sm">

@@ -3,7 +3,6 @@ import { downloadHtmlFile, generateFullHtmlDocument } from "@/lib/utils";
 import { useEditor } from "@craftjs/core";
 import { useLayoutStore } from "@/store/layout";
 import { useState, useEffect } from "react";
-import PreviewModal from "./PreviewModal";
 import LayoutManager from "./LayoutManager";
 import SaveModal from "./SaveModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
@@ -31,7 +30,6 @@ const TopBar = () => {
     canRedo: storeCanRedo 
   } = useLayoutStore();
   
-  const [showPreview, setShowPreview] = useState(false);
   const [showLayoutManager, setShowLayoutManager] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
@@ -95,6 +93,21 @@ const TopBar = () => {
     setShowSaveModal(true);
   };
 
+  const handlePreview = () => {
+    // For now, we'll use a temporary ID. In a real app, you'd save the current state first
+    // and get the actual page ID from the save operation
+    const tempId = 'temp-' + Date.now();
+    
+    // Open preview in new tab with the current editor state
+    const json = query.serialize();
+    
+    // Store the current state temporarily (in a real app, you'd save to database)
+    sessionStorage.setItem(`preview-${tempId}`, json);
+    
+    // Open preview route in new tab
+    window.open(`/preview/${tempId}`, '_blank');
+  };
+
   const handleExport = () => {
     const json = query.serialize();
     const parsedJson = JSON.parse(json);
@@ -133,7 +146,7 @@ const TopBar = () => {
 
           {/* Preview Button */}
           <button
-            onClick={() => setShowPreview(true)}
+            onClick={handlePreview}
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
           >
             <Eye className="h-4 w-4" />
@@ -189,7 +202,6 @@ const TopBar = () => {
       </div>
 
       {/* Modals */}
-      <PreviewModal isOpen={showPreview} onClose={() => setShowPreview(false)} />
       <LayoutManager isOpen={showLayoutManager} onClose={() => setShowLayoutManager(false)} />
       <SaveModal isOpen={showSaveModal} onClose={() => setShowSaveModal(false)} />
       <KeyboardShortcutsModal 

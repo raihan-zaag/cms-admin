@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useEditor } from '@craftjs/core';
 import { useLayoutStore, type SavedLayout } from '@/store/layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import * as Dialog from '@radix-ui/react-dialog';
 import { 
   Save, 
   Upload, 
@@ -14,7 +14,8 @@ import {
   Navigation, 
   FileText,
   Layout,
-  X
+  X,
+  Plus
 } from 'lucide-react';
 
 interface LayoutManagerProps {
@@ -36,22 +37,6 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({ isOpen, onClose })
   const [layoutName, setLayoutName] = useState('');
   const [layoutType, setLayoutType] = useState<SavedLayout['type']>('page');
   const [selectedCategory, setSelectedCategory] = useState<SavedLayout['type'] | 'all'>('all');
-
-  // Add escape key support
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
 
   const handleSaveLayout = () => {
     if (!layoutName.trim()) return;
@@ -103,35 +88,50 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl h-[80vh] flex flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <FolderOpen className="h-5 w-5" />
-            Layout Manager
-          </CardTitle>
-          
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setSaveMode(!saveMode)}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save Current Layout
-            </Button>
+    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-4xl h-[80vh] bg-white rounded-lg shadow-lg flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b">
+            <div className="flex items-center gap-2">
+              <FolderOpen className="h-5 w-5 text-purple-600" />
+              <Dialog.Title className="text-xl font-semibold">
+                Layout Manager
+              </Dialog.Title>
+            </div>
             
-            <Button variant="outline" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSaveMode(!saveMode)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Save Current Layout
+              </Button>
+              
+              <Dialog.Close asChild>
+                <button
+                  className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </Dialog.Close>
+            </div>
           </div>
-        </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col">
-          {/* Save Layout Form */}
-          {saveMode && (
-            <Card className="mb-4">
-              <CardContent className="p-4">
+          {/* Content */}
+          <div className="flex-1 flex flex-col p-6 overflow-hidden">
+            {/* Save Layout Form */}
+            {saveMode && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+                <h3 className="font-medium mb-4 flex items-center gap-2">
+                  <Save className="h-4 w-4" />
+                  Save Current Layout
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="layoutName">Layout Name</Label>
@@ -140,6 +140,7 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({ isOpen, onClose })
                       value={layoutName}
                       onChange={(e) => setLayoutName(e.target.value)}
                       placeholder="Enter layout name..."
+                      className="mt-1"
                     />
                   </div>
                   
@@ -149,7 +150,7 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({ isOpen, onClose })
                       id="layoutType"
                       value={layoutType}
                       onChange={(e) => setLayoutType(e.target.value as SavedLayout['type'])}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="page">Page</option>
                       <option value="header">Header</option>
@@ -159,127 +160,135 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({ isOpen, onClose })
                   </div>
                 </div>
                 
-                <div className="flex justify-end space-x-2 mt-4">
+                <div className="flex justify-end gap-2 mt-4">
                   <Button variant="outline" onClick={() => setSaveMode(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSaveLayout} disabled={!layoutName.trim()}>
+                  <Button 
+                    onClick={handleSaveLayout} 
+                    disabled={!layoutName.trim()}
+                  >
                     Save Layout
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Category Filter */}
-          <div className="flex space-x-2 mb-4">
-            <Button
-              variant={selectedCategory === 'all' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory('all')}
-            >
-              All ({savedLayouts.length})
-            </Button>
-            <Button
-              variant={selectedCategory === 'header' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory('header')}
-              className="flex items-center gap-2"
-            >
-              <Heading className="h-4 w-4" />
-              Headers ({getLayoutsByType('header').length})
-            </Button>
-            <Button
-              variant={selectedCategory === 'footer' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory('footer')}
-              className="flex items-center gap-2"
-            >
-              <Navigation className="h-4 w-4" />
-              Footers ({getLayoutsByType('footer').length})
-            </Button>
-            <Button
-              variant={selectedCategory === 'page' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory('page')}
-              className="flex items-center gap-2"
-            >
-              <FileText className="h-4 w-4" />
-              Pages ({getLayoutsByType('page').length})
-            </Button>
-            <Button
-              variant={selectedCategory === 'section' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory('section')}
-              className="flex items-center gap-2"
-            >
-              <Layout className="h-4 w-4" />
-              Sections ({getLayoutsByType('section').length})
-            </Button>
-          </div>
-
-          {/* Layouts Grid */}
-          <div className="flex-1 overflow-y-auto">
-            {filteredLayouts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredLayouts.map((layout) => (
-                  <Card key={layout.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          {getCategoryIcon(layout.type)}
-                          <h3 className="font-medium truncate">{layout.name}</h3>
-                        </div>
-                        
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(layout.type)}`}>
-                          {layout.type}
-                        </span>
-                      </div>
-                      
-                      <p className="text-sm text-gray-500 mb-3">
-                        Created: {new Date(layout.createdAt).toLocaleDateString()}
-                      </p>
-                      
-                      <div className="flex justify-between">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleLoadLayout(layout.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <Upload className="h-4 w-4" />
-                          Load
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteLayout(layout.id)}
-                          className="text-red-600 hover:text-red-700 flex items-center gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                <FolderOpen className="h-16 w-16 mb-4 opacity-50" />
-                <h3 className="text-lg font-medium mb-2">No layouts found</h3>
-                <p className="text-sm text-center">
-                  {selectedCategory === 'all' 
-                    ? 'Save your first layout to get started' 
-                    : `No ${selectedCategory} layouts saved yet`}
-                </p>
               </div>
             )}
+
+            {/* Category Filter */}
+            <div className="flex gap-2 mb-4 flex-wrap">
+              <Button
+                variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('all')}
+              >
+                All ({savedLayouts.length})
+              </Button>
+              <Button
+                variant={selectedCategory === 'header' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('header')}
+                className="flex items-center gap-2"
+              >
+                <Heading className="h-4 w-4" />
+                Headers ({getLayoutsByType('header').length})
+              </Button>
+              <Button
+                variant={selectedCategory === 'footer' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('footer')}
+                className="flex items-center gap-2"
+              >
+                <Navigation className="h-4 w-4" />
+                Footers ({getLayoutsByType('footer').length})
+              </Button>
+              <Button
+                variant={selectedCategory === 'page' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('page')}
+                className="flex items-center gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                Pages ({getLayoutsByType('page').length})
+              </Button>
+              <Button
+                variant={selectedCategory === 'section' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('section')}
+                className="flex items-center gap-2"
+              >
+                <Layout className="h-4 w-4" />
+                Sections ({getLayoutsByType('section').length})
+              </Button>
+            </div>
+
+            {/* Layouts Grid */}
+            <div className="flex-1 overflow-y-auto">
+              {filteredLayouts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredLayouts.map((layout) => (
+                    <div key={layout.id} className="bg-white border rounded-lg hover:shadow-md transition-shadow">
+                      <div className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {getCategoryIcon(layout.type)}
+                            <h3 className="font-medium truncate">{layout.name}</h3>
+                          </div>
+                          
+                          <span className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ml-2 ${getCategoryColor(layout.type)}`}>
+                            {layout.type}
+                          </span>
+                        </div>
+                        
+                        <p className="text-sm text-gray-500 mb-3">
+                          Created: {new Date(layout.createdAt).toLocaleDateString()}
+                        </p>
+                        
+                        <div className="flex justify-between gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleLoadLayout(layout.id)}
+                            className="flex items-center gap-2 flex-1"
+                          >
+                            <Upload className="h-4 w-4" />
+                            Load
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteLayout(layout.id)}
+                            className="text-red-600 hover:text-red-700 hover:border-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                  <FolderOpen className="h-16 w-16 mb-4 opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">No layouts found</h3>
+                  <p className="text-sm text-center">
+                    {selectedCategory === 'all' 
+                      ? 'Save your first layout to get started' 
+                      : `No ${selectedCategory} layouts saved yet`}
+                  </p>
+                  <Button 
+                    className="mt-4"
+                    onClick={() => setSaveMode(true)}
+                  >
+                    Save Current Layout
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };
 

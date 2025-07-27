@@ -7,6 +7,7 @@ import { Dashboard } from '@/pages/Dashboard'
 import { PageEditor } from '@/pages/PageEditor'
 import { PagesList } from '@/pages/PagesList'
 import { MediaManager } from '@/pages/MediaManager'
+import { PagePreview } from '@/pages/PagePreview'
 import SavedLayoutsList from '@/components/editor/SavedLayoutsList'
 import { useAuthStore } from '@/store/auth'
 
@@ -42,6 +43,16 @@ function App() {
           <Route path="layouts" element={<SavedLayoutsList />} />
           <Route path="" element={<Navigate to="/dashboard" replace />} />
         </Route>
+
+        {/* Preview route - outside of protected layout */}
+        <Route 
+          path="/preview/:pageId" 
+          element={
+            <ProtectedRoute>
+              <PagePreview />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Unauthorized route */}
         <Route 
