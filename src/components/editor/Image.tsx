@@ -257,6 +257,3 @@ ImageComponent.craft = {
     },
     displayName: 'ImageComponent',
 };
-
-
-// TODO: Put another component here that uses this ImageComponent is stretch example

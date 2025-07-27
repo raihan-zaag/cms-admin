@@ -29,11 +29,12 @@ export const PageEditor: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <div className="grid grid-cols-[250px_1fr_300px]  h-[calc(100vh-191px)] overflow-hidden">
+      <div className="grid grid-cols-[250px_1fr_300px] h-[calc(100vh-191px)]">
         <Toolbox />
 
-        <div className="h-full w-full">
-          <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
+        <div className="flex flex-col h-full">
+          {/* Canvas Header */}
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-700">Canvas</h3>
@@ -44,25 +45,22 @@ export const PageEditor: React.FC = () => {
             </div>
           </div>
 
-          <div className="h-full bg-white">
-            <Frame>
-              <Element
-                is={Container}
-                canvas
-                background="#ddebf0"
-                paddingTop={20}
-                paddingRight={20}
-                paddingBottom={20}
-                paddingLeft={20}
-                marginTop={0}
-                marginRight={0}
-                marginBottom={0}
-                marginLeft={0}
-                width="100%"
-                height="600px"
-              >
-              </Element>
-            </Frame>
+          {/* Canvas Content - Single scroll area */}
+          <div className="flex-1 bg-white overflow-auto">
+            <div className="min-h-full p-4">
+              <Frame>
+                <Element
+                  is={Container}
+                  canvas
+                  background="#ddebf0"
+                  padding={['0', '0', '0', '0']}
+                  margin={['0', '0', '0', '0']}
+                  width="100%"
+                  height="auto"
+                >
+                </Element>
+              </Frame>
+            </div>
           </div>
         </div>
 
