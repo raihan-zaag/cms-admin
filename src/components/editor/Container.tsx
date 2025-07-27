@@ -15,8 +15,15 @@ export type ContainerProps = {
     alignItems?: 'stretch' | 'flex-start' | 'center' | 'flex-end';
     flexWrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
     gap?: number;
-    padding?: string[];
-    margin?: string[];
+    // Individual padding/margin props to match ContainerSettings
+    paddingTop?: number;
+    paddingRight?: number;
+    paddingBottom?: number;
+    paddingLeft?: number;
+    marginTop?: number;
+    marginRight?: number;
+    marginBottom?: number;
+    marginLeft?: number;
     fillSpace?: 'yes' | 'no';
     shadow?: number;
     radius?: number;
@@ -26,14 +33,21 @@ const defaultProps: ContainerProps = {
     background: '#ffffff',
     isTransparent: false,
     width: '100%',
-    height: 'auto',
+    height: '300px', // Default height for new containers from toolbox
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     flexWrap: 'nowrap',
     gap: 10,
-    padding: ['0', '0', '', '0'], 
-    margin: ['0', '0', '0', '0'],
+    // Individual padding/margin defaults
+    paddingTop: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingLeft: 20,
+    marginTop: 0,
+    marginRight: 0,
+    marginBottom: 0,
+    marginLeft: 0,
     fillSpace: 'no',
     shadow: 0,
     radius: 0,
@@ -55,8 +69,14 @@ export const Container = (props: Partial<ContainerProps>) => {
         alignItems,
         flexWrap,
         gap,
-        padding,
-        margin,
+        paddingTop,
+        paddingRight,
+        paddingBottom,
+        paddingLeft,
+        marginTop,
+        marginRight,
+        marginBottom,
+        marginLeft,
         fillSpace,
         shadow,
         radius,
@@ -134,8 +154,14 @@ export const Container = (props: Partial<ContainerProps>) => {
                     flexWrap: flexWrap as React.CSSProperties['flexWrap'],
                     gap: `${gap}px`,
                     background: isTransparent ? 'transparent' : background,
-                    padding: `${padding![0]}px ${padding![1]}px ${padding![2]}px ${padding![3]}px`,
-                    margin: `${margin![0]}px ${margin![1]}px ${margin![2]}px ${margin![3]}px`,
+                    paddingTop: `${paddingTop}px`,
+                    paddingRight: `${paddingRight}px`,
+                    paddingBottom: `${paddingBottom}px`,
+                    paddingLeft: `${paddingLeft}px`,
+                    marginTop: `${marginTop}px`,
+                    marginRight: `${marginRight}px`,
+                    marginBottom: `${marginBottom}px`,
+                    marginLeft: `${marginLeft}px`,
                     boxShadow: shadow === 0 ? 'none' : `0px 3px 100px ${shadow}px rgba(0, 0, 0, 0.13)`,
                     borderRadius: `${radius}px`,
                     flex: fillSpace === 'yes' ? 1 : 'unset',

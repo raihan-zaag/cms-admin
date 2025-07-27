@@ -53,8 +53,14 @@ export const PageEditor: React.FC = () => {
                   is={Container}
                   canvas
                   background="#ddebf0"
-                  padding={['0', '0', '0', '0']}
-                  margin={['0', '0', '0', '0']}
+                  paddingTop={20}
+                  paddingRight={20}
+                  paddingBottom={20}
+                  paddingLeft={20}
+                  marginTop={0}
+                  marginRight={0}
+                  marginBottom={0}
+                  marginLeft={0}
                   width="100%"
                   height="auto"
                 >
