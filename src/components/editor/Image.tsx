@@ -47,7 +47,7 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
     alt = 'Image',
     width = '300px',
     height = '200px',
-    objectFit = 'cover',
+    objectFit = 'contain',
     objectPosition = 'center',
     borderRadius = 0,
     opacity = 1,
@@ -149,7 +149,8 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                         backgroundPosition: backgroundPosition,
                         backgroundRepeat: backgroundRepeat,
                         opacity: opacity,
-                        minHeight: '200px',
+                        minHeight: children ? 'auto' : '100%',
+                        height: '100%',
                         display: 'flex',
                         flexDirection: 'column',
                     }}
@@ -159,7 +160,8 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                         <div style={{ 
                             flex: children && src ? '0 0 auto' : '1',
                             position: 'relative',
-                            minHeight: children && src ? '120px' : '200px',
+                            minHeight: src ? '100%' : '200px',
+                            height: src && !children ? '100%' : 'auto',
                         }}>
                             {src ? (
                                 <img
@@ -167,8 +169,6 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                                     alt={alt}
                                     style={{
                                         ...imageStyle,
-                                        height: children ? '120px' : '100%',
-                                        minHeight: children ? '120px' : '200px',
                                     }}
                                     onError={(e) => {
                                         e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
@@ -233,7 +233,7 @@ ImageComponent.craft = {
         alt: 'Image',
         width: '300px',
         height: '200px',
-        objectFit: 'cover',
+        objectFit: 'contain',
         objectPosition: 'center',
         borderRadius: 0,
         opacity: 1,
