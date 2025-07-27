@@ -28,11 +28,17 @@ export const PageEditor: React.FC = () => {
         <TopBar/>
       </div>
 
-      {/* Main content */}
-      <div className="grid grid-cols-[250px_1fr_300px] h-[calc(100vh-191px)]">
-        <Toolbox />
+      {/* Main content container - 3 column layout */}
+      <div className="h-[calc(100vh-191px)]">
+        {/* 3-column grid: Toolbox | Canvas | Settings */}
+        <div className="grid grid-cols-[280px_1fr_300px] h-full">
+          {/* Left Sidebar - Toolbox */}
+          <div className="bg-gray-50 border-r border-gray-200 overflow-y-auto">
+           <Toolbox />
+          </div>
 
-        <div className="flex flex-col h-full">
+          {/* Center - Canvas Area */}
+          <div className="flex flex-col h-full">
           {/* Canvas Header */}
           <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex-shrink-0">
             <div className="flex items-center justify-between">
@@ -68,11 +74,13 @@ export const PageEditor: React.FC = () => {
               </Frame>
             </div>
           </div>
-        </div>
+          </div>
 
-        <div className="space-y-4 overflow-y-auto">
-          <LayersPanel />
-          <SettingsPanel />
+          {/* Right Sidebar - Settings & Layers */}
+          <div className="space-y-4 overflow-y-auto">
+            <LayersPanel />
+            <SettingsPanel />
+          </div>
         </div>
       </div>
     </Editor>

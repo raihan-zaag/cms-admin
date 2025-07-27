@@ -91,7 +91,7 @@ export function DashboardLayout() {
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 py-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>
