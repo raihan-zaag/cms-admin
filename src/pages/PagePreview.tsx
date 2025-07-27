@@ -3,6 +3,14 @@ import { useParams } from 'react-router-dom';
 import { apiService } from '@/services/api';
 import { convertCraftJsonToHtml } from '@/lib/convertCraftJsonToHtml';
 import { 
+  DEVICE_BREAKPOINTS, 
+  ZOOM_SETTINGS, 
+  PREVIEW_DIMENSIONS, 
+  KEYBOARD_SHORTCUTS
+} from '@/constants/devices';
+import { STORAGE_KEYS } from '@/constants/layout';
+import { UI_COLORS } from '@/constants/ui';
+import { 
   Monitor, 
   Tablet, 
   Smartphone, 
@@ -27,14 +35,14 @@ export function PagePreview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentDevice, setCurrentDevice] = useState<DeviceType>('desktop');
-  const [zoom, setZoom] = useState(100);
+  const [zoom, setZoom] = useState(ZOOM_SETTINGS.DEFAULT);
 
   useEffect(() => {
     const loadPage = async () => {
       if (!pageId) {
         // Check if it's a temporary preview
         if (pageId?.startsWith('temp-')) {
-          const tempData = sessionStorage.getItem(`preview-${pageId}`);
+          const tempData = sessionStorage.getItem(STORAGE_KEYS.PREVIEW_DATA(pageId));
           if (tempData) {
             try {
               const craftJson = JSON.parse(tempData);
@@ -67,7 +75,7 @@ export function PagePreview() {
         
         // Check for temporary preview data as fallback
         if (pageId?.startsWith('temp-')) {
-          const tempData = sessionStorage.getItem(`preview-${pageId}`);
+          const tempData = sessionStorage.getItem(STORAGE_KEYS.PREVIEW_DATA(pageId));
           if (tempData) {
             try {
               const craftJson = JSON.parse(tempData);
@@ -96,22 +104,28 @@ export function PagePreview() {
   }, [pageId]);
 
   const getDeviceStyles = () => {
-    const baseStyles = 'transition-all duration-300 mx-auto bg-white shadow-xl h-[800px]';
+    const baseStyles = `transition-all duration-300 mx-auto bg-white shadow-xl h-[${PREVIEW_DIMENSIONS.HEIGHT}px]`;
     
     switch (currentDevice) {
-      case 'mobile':
-        return `${baseStyles} w-[375px] max-w-[375px] border-8 border-gray-800 rounded-[24px] overflow-hidden`;
-      case 'tablet':
-        return `${baseStyles} w-[768px] max-w-[768px] border-4 border-gray-600 rounded-[20px] overflow-hidden`;
+      case 'mobile': {
+        const mobile = DEVICE_BREAKPOINTS.MOBILE;
+        return `${baseStyles} w-[${mobile.WIDTH}px] max-w-[${mobile.MAX_WIDTH}px] border-${mobile.BORDER_WIDTH} ${mobile.BORDER_COLOR} rounded-[${mobile.BORDER_RADIUS}px] overflow-hidden`;
+      }
+      case 'tablet': {
+        const tablet = DEVICE_BREAKPOINTS.TABLET;
+        return `${baseStyles} w-[${tablet.WIDTH}px] max-w-[${tablet.MAX_WIDTH}px] border-${tablet.BORDER_WIDTH} ${tablet.BORDER_COLOR} rounded-[${tablet.BORDER_RADIUS}px] overflow-hidden`;
+      }
       case 'desktop':
-      default:
-        return `${baseStyles} w-full max-w-[1580px] border border-gray-200 rounded-xl overflow-hidden`;
+      default: {
+        const desktop = DEVICE_BREAKPOINTS.DESKTOP;
+        return `${baseStyles} w-full max-w-[${desktop.WIDTH}px] border ${desktop.BORDER_COLOR} rounded-xl overflow-hidden`;
+      }
     }
   };
 
-  const zoomIn = () => setZoom(prev => Math.min(prev + 25, 200));
-  const zoomOut = () => setZoom(prev => Math.max(prev - 25, 50));
-  const resetZoom = () => setZoom(100);
+  const zoomIn = () => setZoom(prev => Math.min(prev + ZOOM_SETTINGS.STEP, ZOOM_SETTINGS.MAX));
+  const zoomOut = () => setZoom(prev => Math.max(prev - ZOOM_SETTINGS.STEP, ZOOM_SETTINGS.MIN));
+  const resetZoom = () => setZoom(ZOOM_SETTINGS.DEFAULT);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -122,13 +136,13 @@ export function PagePreview() {
       }
 
       switch (e.key) {
-        case '1':
+        case KEYBOARD_SHORTCUTS.DESKTOP:
           setCurrentDevice('desktop');
           break;
-        case '2':
+        case KEYBOARD_SHORTCUTS.TABLET:
           setCurrentDevice('tablet');
           break;
-        case '3':
+        case KEYBOARD_SHORTCUTS.MOBILE:
           setCurrentDevice('mobile');
           break;
         case '=':
@@ -140,7 +154,7 @@ export function PagePreview() {
           e.preventDefault();
           zoomOut();
           break;
-        case '0':
+        case KEYBOARD_SHORTCUTS.RESET_ZOOM:
           e.preventDefault();
           resetZoom();
           break;
@@ -160,7 +174,7 @@ export function PagePreview() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className={`min-h-screen flex items-center justify-center ${UI_COLORS.GRADIENTS.MAIN}`}>
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-6">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
@@ -174,7 +188,7 @@ export function PagePreview() {
 
   if (error || !pageData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className={`min-h-screen flex items-center justify-center ${UI_COLORS.GRADIENTS.MAIN}`}>
         <div className="max-w-md text-center">
           <div className="bg-white rounded-xl shadow-xl p-8">
             <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
@@ -210,7 +224,7 @@ export function PagePreview() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className={`min-h-screen ${UI_COLORS.GRADIENTS.MAIN}`}>
       {/* Preview Toolbar */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
         <div className="px-6 py-4">
@@ -222,8 +236,8 @@ export function PagePreview() {
               </h1>
               <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
                 pageData.status === 'published' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-amber-100 text-amber-800'
+                  ? `${UI_COLORS.STATUS.PUBLISHED.BACKGROUND} ${UI_COLORS.STATUS.PUBLISHED.TEXT}` 
+                  : `${UI_COLORS.STATUS.DRAFT.BACKGROUND} ${UI_COLORS.STATUS.DRAFT.TEXT}`
               }`}>
                 {pageData.status.charAt(0).toUpperCase() + pageData.status.slice(1)}
               </span>
@@ -238,7 +252,7 @@ export function PagePreview() {
                     ? 'bg-white text-blue-600 shadow-sm scale-105' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
-                title="Desktop View (1580px)"
+                title={`${DEVICE_BREAKPOINTS.DESKTOP.LABEL} (${DEVICE_BREAKPOINTS.DESKTOP.WIDTH}px)`}
               >
                 <Monitor className="h-5 w-5" />
               </button>
@@ -249,7 +263,7 @@ export function PagePreview() {
                     ? 'bg-white text-blue-600 shadow-sm scale-105' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
-                title="Tablet View (768px)"
+                title={`${DEVICE_BREAKPOINTS.TABLET.LABEL} (${DEVICE_BREAKPOINTS.TABLET.WIDTH}px)`}
               >
                 <Tablet className="h-5 w-5" />
               </button>
@@ -260,7 +274,7 @@ export function PagePreview() {
                     ? 'bg-white text-blue-600 shadow-sm scale-105' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
-                title="Mobile View (375px)"
+                title={`${DEVICE_BREAKPOINTS.MOBILE.LABEL} (${DEVICE_BREAKPOINTS.MOBILE.WIDTH}px)`}
               >
                 <Smartphone className="h-5 w-5" />
               </button>
@@ -272,7 +286,7 @@ export function PagePreview() {
               <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={zoomOut}
-                  disabled={zoom <= 50}
+                  disabled={zoom <= ZOOM_SETTINGS.MIN}
                   className="p-2 rounded text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title="Zoom Out"
                 >
@@ -287,7 +301,7 @@ export function PagePreview() {
                 </button>
                 <button
                   onClick={zoomIn}
-                  disabled={zoom >= 200}
+                  disabled={zoom >= ZOOM_SETTINGS.MAX}
                   className="p-2 rounded text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title="Zoom In"
                 >
@@ -317,7 +331,7 @@ export function PagePreview() {
           }}
         >
           <div 
-            className="min-h-[800px] overflow-auto"
+            className={`min-h-[${PREVIEW_DIMENSIONS.HEIGHT}px] overflow-auto`}
             dangerouslySetInnerHTML={{ __html: htmlContent }} 
           />
         </div>
@@ -326,14 +340,14 @@ export function PagePreview() {
       {/* Device Info */}
       <div className="fixed bottom-6 left-6 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-3 rounded-lg shadow-lg border border-gray-200">
         <div className="text-sm font-medium">
-          {currentDevice === 'desktop' && '🖥️ Desktop View'}
-          {currentDevice === 'tablet' && '📱 Tablet View'}
-          {currentDevice === 'mobile' && '📲 Mobile View'}
+          {currentDevice === 'desktop' && `${DEVICE_BREAKPOINTS.DESKTOP.ICON} ${DEVICE_BREAKPOINTS.DESKTOP.LABEL}`}
+          {currentDevice === 'tablet' && `${DEVICE_BREAKPOINTS.TABLET.ICON} ${DEVICE_BREAKPOINTS.TABLET.LABEL}`}
+          {currentDevice === 'mobile' && `${DEVICE_BREAKPOINTS.MOBILE.ICON} ${DEVICE_BREAKPOINTS.MOBILE.LABEL}`}
         </div>
         <div className="text-xs text-gray-600 mt-1">
-          {currentDevice === 'desktop' && '1580px max width'}
-          {currentDevice === 'tablet' && '768px width'}
-          {currentDevice === 'mobile' && '375px width'}
+          {currentDevice === 'desktop' && `${DEVICE_BREAKPOINTS.DESKTOP.WIDTH}px max width`}
+          {currentDevice === 'tablet' && `${DEVICE_BREAKPOINTS.TABLET.WIDTH}px width`}
+          {currentDevice === 'mobile' && `${DEVICE_BREAKPOINTS.MOBILE.WIDTH}px width`}
           {' • Zoom: '}{zoom}%
         </div>
       </div>
@@ -342,9 +356,9 @@ export function PagePreview() {
       <div className="fixed bottom-6 right-6 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-3 rounded-lg shadow-lg border border-gray-200">
         <div className="text-sm font-medium mb-2">⌨️ Keyboard Shortcuts</div>
         <div className="text-xs text-gray-600 space-y-1">
-          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">1</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">2</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">3</kbd> Switch devices</div>
+          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.DESKTOP}</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.TABLET}</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.MOBILE}</kbd> Switch devices</div>
           <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">+</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">-</kbd> Zoom in/out</div>
-          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">0</kbd> Reset zoom</div>
+          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.RESET_ZOOM}</kbd> Reset zoom</div>
           <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">R</kbd> Refresh page</div>
         </div>
       </div>

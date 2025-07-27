@@ -7,6 +7,7 @@ import {
     getContentStyles, 
     getDefaultCraftSpacing 
 } from '../../lib/spacingUtils';
+import { EDITOR_SETTINGS } from '@/constants/editor';
 
 interface ContainerProps extends SpacingProps {
     background?: string;
@@ -90,8 +91,8 @@ export const Container: ContainerComponent = ({
                 topLeft: { zIndex: 1000 },
             }}
             style={{
-                border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
-                borderRadius: '4px',
+                border: selected ? EDITOR_SETTINGS.SELECTION.ACTIVE_BORDER : EDITOR_SETTINGS.SELECTION.INACTIVE_BORDER,
+                borderRadius: `${EDITOR_SETTINGS.SELECTION.BORDER_RADIUS}px`,
                 overflow: 'hidden',
             }}
         >

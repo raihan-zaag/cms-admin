@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEditor } from '@craftjs/core';
+import { EDITOR_SETTINGS } from '@/constants/editor';
 
 export const Viewport: React.FC = () => {
   const { enabled, actions } = useEditor((state) => ({
@@ -29,10 +30,10 @@ export const Viewport: React.FC = () => {
           className="absolute inset-0 p-4"
           style={{
             background: `
-              linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px),
-              linear-gradient(180deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+              linear-gradient(90deg, ${EDITOR_SETTINGS.GRID.COLOR} 1px, transparent 1px),
+              linear-gradient(180deg, ${EDITOR_SETTINGS.GRID.COLOR} 1px, transparent 1px)
             `,
-            backgroundSize: '20px 20px'
+            backgroundSize: `${EDITOR_SETTINGS.GRID.SIZE}px ${EDITOR_SETTINGS.GRID.SIZE}px`
           }}
         >
           {/* The canvas content will be rendered here by CraftJS */}
