@@ -13,26 +13,12 @@ import { Resizable } from 're-resizable';
 import { useNode, useEditor } from '@craftjs/core';
 import { debounce } from 'lodash';
 import { cn } from '@/lib/utils';
-
-// Utility functions — add these to your numToMeasurement.ts file if missing
-function isPercentage(value: string | number): boolean {
-  return typeof value === 'string' && value.trim().endsWith('%');
-}
-
-function pxToPercent(px: number, parentSize: number): number {
-  return (px / parentSize) * 100;
-}
-
-function percentToPx(percent: string | number, parentSize: number): number {
-  const numeric = typeof percent === 'string' ? parseFloat(percent) : percent;
-  return (numeric / 100) * parentSize;
-}
-
-function getElementDimensions(el: HTMLElement | null): { width: number; height: number } {
-  if (!el) return { width: 0, height: 0 };
-  const { width, height } = el.getBoundingClientRect();
-  return { width, height };
-}
+import { 
+  isPercentage, 
+  pxToPercent, 
+  percentToPx, 
+  getElementDimensions 
+} from '@/lib/numToMeasurement';
 
 type ResizerProps = {
   propKey: { width: string; height: string };

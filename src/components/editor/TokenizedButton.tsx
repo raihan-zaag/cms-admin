@@ -9,23 +9,24 @@ import {
     getDefaultCraftSpacing 
 } from '../../lib/spacingUtils';
 
-interface ButtonProps extends SpacingProps {
+interface TokenizedButtonProps extends SpacingProps {
   text?: string;
   backgroundColor?: string;
   isTransparent?: boolean;
   color?: string;
-  borderRadius?: number | string; // Allow both number and token string
-  fontSize?: number | string; // Allow both number and token string
+  borderRadius?: string; // Can accept tokens like '@radius.md'
+  fontSize?: string; // Can accept tokens like '@typography.lg'
   fontWeight?: string;
   width?: string;
   height?: string;
   onClick?: () => void;
-  useDesignTokens?: boolean; // Toggle for using design tokens
+  // Token support
+  useDesignTokens?: boolean;
 }
 
-interface ButtonComponent extends React.FC<ButtonProps> {
+interface TokenizedButtonComponent extends React.FC<TokenizedButtonProps> {
   craft?: {
-    props: ButtonProps;
+    props: TokenizedButtonProps;
     rules?: {
       canDrag?: () => boolean;
       canDrop?: () => boolean;
@@ -39,7 +40,7 @@ interface ButtonComponent extends React.FC<ButtonProps> {
   };
 }
 
-export const Button: ButtonComponent = ({
+export const TokenizedButton: TokenizedButtonComponent = ({
   text = 'Click me',
   backgroundColor = '@color.primary',
   isTransparent = false,
@@ -65,35 +66,29 @@ export const Button: ButtonComponent = ({
     selected: state.events.selected,
   }));
 
-  // Use design tokens hook
-  const { processToken } = useTheme();
+  const { processToken, processStyleObject } = useTheme();
 
-  // Process design tokens or use raw values
-  const processedBackgroundColor = useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@')
-    ? processToken(backgroundColor)
-    : backgroundColor;
-
-  const processedColor = useDesignTokens && typeof color === 'string' && color.startsWith('@')
-    ? processToken(color)
-    : color;
-
-  const processedBorderRadius = useDesignTokens && typeof borderRadius === 'string' && borderRadius.startsWith('@')
-    ? processToken(borderRadius)
-    : typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
-
-  const processedFontSize = useDesignTokens && typeof fontSize === 'string' && fontSize.startsWith('@')
-    ? processToken(fontSize)
-    : typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
+  // Process tokens in style properties
+  const processedStyles = useDesignTokens 
+    ? processStyleObject({
+        backgroundColor: isTransparent ? 'transparent' : backgroundColor,
+        color,
+        borderRadius,
+        fontSize,
+      })
+    : {
+        backgroundColor: isTransparent ? 'transparent' : backgroundColor,
+        color,
+        borderRadius: typeof borderRadius === 'string' && borderRadius.includes('px') ? borderRadius : `${borderRadius}px`,
+        fontSize: typeof fontSize === 'string' && fontSize.includes('px') ? fontSize : `${fontSize}px`,
+      };
 
   const buttonStyle: React.CSSProperties = {
     ...getContentStyles(
       { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
       height,
       {
-        backgroundColor: isTransparent ? 'transparent' : processedBackgroundColor,
-        color: processedColor,
-        borderRadius: processedBorderRadius,
-        fontSize: processedFontSize,
+        ...processedStyles,
         fontWeight,
         border: 'none',
         cursor: 'pointer',
@@ -104,7 +99,7 @@ export const Button: ButtonComponent = ({
   };
 
   const resizerStyle: React.CSSProperties = {
-    border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
+    border: selected ? `2px dashed ${useDesignTokens ? processToken('@color.primary') : '#3b82f6'}` : '2px solid #e5e7eb',
     borderRadius: '4px',
     overflow: 'hidden',
   };
@@ -125,8 +120,9 @@ export const Button: ButtonComponent = ({
   );
 };
 
-Button.craft = {
+TokenizedButton.craft = {
   props: {
+    ...getDefaultCraftSpacing(),
     text: 'Click me',
     backgroundColor: '@color.primary',
     isTransparent: false,
@@ -134,10 +130,8 @@ Button.craft = {
     borderRadius: '@radius.md',
     fontSize: '@typography.base',
     fontWeight: 'normal',
-    width: 'auto',
     height: 'auto',
     useDesignTokens: true,
-    ...getDefaultCraftSpacing(),
   },
   rules: {
     canDrag: () => true,
@@ -148,5 +142,5 @@ Button.craft = {
   related: {
     settings: ButtonSettings,
   },
-  displayName: 'Button',
+  displayName: 'Tokenized Button',
 };

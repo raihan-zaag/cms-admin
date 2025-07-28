@@ -3,6 +3,7 @@ import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { ContainerSettings } from './settings/ContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export type ContainerProps = {
     background?: string;
@@ -14,23 +15,24 @@ export type ContainerProps = {
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
     alignItems?: 'stretch' | 'flex-start' | 'center' | 'flex-end';
     flexWrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
-    gap?: number;
+    gap?: string | number;
     // Individual padding/margin props to match ContainerSettings
-    paddingTop?: number;
-    paddingRight?: number;
-    paddingBottom?: number;
-    paddingLeft?: number;
-    marginTop?: number;
-    marginRight?: number;
-    marginBottom?: number;
-    marginLeft?: number;
+    paddingTop?: string | number;
+    paddingRight?: string | number;
+    paddingBottom?: string | number;
+    paddingLeft?: string | number;
+    marginTop?: string | number;
+    marginRight?: string | number;
+    marginBottom?: string | number;
+    marginLeft?: string | number;
     fillSpace?: 'yes' | 'no';
     shadow?: number;
-    radius?: number;
+    radius?: string | number;
+    useDesignTokens?: boolean;
 };
 
 const defaultProps: ContainerProps = {
-    background: '#ffffff',
+    background: '@color.background',
     isTransparent: false,
     width: '100%',
     height: '300px',
@@ -38,18 +40,19 @@ const defaultProps: ContainerProps = {
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     flexWrap: 'nowrap',
-    gap: 10,
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
+    gap: '@spacing.md',
+    paddingTop: '@spacing.sm',
+    paddingRight: '@spacing.sm',
+    paddingBottom: '@spacing.sm',
+    paddingLeft: '@spacing.sm',
     marginTop: 0,
     marginRight: 0,
     marginBottom: 0,
     marginLeft: 0,
     fillSpace: 'no',
     shadow: 0,
-    radius: 0,
+    radius: '@radius.md',
+    useDesignTokens: true,
 };
 
 export const Container = (props: Partial<ContainerProps>) => {
@@ -78,6 +81,7 @@ export const Container = (props: Partial<ContainerProps>) => {
         fillSpace,
         shadow,
         radius,
+        useDesignTokens,
         children,
     } = mergedProps;
 
@@ -86,6 +90,31 @@ export const Container = (props: Partial<ContainerProps>) => {
     } = useNode((state) => ({
         selected: state.events.selected,
     }));
+
+    // Use design tokens hook
+    const { processToken } = useTheme();
+
+    // Process design tokens or use raw values
+    const processedBackground = useDesignTokens && typeof background === 'string' && background.startsWith('@')
+        ? processToken(background)
+        : background;
+
+    const processedGap = useDesignTokens && typeof gap === 'string' && gap.startsWith('@')
+        ? processToken(gap)
+        : typeof gap === 'number' ? `${gap}px` : gap;
+
+    const processedRadius = useDesignTokens && typeof radius === 'string' && radius.startsWith('@')
+        ? processToken(radius)
+        : typeof radius === 'number' ? `${radius}px` : radius;
+
+    // Process spacing tokens helper function
+    const processSpacing = (value: string | number | undefined) => {
+        if (!value) return '0px';
+        if (useDesignTokens && typeof value === 'string' && value.startsWith('@')) {
+            return processToken(value);
+        }
+        return typeof value === 'number' ? `${value}px` : value;
+    };
 
     const containerStyle: React.CSSProperties = {
         width: '100%',
@@ -96,18 +125,18 @@ export const Container = (props: Partial<ContainerProps>) => {
         justifyContent: justifyContent as React.CSSProperties['justifyContent'],
         alignItems: alignItems as React.CSSProperties['alignItems'],
         flexWrap: flexWrap as React.CSSProperties['flexWrap'],
-        gap: `${gap}px`,
-        background: isTransparent ? 'transparent' : background,
-        paddingTop: `${paddingTop}px`,
-        paddingRight: `${paddingRight}px`,
-        paddingBottom: `${paddingBottom}px`,
-        paddingLeft: `${paddingLeft}px`,
-        marginTop: `${marginTop}px`,
-        marginRight: `${marginRight}px`,
-        marginBottom: `${marginBottom}px`,
-        marginLeft: `${marginLeft}px`,
+        gap: processedGap,
+        background: isTransparent ? 'transparent' : processedBackground,
+        borderRadius: processedRadius,
+        paddingTop: processSpacing(paddingTop),
+        paddingRight: processSpacing(paddingRight),
+        paddingBottom: processSpacing(paddingBottom),
+        paddingLeft: processSpacing(paddingLeft),
+        marginTop: processSpacing(marginTop),
+        marginRight: processSpacing(marginRight),
+        marginBottom: processSpacing(marginBottom),
+        marginLeft: processSpacing(marginLeft),
         boxShadow: shadow === 0 ? 'none' : `0px 3px 100px ${shadow}px rgba(0, 0, 0, 0.13)`,
-        borderRadius: `${radius}px`,
         flex: fillSpace === 'yes' ? 1 : 'unset',
         boxSizing: 'border-box',
         overflow: 'visible',

@@ -1,5 +1,6 @@
 import { convertCraftJsonToHtml } from "@/lib/convertCraftJsonToHtml";
 import { downloadHtmlFile, generateFullHtmlDocument } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import { useEditor } from "@craftjs/core";
 import { useLayoutStore } from "@/store/layout";
 import { useState, useEffect } from "react";
@@ -16,6 +17,18 @@ import {
   Keyboard
 } from "lucide-react";
 
+/**
+ * TopBar Component
+ * 
+ * Provides the main toolbar for the page editor with the following features:
+ * - Undo/Redo functionality
+ * - Save and load layouts
+ * - Export to HTML
+ * - Preview mode
+ * - Keyboard shortcuts modal
+ * 
+ * @returns {JSX.Element} The top bar component
+ */
 const TopBar = () => {
   const { enabled, actions, query, nodes } = useEditor((state) => ({
     enabled: state.options.enabled,
@@ -45,9 +58,9 @@ const TopBar = () => {
           const serializedData = query.serialize();
           const craftJson = JSON.parse(serializedData);
           addToHistory(craftJson);
-          console.log('State saved to history, nodes count:', Object.keys(nodes).length);
+          logger.debug('State saved to history, nodes count:', Object.keys(nodes).length);
         } catch (error) {
-          console.error('Error saving to history:', error);
+          logger.error('Error saving to history:', error);
         }
       }, 1000); // Debounce for 1 second
     }
@@ -58,32 +71,32 @@ const TopBar = () => {
   }, [enabled, addToHistory, query, nodes]); // Include nodes in dependencies to track changes
 
   const handleUndo = () => {
-    console.log('Undo clicked, can undo:', storeCanUndo());
+    logger.debug('Undo clicked, can undo:', storeCanUndo());
     if (storeCanUndo()) {
       const previousState = undo();
-      console.log('Previous state retrieved:', previousState);
+      logger.debug('Previous state retrieved:', previousState);
       if (previousState) {
         try {
           actions.deserialize(JSON.stringify(previousState.craftJson));
-          console.log('Successfully deserialized previous state');
+          logger.debug('Successfully deserialized previous state');
         } catch (error) {
-          console.error('Error deserializing previous state:', error);
+          logger.error('Error deserializing previous state:', error);
         }
       }
     }
   };
 
   const handleRedo = () => {
-    console.log('Redo clicked, can redo:', storeCanRedo());
+    logger.debug('Redo clicked, can redo:', storeCanRedo());
     if (storeCanRedo()) {
       const nextState = redo();
-      console.log('Next state retrieved:', nextState);
+      logger.debug('Next state retrieved:', nextState);
       if (nextState) {
         try {
           actions.deserialize(JSON.stringify(nextState.craftJson));
-          console.log('Successfully deserialized next state');
+          logger.debug('Successfully deserialized next state');
         } catch (error) {
-          console.error('Error deserializing next state:', error);
+          logger.error('Error deserializing next state:', error);
         }
       }
     }
@@ -100,7 +113,7 @@ const TopBar = () => {
     
     // Open preview in new tab with the current editor state
     const json = query.serialize();
-    console.log('Previewing state:', json);
+    logger.debug('Previewing state:', json);
     
     // Store the current state temporarily (in a real app, you'd save to database)
     sessionStorage.setItem(`preview-${tempId}`, json);

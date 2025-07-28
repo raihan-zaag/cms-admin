@@ -2,6 +2,7 @@ import React from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { TextSettings } from './settings/TextSettings';
+import { useTheme } from '@/hooks/useTheme';
 import { 
     type SpacingProps, 
     getContentStyles, 
@@ -10,13 +11,17 @@ import {
 
 interface TextProps extends SpacingProps {
   text?: string;
-  fontSize?: number;
+  fontSize?: number | string; // Allow both number and token string
   fontWeight?: string;
+  fontFamily?: string; // Add font family support
+  lineHeight?: string | number; // Add line height
+  letterSpacing?: string | number; // Add letter spacing
   color?: string;
   backgroundColor?: string;
   textAlign?: string;
   width?: string;
   height?: string;
+  useDesignTokens?: boolean; // Toggle for using design tokens
 }
 
 interface TextComponent extends React.FC<TextProps> {
@@ -37,12 +42,16 @@ interface TextComponent extends React.FC<TextProps> {
 
 export const Text: TextComponent = ({
   text = 'Click to edit text',
-  fontSize = 16,
+  fontSize = '@typography.base',
   fontWeight = 'normal',
-  color = '#000000',
+  fontFamily = '@typography.primary',
+  lineHeight = 'normal',
+  letterSpacing = 'normal',
+  color = '@color.text',
   backgroundColor = 'transparent',
   textAlign = 'left',
   height = 'auto',
+  useDesignTokens = true,
   paddingTop = 8,
   paddingRight = 8,
   paddingBottom = 8,
@@ -59,7 +68,31 @@ export const Text: TextComponent = ({
     selected: state.events.selected,
   }));
 
+  // Use design tokens hook
+  const { processToken } = useTheme();
+
   const [isEditing, setIsEditing] = React.useState(false);
+
+  // Process design tokens or use raw values
+  const processedFontSize = useDesignTokens && typeof fontSize === 'string' && fontSize.startsWith('@')
+    ? processToken(fontSize)
+    : typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
+
+  const processedFontFamily = useDesignTokens && typeof fontFamily === 'string' && fontFamily.startsWith('@')
+    ? processToken(fontFamily)
+    : fontFamily;
+
+  const processedLineHeight = useDesignTokens && typeof lineHeight === 'string' && lineHeight.startsWith('@')
+    ? processToken(lineHeight)
+    : lineHeight;
+
+  const processedLetterSpacing = useDesignTokens && typeof letterSpacing === 'string' && letterSpacing.startsWith('@')
+    ? processToken(letterSpacing)
+    : letterSpacing;
+
+  const processedColor = useDesignTokens && typeof color === 'string' && color.startsWith('@')
+    ? processToken(color)
+    : color;
 
   const textStyle: React.CSSProperties = {
     ...getContentStyles(
@@ -69,9 +102,12 @@ export const Text: TextComponent = ({
         backgroundColor: backgroundColor,
       }
     ),
-    fontSize: `${fontSize}px`,
+    fontSize: processedFontSize,
+    fontFamily: processedFontFamily,
     fontWeight,
-    color,
+    lineHeight: processedLineHeight,
+    letterSpacing: processedLetterSpacing,
+    color: processedColor,
     textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
     cursor: 'text',
     width: '100%',
@@ -136,13 +172,17 @@ export const Text: TextComponent = ({
 Text.craft = {
   props: {
     text: 'Click to edit text',
-    fontSize: 16,
+    fontSize: '@typography.base',
+    fontFamily: '@typography.primary',
     fontWeight: 'normal',
-    color: '#000000',
+    lineHeight: 'normal',
+    letterSpacing: 'normal',
+    color: '@color.text',
     backgroundColor: 'transparent',
     textAlign: 'left',
     width: 'auto',
     height: 'auto',
+    useDesignTokens: true,
     ...getDefaultCraftSpacing(),
   },
   rules: {

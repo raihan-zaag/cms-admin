@@ -1,16 +1,39 @@
 import React from 'react';
 import { useEditor, Element } from '@craftjs/core';
+
+// Editor Components
 import { Container } from './Container';
 import { GridContainer } from './GridContainer';
 import { Text } from './Text';
 import { Button } from './Button';
 import { ImageComponent } from './Image';
+
+// Icons
 import { Box, Type, Square, Image, Grid3X3 } from 'lucide-react';
 
+/**
+ * Component definition for the toolbox
+ */
+interface ToolboxComponent {
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  description: string;
+  element: React.ReactElement;
+}
+
+/**
+ * Toolbox Component
+ * 
+ * Provides a draggable component library for the page editor.
+ * Users can drag components from here to the canvas to build pages.
+ * 
+ * @returns {JSX.Element} The toolbox component with draggable elements
+ */
 export const Toolbox: React.FC = () => {
   const { connectors } = useEditor();
 
-  const components = [
+  const components: ToolboxComponent[] = [
     {
       name: 'Container',
       icon: Box,

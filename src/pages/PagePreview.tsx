@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { apiService } from '@/services/api';
 import { convertCraftJsonToHtml } from '@/lib/convertCraftJsonToHtml';
+import { logger } from '@/lib/logger';
 import { 
   DEVICE_BREAKPOINTS, 
   ZOOM_SETTINGS, 
@@ -223,7 +224,7 @@ export function PagePreview() {
     htmlContent = '<div class="p-8 text-center"><h1>Error rendering page content</h1></div>';
   }
 
-  console.log('Rendered HTML content:', htmlContent);
+  logger.debug('Rendered HTML content:', htmlContent);
 
   return (
     <div className={`min-h-screen ${UI_COLORS.GRADIENTS.MAIN}`}>

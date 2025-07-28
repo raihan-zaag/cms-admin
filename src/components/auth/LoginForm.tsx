@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/auth'
+import { logger } from '@/lib/logger'
 import { apiService } from '@/services/api'
 
 const loginSchema = z.object({
@@ -38,7 +39,7 @@ export function LoginForm() {
     try {
       const response = await apiService.login(data.email, data.password)
 
-      console.log('Login response:', response)
+      logger.debug('Login response:', response)
       
       if (response.accessToken && response.user) {
         login(response.accessToken, response.user)

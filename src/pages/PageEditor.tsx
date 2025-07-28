@@ -3,6 +3,7 @@ import { Editor, Frame, Element,  } from '@craftjs/core';
 import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
+import { DesignTokensModal } from '../components/editor/design-tokens/DesignTokensModal';
 import { Container } from '../components/editor/Container';
 import { GridContainer } from '../components/editor/GridContainer';
 import { Text } from '../components/editor/Text';
@@ -79,11 +80,16 @@ export const PageEditor: React.FC = () => {
           </div>
 
           {/* Right Sidebar - Settings & Layers */}
-          <div className="space-y-4 overflow-y-auto">
-            <LayersPanel />
-            <SettingsPanel />
+          <div className="border-r border-gray-200 bg-white overflow-y-auto">
+            <div className="space-y-4 p-4">
+              <LayersPanel />
+              <SettingsPanel />
+            </div>
           </div>
         </div>
+        
+        {/* Design Tokens Modal - Floating Button */}
+        <DesignTokensModal />
       </div>
     </Editor>
   );

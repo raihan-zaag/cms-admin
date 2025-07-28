@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { logger } from '@/lib/logger'
 
 export interface SavedLayout {
   id: string
@@ -88,7 +89,7 @@ export const useLayoutStore = create<LayoutState>()(
         if (state.history.length > 0 && state.currentHistoryIndex >= 0) {
           const currentState = state.history[state.currentHistoryIndex];
           if (JSON.stringify(currentState.craftJson) === JSON.stringify(craftJson)) {
-            console.log('Skipping duplicate history entry');
+            logger.debug('Skipping duplicate history entry');
             return;
           }
         }
@@ -111,32 +112,32 @@ export const useLayoutStore = create<LayoutState>()(
           currentHistoryIndex: limitedHistory.length - 1
         })
         
-        console.log('Added to history, total items:', limitedHistory.length, 'current index:', limitedHistory.length - 1);
+        logger.debug('Added to history, total items:', limitedHistory.length, 'current index:', limitedHistory.length - 1);
       },
       
       undo: () => {
         const state = get()
-        console.log('Undo requested. Current index:', state.currentHistoryIndex, 'History length:', state.history.length);
+        logger.debug('Undo requested. Current index:', state.currentHistoryIndex, 'History length:', state.history.length);
         if (state.currentHistoryIndex > 0) {
           const newIndex = state.currentHistoryIndex - 1
           set({ currentHistoryIndex: newIndex })
-          console.log('Undo successful. New index:', newIndex);
+          logger.debug('Undo successful. New index:', newIndex);
           return state.history[newIndex]
         }
-        console.log('Cannot undo - at beginning of history');
+        logger.debug('Cannot undo - at beginning of history');
         return null
       },
       
       redo: () => {
         const state = get()
-        console.log('Redo requested. Current index:', state.currentHistoryIndex, 'History length:', state.history.length);
+        logger.debug('Redo requested. Current index:', state.currentHistoryIndex, 'History length:', state.history.length);
         if (state.currentHistoryIndex < state.history.length - 1) {
           const newIndex = state.currentHistoryIndex + 1
           set({ currentHistoryIndex: newIndex })
-          console.log('Redo successful. New index:', newIndex);
+          logger.debug('Redo successful. New index:', newIndex);
           return state.history[newIndex]
         }
-        console.log('Cannot redo - at end of history');
+        logger.debug('Cannot redo - at end of history');
         return null
       },
       
