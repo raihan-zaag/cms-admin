@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { 
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -21,13 +21,13 @@ export const DesignTokensModal: React.FC = () => {
           <DialogTrigger asChild>
             <Button
               size="lg"
-              className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-blue-600 hover:bg-blue-700"
+              className="size-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-blue-500 hover:bg-blue-700"
               title="Open Design Tokens"
             >
-              <Palette className="w-6 h-6" />
+              DS
             </Button>
           </DialogTrigger>
-          
+
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0 bg-white">
             <DialogHeader className="px-6 py-4 border-b bg-white">
               <DialogTitle className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export const DesignTokensModal: React.FC = () => {
                 Design Tokens System
               </DialogTitle>
             </DialogHeader>
-            
+
             <div className="h-[calc(90vh-80px)] overflow-hidden bg-white">
               <DesignTokensPanel />
             </div>

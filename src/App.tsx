@@ -16,24 +16,13 @@ import { PageEditor } from '@/pages/PageEditor'
 import { PagesList } from '@/pages/PagesList'
 import { MediaManager } from '@/pages/MediaManager'
 import { PagePreview } from '@/pages/PagePreview'
-import { DesignTokensDemo } from '@/pages/DesignTokensDemo'
-
 // Editor Components
 import SavedLayoutsList from '@/components/editor/SavedLayoutsList'
 
 // Store
 import { useAuthStore } from '@/store/auth'
 
-/**
- * Main Application Component
- * 
- * Handles routing for the CMS admin application with the following routes:
- * - Public routes: /login, /register
- * - Protected routes: /dashboard, /pages, /editor, /media, /layouts
- * - Special routes: /design-tokens-demo, /preview/:pageId, /unauthorized
- * 
- * @returns {JSX.Element} The main app component with all routes configured
- */
+
 function App() {
   const { isAuthenticated } = useAuthStore()
 
@@ -42,28 +31,19 @@ function App() {
       <Router>
         <Routes>
           {/* Public routes */}
-          <Route 
-            path="/login" 
-            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />} 
+          <Route
+            path="/login"
+            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />}
           />
-          <Route 
-            path="/register" 
-            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterForm />} 
+          <Route
+            path="/register"
+            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterForm />}
           />
-          
-          {/* Design Tokens Demo - accessible without layout */}
-          <Route 
-            path="/design-tokens-demo" 
-            element={
-              <ProtectedRoute>
-                <DesignTokensDemo />
-              </ProtectedRoute>
-            } 
-          />
-          
+
+
           {/* Protected routes with dashboard layout */}
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <ProtectedRoute>
                 <DashboardLayout />
@@ -79,18 +59,18 @@ function App() {
           </Route>
 
           {/* Preview route - outside of protected layout */}
-          <Route 
-            path="/preview/:pageId" 
+          <Route
+            path="/preview/:pageId"
             element={
               <ProtectedRoute>
                 <PagePreview />
               </ProtectedRoute>
-            } 
+            }
           />
 
           {/* Unauthorized route */}
-          <Route 
-            path="/unauthorized" 
+          <Route
+            path="/unauthorized"
             element={
               <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
@@ -99,7 +79,7 @@ function App() {
                   <Navigate to="/login" replace />
                 </div>
               </div>
-            } 
+            }
           />
 
           {/* Catch all route */}
