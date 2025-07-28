@@ -4,7 +4,7 @@ import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
 import { Container } from '../components/editor/Container';
-import { ContainerCopy } from '../components/editor/ContainerCopy';
+import { GridContainer } from '../components/editor/GridContainer';
 import { Text } from '../components/editor/Text';
 import { Button } from '../components/editor/Button';
 import { ImageComponent } from '../components/editor/Image';
@@ -17,7 +17,7 @@ export const PageEditor: React.FC = () => {
     <Editor
       resolver={{
         Container,
-        ContainerCopy,
+        GridContainer,
         Text,
         Button,
         ImageComponent,

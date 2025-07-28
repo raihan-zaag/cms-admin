@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizable } from 're-resizable';
+import { Resizer } from '../common/Resizer';
 import { ContainerSettings } from './settings/ContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
 
@@ -61,7 +61,6 @@ export const Container = (props: Partial<ContainerProps>) => {
     const {
         background,
         isTransparent,
-        width,
         height,
         flexDirection,
         justifyContent,
@@ -83,97 +82,58 @@ export const Container = (props: Partial<ContainerProps>) => {
     } = mergedProps;
 
     const {
-        connectors: { connect, drag },
         selected,
-        actions: { setProp }
     } = useNode((state) => ({
         selected: state.events.selected,
-        dragged: state.events.dragged,
     }));
 
-    const isAutoHeight = height === 'auto';
+    const containerStyle: React.CSSProperties = {
+        width: '100%',
+        height: height === 'auto' ? 'auto' : '100%',
+        minHeight: height === 'auto' ? '100px' : '100%',
+        display: 'flex',
+        flexDirection: flexDirection as React.CSSProperties['flexDirection'],
+        justifyContent: justifyContent as React.CSSProperties['justifyContent'],
+        alignItems: alignItems as React.CSSProperties['alignItems'],
+        flexWrap: flexWrap as React.CSSProperties['flexWrap'],
+        gap: `${gap}px`,
+        background: isTransparent ? 'transparent' : background,
+        paddingTop: `${paddingTop}px`,
+        paddingRight: `${paddingRight}px`,
+        paddingBottom: `${paddingBottom}px`,
+        paddingLeft: `${paddingLeft}px`,
+        marginTop: `${marginTop}px`,
+        marginRight: `${marginRight}px`,
+        marginBottom: `${marginBottom}px`,
+        marginLeft: `${marginLeft}px`,
+        boxShadow: shadow === 0 ? 'none' : `0px 3px 100px ${shadow}px rgba(0, 0, 0, 0.13)`,
+        borderRadius: `${radius}px`,
+        flex: fillSpace === 'yes' ? 1 : 'unset',
+        boxSizing: 'border-box',
+        overflow: 'visible',
+        position: 'relative',
+        border: selected ? EDITOR_SETTINGS.SELECTION.ACTIVE_BORDER : EDITOR_SETTINGS.SELECTION.INACTIVE_BORDER,
+        minWidth: '50px', // Ensure minimum width
+    };
+
+    const resizerStyle: React.CSSProperties = {
+        borderRadius: `${EDITOR_SETTINGS.SELECTION.BORDER_RADIUS}px`,
+        overflow: 'visible',
+        minHeight: height === 'auto' ? '100px' : 'auto',
+        position: 'relative',
+        zIndex: selected ? 10 : 1,
+    };
 
     return (
-        <Resizable
-            size={{
-                width: width!,
-                height: isAutoHeight ? 'auto' : height!,
-            }}
-            minHeight={isAutoHeight ? 100 : undefined}
-            onResizeStop={(_, __, ref) => {
-                setProp((props: ContainerProps) => {
-                    props.width = ref.style.width;
-                    props.height = ref.style.height;
-                });
-            }}
-            bounds="parent"
-            enable={{
-                top: true,
-                right: true,
-                bottom: true,
-                left: true,
-                topRight: true,
-                bottomRight: true,
-                bottomLeft: true,
-                topLeft: true,
-            }}
-            handleStyles={{
-                top: { zIndex: 999 },
-                right: { zIndex: 999 },
-                bottom: { zIndex: 999 },
-                left: { zIndex: 999 },
-                topRight: { zIndex: 999 },
-                bottomRight: { zIndex: 999 },
-                bottomLeft: { zIndex: 999 },
-                topLeft: { zIndex: 999 },
-            }}
-            style={{
-                border: selected ? EDITOR_SETTINGS.SELECTION.ACTIVE_BORDER : EDITOR_SETTINGS.SELECTION.INACTIVE_BORDER,
-                borderRadius: `${EDITOR_SETTINGS.SELECTION.BORDER_RADIUS}px`,
-                overflow: 'visible',
-                minHeight: isAutoHeight ? '100px' : 'auto',
-                position: 'relative',
-                zIndex: selected ? 10 : 1, // Lower z-index for containers, higher when selected
-            }}
+        <Resizer
+            propKey={{ width: 'width', height: 'height' }}
+            style={resizerStyle}
+            fillSpace={fillSpace}
         >
-            <div
-                ref={(ref) => {
-                    if (ref) {
-                        connect(drag(ref));
-                    }
-                }}
-                style={{
-                    width: '100%',
-                    height: isAutoHeight ? 'auto' : '100%',
-                    minHeight: isAutoHeight ? '100px' : '100%',
-                    display: 'flex',
-                    flexDirection: flexDirection as React.CSSProperties['flexDirection'],
-                    justifyContent: justifyContent as React.CSSProperties['justifyContent'],
-                    alignItems: alignItems as React.CSSProperties['alignItems'],
-                    flexWrap: flexWrap as React.CSSProperties['flexWrap'],
-                    gap: `${gap}px`,
-                    background: isTransparent ? 'transparent' : background,
-                    paddingTop: `${paddingTop}px`,
-                    paddingRight: `${paddingRight}px`,
-                    paddingBottom: `${paddingBottom}px`,
-                    paddingLeft: `${paddingLeft}px`,
-                    marginTop: `${marginTop}px`,
-                    marginRight: `${marginRight}px`,
-                    marginBottom: `${marginBottom}px`,
-                    marginLeft: `${marginLeft}px`,
-                    boxShadow: shadow === 0 ? 'none' : `0px 3px 100px ${shadow}px rgba(0, 0, 0, 0.13)`,
-                    borderRadius: `${radius}px`,
-                    flex: fillSpace === 'yes' ? 1 : 'unset',
-                    boxSizing: 'border-box',
-                    overflow: 'visible',
-                    position: 'relative',
-                    zIndex: 1,
-                    minWidth: '100%',
-                }}
-            >
+            <div style={containerStyle}>
                 {children}
             </div>
-        </Resizable>
+        </Resizer>
     );
 };
 

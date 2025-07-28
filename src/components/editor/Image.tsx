@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizable } from 're-resizable';
+import { Resizer } from '../common/Resizer';
 import { Image as ImageIcon } from 'lucide-react';
 import { ImageSettings } from './settings/ImageSettings';
 import {
@@ -45,8 +45,6 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
 } = ({
     src = '',
     alt = 'Image',
-    width = '300px',
-    height = '200px',
     objectFit = 'contain',
     objectPosition = 'center',
     borderRadius = 0,
@@ -57,7 +55,6 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
     backgroundRepeat = 'no-repeat',
     border = 'none',
     boxShadow = 'none',
-    isFullWidth = false,
     children,
     paddingTop = 0,
     paddingRight = 0,
@@ -69,9 +66,7 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
     marginLeft = 0,
 }) => {
         const {
-            connectors: { connect, drag },
             selected,
-            actions: { setProp },
         } = useNode((state) => ({
             selected: state.events.selected,
         }));
@@ -87,70 +82,37 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
             marginLeft,
         });
 
+        const imageContainerStyle: React.CSSProperties = {
+            ...contentSpacing,
+            border,
+            boxShadow,
+            borderRadius: `${borderRadius}px`,
+            opacity,
+            backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+            backgroundSize,
+            backgroundPosition,
+            backgroundRepeat,
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+        };
+
+        const resizerStyle: React.CSSProperties = {
+            border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
+            borderRadius: '4px',
+            overflow: 'hidden',
+        };
+
         return (
-            <Resizable
-                size={{
-                    width: isFullWidth ? '100%' : width,
-                    height,
-                }}
-                onResizeStop={(_, __, ref) => {
-                    setProp((props: ImageComponentProps) => {
-                        if (!props.isFullWidth) props.width = ref.style.width;
-                        props.height = ref.style.height;
-                    });
-                }}
-                bounds="parent"
-                handleStyles={{
-                    top: { zIndex: 1000 },
-                    right: { zIndex: 1000 },
-                    bottom: { zIndex: 1000 },
-                    left: { zIndex: 1000 },
-                    topRight: { zIndex: 1000 },
-                    bottomRight: { zIndex: 1000 },
-                    bottomLeft: { zIndex: 1000 },
-                    topLeft: { zIndex: 1000 },
-                }}
-                style={{
-                    border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                }}
-                enable={{
-                    left: !isFullWidth,
-                    right: !isFullWidth,
-                    top: true,
-                    bottom: true,
-                    topLeft: !isFullWidth,
-                    topRight: !isFullWidth,
-                    bottomLeft: !isFullWidth,
-                    bottomRight: !isFullWidth,
-                }}
+            <Resizer
+                propKey={{ width: 'width', height: 'height' }}
+                style={resizerStyle}
             >
-                <div
-                    ref={(ref) => {
-                        if (ref) {
-                            connect(drag(ref));
-                        }
-                    }}
-                    style={{
-                        ...contentSpacing,
-                        border,
-                        boxShadow,
-                        borderRadius: `${borderRadius}px`,
-                        opacity,
-                        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-                        backgroundSize,
-                        backgroundPosition,
-                        backgroundRepeat,
-                        boxSizing: 'border-box',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        position: 'relative',
-                        width: '100%',
-                        height: '100%',
-                        overflow: 'hidden',
-                    }}
-                >
+                <div style={imageContainerStyle}>
                     {src ? (
                         <img
                             src={src}
@@ -184,7 +146,7 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                         </div>
                     )}
                 </div>
-            </Resizable>
+            </Resizer>
         );
     };
 

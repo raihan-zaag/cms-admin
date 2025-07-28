@@ -1,11 +1,11 @@
 import React from 'react';
 import { useEditor, Element } from '@craftjs/core';
 import { Container } from './Container';
-import { ContainerCopy } from './ContainerCopy';
+import { GridContainer } from './GridContainer';
 import { Text } from './Text';
 import { Button } from './Button';
 import { ImageComponent } from './Image';
-import { Box, Type, Square, Image, Copy } from 'lucide-react';
+import { Box, Type, Square, Image, Grid3X3 } from 'lucide-react';
 
 export const Toolbox: React.FC = () => {
   const { connectors } = useEditor();
@@ -19,11 +19,11 @@ export const Toolbox: React.FC = () => {
       element: <Element is={Container} canvas />,
     },
     {
-      name: 'Container Copy',
-      icon: Copy,
-      color: 'bg-gradient-to-r from-cyan-500 to-cyan-600',
-      description: 'Container with Resizer component',
-      element: <Element is={ContainerCopy} canvas />,
+      name: 'Grid Container',
+      icon: Grid3X3,
+      color: 'bg-gradient-to-r from-indigo-500 to-indigo-600',
+      description: 'CSS Grid layout container',
+      element: <Element is={GridContainer} canvas />,
     },
     {
       name: 'Text',

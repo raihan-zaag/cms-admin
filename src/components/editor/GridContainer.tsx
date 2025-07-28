@@ -1,21 +1,29 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
-import { ContainerSettings } from './settings/ContainerSettings';
+import { GridContainerSettings } from './settings/GridContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
 
-export type ContainerCopyProps = {
+export type GridContainerProps = {
     background?: string;
     isTransparent?: boolean;
     children?: React.ReactNode;
     width?: string;
     height?: string;
-    flexDirection?: 'row' | 'column';
-    justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
-    alignItems?: 'stretch' | 'flex-start' | 'center' | 'flex-end';
-    flexWrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
-    gap?: number;
-    // Individual padding/margin props to match ContainerSettings
+    // Grid-specific properties
+    gridTemplateColumns?: string;
+    gridTemplateRows?: string;
+    gridGap?: number;
+    gridColumnGap?: number;
+    gridRowGap?: number;
+    justifyItems?: 'start' | 'end' | 'center' | 'stretch';
+    alignItems?: 'start' | 'end' | 'center' | 'stretch';
+    justifyContent?: 'start' | 'end' | 'center' | 'stretch' | 'space-around' | 'space-between' | 'space-evenly';
+    alignContent?: 'start' | 'end' | 'center' | 'stretch' | 'space-around' | 'space-between' | 'space-evenly';
+    gridAutoFlow?: 'row' | 'column' | 'row dense' | 'column dense';
+    gridAutoColumns?: string;
+    gridAutoRows?: string;
+    // Individual padding/margin props
     paddingTop?: number;
     paddingRight?: number;
     paddingBottom?: number;
@@ -29,20 +37,27 @@ export type ContainerCopyProps = {
     radius?: number;
 };
 
-const defaultProps: ContainerCopyProps = {
+const defaultProps: GridContainerProps = {
     background: '#ffffff',
     isTransparent: false,
     width: '100%',
     height: '300px',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
+    gridTemplateColumns: 'repeat(2, 1fr)', // Default 2-column grid
+    gridTemplateRows: 'auto',
+    gridGap: 10,
+    gridColumnGap: 10,
+    gridRowGap: 10,
+    justifyItems: 'stretch',
     alignItems: 'stretch',
-    flexWrap: 'nowrap',
-    gap: 10,
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
+    justifyContent: 'start',
+    alignContent: 'start',
+    gridAutoFlow: 'row',
+    gridAutoColumns: 'auto',
+    gridAutoRows: 'auto',
+    paddingTop: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingLeft: 20,
     marginTop: 0,
     marginRight: 0,
     marginBottom: 0,
@@ -52,7 +67,7 @@ const defaultProps: ContainerCopyProps = {
     radius: 0,
 };
 
-export const ContainerCopy = (props: Partial<ContainerCopyProps>) => {
+export const GridContainer = (props: Partial<GridContainerProps>) => {
     const mergedProps = {
         ...defaultProps,
         ...props,
@@ -62,11 +77,18 @@ export const ContainerCopy = (props: Partial<ContainerCopyProps>) => {
         background,
         isTransparent,
         height,
-        flexDirection,
-        justifyContent,
+        gridTemplateColumns,
+        gridTemplateRows,
+        gridGap,
+        gridColumnGap,
+        gridRowGap,
+        justifyItems,
         alignItems,
-        flexWrap,
-        gap,
+        justifyContent,
+        alignContent,
+        gridAutoFlow,
+        gridAutoColumns,
+        gridAutoRows,
         paddingTop,
         paddingRight,
         paddingBottom,
@@ -91,12 +113,19 @@ export const ContainerCopy = (props: Partial<ContainerCopyProps>) => {
         width: '100%',
         height: height === 'auto' ? 'auto' : '100%',
         minHeight: height === 'auto' ? '100px' : '100%',
-        display: 'flex',
-        flexDirection: flexDirection as React.CSSProperties['flexDirection'],
-        justifyContent: justifyContent as React.CSSProperties['justifyContent'],
+        display: 'grid',
+        gridTemplateColumns,
+        gridTemplateRows,
+        gap: gridGap ? `${gridGap}px` : undefined,
+        columnGap: gridColumnGap ? `${gridColumnGap}px` : undefined,
+        rowGap: gridRowGap ? `${gridRowGap}px` : undefined,
+        justifyItems: justifyItems as React.CSSProperties['justifyItems'],
         alignItems: alignItems as React.CSSProperties['alignItems'],
-        flexWrap: flexWrap as React.CSSProperties['flexWrap'],
-        gap: `${gap}px`,
+        justifyContent: justifyContent as React.CSSProperties['justifyContent'],
+        alignContent: alignContent as React.CSSProperties['alignContent'],
+        gridAutoFlow: gridAutoFlow as React.CSSProperties['gridAutoFlow'],
+        gridAutoColumns,
+        gridAutoRows,
         background: isTransparent ? 'transparent' : background,
         paddingTop: `${paddingTop}px`,
         paddingRight: `${paddingRight}px`,
@@ -137,8 +166,8 @@ export const ContainerCopy = (props: Partial<ContainerCopyProps>) => {
     );
 };
 
-ContainerCopy.craft = {
-    displayName: 'Container Copy',
+GridContainer.craft = {
+    displayName: 'Grid Container',
     props: defaultProps,
     rules: {
         canDrag: () => true,
@@ -147,6 +176,6 @@ ContainerCopy.craft = {
         canMoveOut: () => true,
     },
     related: {
-        settings: ContainerSettings,
+        settings: GridContainerSettings,
     },
 };

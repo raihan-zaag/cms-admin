@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizable } from 're-resizable';
+import { Resizer } from '../common/Resizer';
 import { ButtonSettings } from './settings/ButtonSettings';
 import { 
     type SpacingProps, 
@@ -45,7 +45,6 @@ export const Button: ButtonComponent = ({
   borderRadius = 8,
   fontSize = 16,
   fontWeight = 'normal',
-  width = 'auto',
   height = 'auto',
   onClick,
   paddingTop = 12,
@@ -58,70 +57,48 @@ export const Button: ButtonComponent = ({
   marginLeft = 0,
 }) => {
   const {
-    connectors: { connect, drag },
     selected,
-    actions: { setProp }
   } = useNode((state) => ({
     selected: state.events.selected,
-    dragged: state.events.dragged,
   }));
 
+  const buttonStyle: React.CSSProperties = {
+    ...getContentStyles(
+      { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
+      height,
+      {
+        backgroundColor: isTransparent ? 'transparent' : backgroundColor,
+        color,
+        borderRadius: `${borderRadius}px`,
+        fontSize: `${fontSize}px`,
+        fontWeight,
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        height: '100%',
+      }
+    ),
+  };
+
+  const resizerStyle: React.CSSProperties = {
+    border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
+    borderRadius: '4px',
+    overflow: 'hidden',
+  };
+
   return (
-    <Resizable
-      size={{
-        width: width,
-        height: height,
-      }}
-      onResizeStop={(_, __, ref) => {
-        setProp((props: ButtonProps) => {
-          props.width = ref.style.width;
-          props.height = ref.style.height;
-        });
-      }}
-      bounds="parent"
-      handleStyles={{
-        top: { zIndex: 1000 },
-        right: { zIndex: 1000 },
-        bottom: { zIndex: 1000 },
-        left: { zIndex: 1000 },
-        topRight: { zIndex: 1000 },
-        bottomRight: { zIndex: 1000 },
-        bottomLeft: { zIndex: 1000 },
-        topLeft: { zIndex: 1000 },
-      }}
-      style={{
-        border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
-        borderRadius: '4px',
-        overflow: 'hidden',
-      }}
+    <Resizer
+      propKey={{ width: 'width', height: 'height' }}
+      style={resizerStyle}
     >
       <button
-        ref={(ref) => {
-          if (ref) {
-            connect(drag(ref));
-          }
-        }}
         className="transition-all duration-200 hover:opacity-80"
-        style={{
-          ...getContentStyles(
-            { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
-            height,
-            {
-              backgroundColor: isTransparent ? 'transparent' : backgroundColor,
-              color,
-              borderRadius: `${borderRadius}px`,
-              fontSize: `${fontSize}px`,
-              fontWeight,
-              border: 'none',
-              cursor: 'pointer',
-            }
-          ),
-        }}
+        style={buttonStyle}
         onClick={onClick}
       >
         {text}
       </button>
-    </Resizable>
+    </Resizer>
   );
 };
 

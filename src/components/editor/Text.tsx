@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizable } from 're-resizable';
+import { Resizer } from '../common/Resizer';
 import { TextSettings } from './settings/TextSettings';
 import { 
     type SpacingProps, 
@@ -42,7 +42,6 @@ export const Text: TextComponent = ({
   color = '#000000',
   backgroundColor = 'transparent',
   textAlign = 'left',
-  width = 'auto',
   height = 'auto',
   paddingTop = 8,
   paddingRight = 8,
@@ -54,96 +53,83 @@ export const Text: TextComponent = ({
   marginLeft = 0,
 }) => {
   const {
-    connectors: { connect, drag },
     selected,
     actions: { setProp }
   } = useNode((state) => ({
     selected: state.events.selected,
-    dragged: state.events.dragged,
   }));
 
   const [isEditing, setIsEditing] = React.useState(false);
 
+  const textStyle: React.CSSProperties = {
+    ...getContentStyles(
+      { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
+      height,
+      {
+        backgroundColor: backgroundColor,
+      }
+    ),
+    fontSize: `${fontSize}px`,
+    fontWeight,
+    color,
+    textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+    cursor: 'text',
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    outline: 'none',
+    resize: 'none',
+  };
+
+  const resizerStyle: React.CSSProperties = {
+    border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
+    borderRadius: '4px',
+    overflow: 'hidden',
+  };
+
   return (
-    <Resizable
-      size={{
-        width: width,
-        height: height,
-      }}
-      onResizeStop={(_, __, ref) => {
-        setProp((props: TextProps) => {
-          props.width = ref.style.width;
-          props.height = ref.style.height;
-        });
-      }}
-      bounds="parent"
-      handleStyles={{
-        top: { zIndex: 1000 },
-        right: { zIndex: 1000 },
-        bottom: { zIndex: 1000 },
-        left: { zIndex: 1000 },
-        topRight: { zIndex: 1000 },
-        bottomRight: { zIndex: 1000 },
-        bottomLeft: { zIndex: 1000 },
-        topLeft: { zIndex: 1000 },
-      }}
-      style={{
-        border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
-        borderRadius: '4px',
-        overflow: 'hidden',
-      }}
+    <Resizer
+      propKey={{ width: 'width', height: 'height' }}
+      style={resizerStyle}
     >
       <div
-        ref={(ref) => {
-          if (ref) {
-            connect(drag(ref));
-          }
-        }}
         className="cursor-text"
-        style={{
-          ...getContentStyles(
-            { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
-            height,
-            {
-              backgroundColor: backgroundColor,
-            }
-          ),
-        }}
+        style={textStyle}
         onClick={() => setIsEditing(true)}
         onBlur={() => setIsEditing(false)}
       >
-          {isEditing ? (
-            <textarea
-              value={text}
-              onChange={(e) =>
-                setProp((props: TextProps) => (props.text = e.target.value))
-              }
-              autoFocus
-              className="w-full h-full resize-none border-none outline-none bg-transparent"
-              style={{
-                fontSize: `${fontSize}px`,
-                fontWeight,
-                color,
-                textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
-                backgroundColor: 'transparent',
-              }}
-            />
-          ) : (
-            <div
-              className="w-full h-full"
-              style={{
-                fontSize: `${fontSize}px`,
-                fontWeight,
-                color,
-                textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {text}
-            </div>
-          )}
-        </div>
-      </Resizable>
+        {isEditing ? (
+          <textarea
+            value={text}
+            onChange={(e) =>
+              setProp((props: TextProps) => (props.text = e.target.value))
+            }
+            autoFocus
+            className="w-full h-full resize-none border-none outline-none bg-transparent"
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight,
+              color,
+              textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+              backgroundColor: 'transparent',
+            }}
+          />
+        ) : (
+          <div
+            className="w-full h-full"
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight,
+              color,
+              textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {text}
+          </div>
+        )}
+      </div>
+    </Resizer>
   );
 };
 
