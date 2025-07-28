@@ -1,12 +1,12 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizable } from 're-resizable';
 import { Image as ImageIcon } from 'lucide-react';
 import { ImageSettings } from './settings/ImageSettings';
-import { 
-    type SpacingProps, 
+import {
+    type SpacingProps,
     getContentStyles,
-    getDefaultCraftSpacing 
+    getDefaultCraftSpacing,
 } from '../../lib/spacingUtils';
 
 interface ImageComponentProps extends SpacingProps {
@@ -71,40 +71,31 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
         const {
             connectors: { connect, drag },
             selected,
-            actions: { setProp }
+            actions: { setProp },
         } = useNode((state) => ({
             selected: state.events.selected,
-            dragged: state.events.dragged,
         }));
 
-        const containerStyle = {
-            border: border,
-            boxShadow: boxShadow,
-            borderRadius: `${borderRadius}px`,
-            position: 'relative' as const,
-            overflow: 'hidden' as const,
-            boxSizing: 'border-box' as const,
-        };
-
-        const imageStyle = {
-            width: '100%',
-            height: '100%',
-            objectFit: objectFit,
-            objectPosition: objectPosition,
-            display: 'block',
-        };
+        const contentSpacing = getContentStyles({
+            paddingTop,
+            paddingRight,
+            paddingBottom,
+            paddingLeft,
+            marginTop,
+            marginRight,
+            marginBottom,
+            marginLeft,
+        });
 
         return (
             <Resizable
                 size={{
                     width: isFullWidth ? '100%' : width,
-                    height: height,
+                    height,
                 }}
                 onResizeStop={(_, __, ref) => {
                     setProp((props: ImageComponentProps) => {
-                        if (!props.isFullWidth) {
-                            props.width = ref.style.width;
-                        }
+                        if (!props.isFullWidth) props.width = ref.style.width;
                         props.height = ref.style.height;
                     });
                 }}
@@ -142,68 +133,53 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                         }
                     }}
                     style={{
-                        ...containerStyle,
-                        ...getContentStyles({ paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft }),
+                        ...contentSpacing,
+                        border,
+                        boxShadow,
+                        borderRadius: `${borderRadius}px`,
+                        opacity,
                         backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-                        backgroundSize: backgroundSize,
-                        backgroundPosition: backgroundPosition,
-                        backgroundRepeat: backgroundRepeat,
-                        opacity: opacity,
-                        minHeight: children ? 'auto' : '100%',
-                        height: '100%',
+                        backgroundSize,
+                        backgroundPosition,
+                        backgroundRepeat,
+                        boxSizing: 'border-box',
                         display: 'flex',
                         flexDirection: 'column',
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'hidden',
                     }}
                 >
-                    {/* Image section - only show if there's an image or no children */}
-                    {(src || !children) && (
-                        <div style={{ 
-                            flex: children && src ? '0 0 auto' : '1',
-                            position: 'relative',
-                            minHeight: src ? '100%' : '200px',
-                            height: src && !children ? '100%' : 'auto',
-                        }}>
-                            {src ? (
-                                <img
-                                    src={src}
-                                    alt={alt}
-                                    style={{
-                                        ...imageStyle,
-                                    }}
-                                    onError={(e) => {
-                                        e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
-                                    }}
-                                />
-                            ) : (
-                                <div
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        minHeight: '200px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: backgroundImage ? 'transparent' : '#f3f4f6',
-                                        color: '#6b7280',
-                                        fontSize: '14px',
-                                        fontWeight: '500',
-                                    }}
-                                >
-                                    <ImagePlaceholder />
-                                </div>
-                            )}
-                        </div>
+                    {src ? (
+                        <img
+                            src={src}
+                            alt={alt}
+                            style={{
+                                width: '100%',
+                                height: children ? 'auto' : '100%',
+                                objectFit,
+                                objectPosition,
+                                display: 'block',
+                                flexShrink: 0,
+                            }}
+                            onError={(e) => {
+                                e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                            }}
+                        />
+                    ) : (
+                        <ImagePlaceholder />
                     )}
-                    
-                    {/* Children section */}
+
                     {children && (
-                        <div style={{ 
-                            padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
-                            flex: '1',
-                            position: 'relative',
-                            minHeight: '50px',
-                        }}>
+                        <div
+                            style={{
+                                padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
+                                flex: 1,
+                                minHeight: '50px',
+                                position: 'relative',
+                            }}
+                        >
                             {children}
                         </div>
                     )}
@@ -212,20 +188,26 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
         );
     };
 
-
-const ImagePlaceholder: React.FC = () => {
-    return (
-        <Fragment>
-            <ImageIcon className="h-12 w-12 mb-2 text-gray-400" />
-            <p className="text-center">
-                No image selected
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-                Configure image in settings panel
-            </p>
-        </Fragment>
-    )
-}
+const ImagePlaceholder: React.FC = () => (
+    <div
+        style={{
+            flex: 1,
+            minHeight: '200px',
+            backgroundColor: '#f3f4f6',
+            color: '#6b7280',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            textAlign: 'center',
+            padding: '1rem',
+        }}
+    >
+        <ImageIcon className="h-12 w-12 mb-2 text-gray-400" />
+        <p>No image selected</p>
+        <p className="text-xs text-gray-400 mt-1">Configure image in settings panel</p>
+    </div>
+);
 
 ImageComponent.craft = {
     props: {

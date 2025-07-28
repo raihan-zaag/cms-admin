@@ -27,6 +27,7 @@ type CraftJson = Record<string, CraftNodeType>;
 // Maps resolved component names to actual React components
 const componentMap: Record<string, React.ElementType> = {
   Container: RenderContainer,
+  ContainerCopy: RenderContainer,
   Text: RenderText,
   Button: RenderButton,
   ImageComponent: RenderImage

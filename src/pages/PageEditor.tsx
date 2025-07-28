@@ -4,6 +4,7 @@ import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
 import { Container } from '../components/editor/Container';
+import { ContainerCopy } from '../components/editor/ContainerCopy';
 import { Text } from '../components/editor/Text';
 import { Button } from '../components/editor/Button';
 import { ImageComponent } from '../components/editor/Image';
@@ -16,6 +17,7 @@ export const PageEditor: React.FC = () => {
     <Editor
       resolver={{
         Container,
+        ContainerCopy,
         Text,
         Button,
         ImageComponent,
@@ -59,10 +61,10 @@ export const PageEditor: React.FC = () => {
                   is={Container}
                   canvas
                   background="#ddebf0"
-                  paddingTop={20}
-                  paddingRight={20}
-                  paddingBottom={20}
-                  paddingLeft={20}
+                  paddingTop={0}
+                  paddingRight={0}
+                  paddingBottom={0}
+                  paddingLeft={0}
                   marginTop={0}
                   marginRight={0}
                   marginBottom={0}

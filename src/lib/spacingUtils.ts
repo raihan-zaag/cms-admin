@@ -114,10 +114,10 @@ export const getContentStyles = (
  * Default spacing values for components
  */
 export const DEFAULT_SPACING = {
-  paddingTop: 10,
-  paddingRight: 10,
-  paddingBottom: 10,
-  paddingLeft: 10,
+  paddingTop: 0,
+  paddingRight: 0,
+  paddingBottom: 0,
+  paddingLeft: 0,
   marginTop: 0,
   marginRight: 0,
   marginBottom: 0,
