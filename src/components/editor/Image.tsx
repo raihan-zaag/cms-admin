@@ -113,7 +113,8 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                 style={resizerStyle}
             >
                 <div style={imageContainerStyle}>
-                    {src ? (
+                    {/* Render image if src is provided */}
+                    {src && (
                         <img
                             src={src}
                             alt={alt}
@@ -129,17 +130,25 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
                                 e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
                             }}
                         />
-                    ) : (
-                        <ImagePlaceholder />
                     )}
 
+                    {/* Show placeholder only when no src AND no children */}
+                    {!src && !children && (
+                        <ImagePlaceholder hasBackgroundImage={!!backgroundImage} />
+                    )}
+
+                    {/* Render children if present */}
                     {children && (
                         <div
                             style={{
                                 padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
                                 flex: 1,
-                                minHeight: '50px',
+                                minHeight: src ? '50px' : '200px',
                                 position: 'relative',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                width: '100%',
+                                height: src ? 'auto' : '100%',
                             }}
                         >
                             {children}
@@ -150,24 +159,30 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
         );
     };
 
-const ImagePlaceholder: React.FC = () => (
+const ImagePlaceholder: React.FC<{ hasBackgroundImage?: boolean }> = ({ hasBackgroundImage = false }) => (
     <div
         style={{
             flex: 1,
             minHeight: '200px',
-            backgroundColor: '#f3f4f6',
-            color: '#6b7280',
+            backgroundColor: hasBackgroundImage ? 'rgba(0,0,0,0.3)' : '#f3f4f6',
+            color: hasBackgroundImage ? '#ffffff' : '#6b7280',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'column',
             textAlign: 'center',
             padding: '1rem',
+            textShadow: hasBackgroundImage ? '1px 1px 2px rgba(0,0,0,0.8)' : 'none',
+            backdropFilter: hasBackgroundImage ? 'blur(1px)' : 'none',
         }}
     >
-        <ImageIcon className="h-12 w-12 mb-2 text-gray-400" />
-        <p>No image selected</p>
-        <p className="text-xs text-gray-400 mt-1">Configure image in settings panel</p>
+        <ImageIcon className={`h-12 w-12 mb-2 ${hasBackgroundImage ? 'text-white' : 'text-gray-400'}`} />
+        <p style={{ fontWeight: hasBackgroundImage ? '500' : 'normal' }}>
+            {hasBackgroundImage ? 'Background image set' : 'No image selected'}
+        </p>
+        <p className={`text-xs mt-1 ${hasBackgroundImage ? 'text-gray-100' : 'text-gray-400'}`}>
+            {hasBackgroundImage ? 'Add foreground image or content' : 'Configure image in settings panel'}
+        </p>
     </div>
 );
 
