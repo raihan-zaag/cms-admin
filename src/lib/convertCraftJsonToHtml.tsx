@@ -33,18 +33,24 @@ const componentMap: Record<string, React.ElementType> = {
   ImageComponent: RenderImage
 };
 
-function renderNode(node: CraftNodeType, allNodes: CraftJson): React.ReactElement | null {
+function renderNode(node: CraftNodeType, allNodes: CraftJson, nodeId?: string): React.ReactElement | null {
   const Component = componentMap[node.type.resolvedName];
-  if (!Component) return null;
+  if (!Component) {
+    console.warn(`Unknown component type: ${node.type.resolvedName}`);
+    return null;
+  }
 
-  const children = (node.nodes || []).map(id => {
-    const childNode = allNodes[id];
-    if (!childNode) return null;
-    return renderNode(childNode, allNodes);
-  });
+  const children = (node.nodes || []).map(childId => {
+    const childNode = allNodes[childId];
+    if (!childNode) {
+      console.warn(`Child node not found: ${childId}`);
+      return null;
+    }
+    return renderNode(childNode, allNodes, childId);
+  }).filter(Boolean);
 
   return (
-    <Component key={node.id} {...node.props}>
+    <Component key={nodeId || node.id} {...node.props}>
       {children}
     </Component>
   );
@@ -56,6 +62,15 @@ export function convertCraftJsonToHtml(json: CraftJson): string {
     throw new Error('Missing ROOT node in JSON');
   }
 
-  const tree = renderNode(rootNode, json);
-  return ReactDOMServer.renderToStaticMarkup(tree);
+  try {
+    const tree = renderNode(rootNode, json, 'ROOT');
+    if (!tree) {
+      throw new Error('Failed to render root node');
+    }
+    return ReactDOMServer.renderToStaticMarkup(tree);
+  } catch (error) {
+    console.error('Error converting Craft JSON to HTML:', error);
+    console.error('JSON structure:', JSON.stringify(json, null, 2));
+    throw error;
+  }
 }

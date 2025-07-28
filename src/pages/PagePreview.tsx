@@ -223,6 +223,8 @@ export function PagePreview() {
     htmlContent = '<div class="p-8 text-center"><h1>Error rendering page content</h1></div>';
   }
 
+  console.log('Rendered HTML content:', htmlContent);
+
   return (
     <div className={`min-h-screen ${UI_COLORS.GRADIENTS.MAIN}`}>
       {/* Preview Toolbar */}
