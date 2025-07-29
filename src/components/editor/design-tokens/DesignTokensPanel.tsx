@@ -13,7 +13,8 @@ import {
   RotateCcw,
   Sun,
   Moon,
-  Laptop
+  Laptop,
+  Settings
 } from 'lucide-react';
 import { useDesignTokensStore, type ThemeMode } from '@/store/design-tokens';
 import { ColorTokensSection } from './ColorTokensSection';
@@ -22,10 +23,11 @@ import { SpacingTokensSection } from './SpacingTokensSection';
 import { BorderRadiusTokensSection } from './BorderRadiusTokensSection';
 import { BreakpointsTokensSection } from './BreakpointsTokensSection';
 import { ContainersTokensSection } from './ContainersTokensSection';
+import { GlobalDesignTokensPanel } from '../GlobalDesignTokensPanel';
 
 export const DesignTokensPanel: React.FC = () => {
   const { currentTheme, setTheme, exportTokens, importTokens, resetToDefaults } = useDesignTokensStore();
-  const [activeTab, setActiveTab] = useState('colors');
+  const [activeTab, setActiveTab] = useState('global');
 
   const handleExportTokens = () => {
     const tokens = exportTokens();
@@ -70,6 +72,7 @@ export const DesignTokensPanel: React.FC = () => {
   };
 
   const tabs = [
+    { id: 'global', label: 'Global Settings', icon: Settings, component: GlobalDesignTokensPanel },
     { id: 'colors', label: 'Colors', icon: Palette, component: ColorTokensSection },
     { id: 'typography', label: 'Typography', icon: Type, component: TypographyTokensSection },
     { id: 'spacing', label: 'Spacing', icon: Box, component: SpacingTokensSection },
@@ -125,7 +128,7 @@ export const DesignTokensPanel: React.FC = () => {
 
       <CardContent className="flex-1 min-h-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-4">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 mb-4">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}

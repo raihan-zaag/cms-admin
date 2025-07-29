@@ -176,6 +176,14 @@ const defaultTokens: DesignTokens = {
     '16': { name: '6XL', value: '4rem', rem: 4, px: 64 },
     '20': { name: '7XL', value: '5rem', rem: 5, px: 80 },
     '24': { name: '8XL', value: '6rem', rem: 6, px: 96 },
+    // Semantic spacing tokens for easier reference
+    xs: { name: 'Extra Small', value: '0.25rem', rem: 0.25, px: 4 },
+    sm: { name: 'Small', value: '0.5rem', rem: 0.5, px: 8 },
+    md: { name: 'Medium', value: '1rem', rem: 1, px: 16 },
+    lg: { name: 'Large', value: '1.5rem', rem: 1.5, px: 24 },
+    xl: { name: 'Extra Large', value: '2rem', rem: 2, px: 32 },
+    '2xl': { name: '2X Large', value: '2.5rem', rem: 2.5, px: 40 },
+    '3xl': { name: '3X Large', value: '3rem', rem: 3, px: 48 },
   },
   
   borderRadius: {

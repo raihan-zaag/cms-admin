@@ -117,3 +117,22 @@ code {
   position: relative;
   z-index: 1;
 }
+
+/* Global Design Tokens - Force text color inheritance */
+.global-design-tokens-root * {
+  /* Force inheritance for most text elements, but allow explicit overrides */
+  color: inherit !important;
+}
+
+.global-design-tokens-root button,
+.global-design-tokens-root .button,
+.global-design-tokens-root [role="button"] {
+  /* Buttons should inherit text color unless explicitly overridden */
+  color: inherit !important;
+}
+
+.global-design-tokens-root input,
+.global-design-tokens-root textarea {
+  /* Form elements can keep their own colors */
+  color: initial !important;
+}

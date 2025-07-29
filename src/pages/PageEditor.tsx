@@ -5,27 +5,31 @@ import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
 import { DesignTokensModal } from '../components/editor/design-tokens/DesignTokensModal';
 import { Container } from '../components/editor/Container';
+import { RootContainer } from '../components/editor/RootContainer';
 import { GridContainer } from '../components/editor/GridContainer';
 import { Text } from '../components/editor/Text';
 import { Button } from '../components/editor/Button';
 import { ImageComponent } from '../components/editor/Image';
+import { DesignTokensProvider } from '../components/providers/DesignTokensProvider';
 import TopBar from '@/components/editor/TopBar';
 import KeyboardShortcutsHandler from '@/components/editor/KeyboardShortcutsHandler';
 
 export const PageEditor: React.FC = () => {
  
   return (
-    <Editor
-      resolver={{
-        Container,
-        GridContainer,
-        Text,
-        Button,
-        ImageComponent,
-      }}
-    >
-      {/* Enable keyboard shortcuts inside Editor context */}
-      <KeyboardShortcutsHandler />
+    <DesignTokensProvider>
+      <Editor
+        resolver={{
+          Container,
+          RootContainer,
+          GridContainer,
+          Text,
+          Button,
+          ImageComponent,
+        }}
+      >
+        {/* Enable keyboard shortcuts inside Editor context */}
+        <KeyboardShortcutsHandler />
       
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <TopBar/>
@@ -59,17 +63,10 @@ export const PageEditor: React.FC = () => {
             <div className="min-h-full p-4">
               <Frame>
                 <Element
-                  is={Container}
+                  is={RootContainer}
                   canvas
-                  background="#ddebf0"
-                  paddingTop={0}
-                  paddingRight={0}
-                  paddingBottom={0}
-                  paddingLeft={0}
-                  marginTop={0}
-                  marginRight={0}
-                  marginBottom={0}
-                  marginLeft={0}
+                  useGlobalTokens={true}
+                  background="@color.background"
                   width="100%"
                   height="auto"
                 >
@@ -92,6 +89,7 @@ export const PageEditor: React.FC = () => {
         <DesignTokensModal />
       </div>
     </Editor>
+    </DesignTokensProvider>
   );
 };
 
