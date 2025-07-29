@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useGlobalDesignTokens } from '@/hooks/useGlobalDesignTokens';
+import { useDesignTokenOptions } from '@/lib/designTokenOptions';
+import { SelectOptionsRenderer } from '@/components/ui/SelectOptionsRenderer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -12,7 +14,6 @@ import {
   Type, 
   Layout, 
   Container,
-  Move,
   Download,
   Upload,
   HelpCircle
@@ -20,6 +21,16 @@ import {
 
 export const GlobalDesignTokensPanel: React.FC = () => {
   const { globalSettings, updateGlobalSettings, resetGlobalSettings } = useGlobalDesignTokens();
+  const {
+    fontFamilyOptions,
+    colorOptions,
+    spacingOptions,
+    borderRadiusOptions,
+    containerOptions,
+    layoutDirectionOptions,
+    justifyContentOptions,
+    alignItemsOptions
+  } = useDesignTokenOptions();
   const [activeTab, setActiveTab] = useState('typography');
 
   const exportSettings = () => {
@@ -114,10 +125,7 @@ export const GlobalDesignTokensPanel: React.FC = () => {
             <Palette className="w-3 h-3" />
             <span className="hidden sm:inline">Colors</span>
           </TabsTrigger>
-          <TabsTrigger value="spacing" className="flex items-center gap-1">
-            <Move className="w-3 h-3" />
-            <span className="hidden sm:inline">Spacing</span>
-          </TabsTrigger>
+
           <TabsTrigger value="layout" className="flex items-center gap-1">
             <Layout className="w-3 h-3" />
             <span className="hidden sm:inline">Layout</span>
@@ -144,45 +152,39 @@ export const GlobalDesignTokensPanel: React.FC = () => {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="primaryFont">Primary Font Family</Label>
-                <select
+                <SelectOptionsRenderer
                   id="primaryFont"
+                  options={fontFamilyOptions}
                   value={globalSettings.fontFamily.primary}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       fontFamily: { 
                         ...globalSettings.fontFamily, 
-                        primary: e.target.value 
+                        primary: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@font.primary">Primary Font (@font.primary)</option>
-                  <option value="@font.secondary">Secondary Font (@font.secondary)</option>
-                  <option value="@font.mono">Mono Font (@font.mono)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Default font family for all text elements</p>
               </div>
 
               <div>
                 <Label htmlFor="secondaryFont">Secondary Font Family</Label>
-                <select
+                <SelectOptionsRenderer
                   id="secondaryFont"
+                  options={fontFamilyOptions}
                   value={globalSettings.fontFamily.secondary}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       fontFamily: { 
                         ...globalSettings.fontFamily, 
-                        secondary: e.target.value 
+                        secondary: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@font.primary">Primary Font (@font.primary)</option>
-                  <option value="@font.secondary">Secondary Font (@font.secondary)</option>
-                  <option value="@font.mono">Mono Font (@font.mono)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Secondary font family for headings and special text</p>
               </div>
             </CardContent>
@@ -202,180 +204,81 @@ export const GlobalDesignTokensPanel: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="backgroundColor">Background Color</Label>
-                  <select
+                  <SelectOptionsRenderer
                     id="backgroundColor"
+                    options={colorOptions}
                     value={globalSettings.colors.background}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       updateGlobalSettings({
                         colors: { 
                           ...globalSettings.colors, 
-                          background: e.target.value 
+                          background: value 
                         }
                       })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  >
-                    <option value="@color.background">Background (@color.background)</option>
-                    <option value="@color.surface">Surface (@color.surface)</option>
-                    <option value="@color.primary">Primary (@color.primary)</option>
-                    <option value="@color.secondary">Secondary (@color.secondary)</option>
-                  </select>
+                  />
                 </div>
 
                 <div>
                   <Label htmlFor="textColor">Text Color</Label>
-                  <select
+                  <SelectOptionsRenderer
                     id="textColor"
+                    options={colorOptions}
                     value={globalSettings.colors.text}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       updateGlobalSettings({
                         colors: { 
                           ...globalSettings.colors, 
-                          text: e.target.value 
+                          text: value 
                         }
                       })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  >
-                    <option value="@color.text">Text (@color.text)</option>
-                    <option value="@color.textMuted">Text Muted (@color.textMuted)</option>
-                    <option value="@color.primary">Primary (@color.primary)</option>
-                    <option value="@color.secondary">Secondary (@color.secondary)</option>
-                  </select>
+                  />
                 </div>
 
                 <div>
                   <Label htmlFor="primaryColor">Primary Color</Label>
-                  <select
+                  <SelectOptionsRenderer
                     id="primaryColor"
+                    options={colorOptions}
                     value={globalSettings.colors.primary}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       updateGlobalSettings({
                         colors: { 
                           ...globalSettings.colors, 
-                          primary: e.target.value 
+                          primary: value 
                         }
                       })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  >
-                    <option value="@color.primary">Primary (@color.primary)</option>
-                    <option value="@color.secondary">Secondary (@color.secondary)</option>
-                    <option value="@color.background">Background (@color.background)</option>
-                    <option value="@color.surface">Surface (@color.surface)</option>
-                  </select>
+                  />
                 </div>
 
                 <div>
                   <Label htmlFor="borderColor">Border Color</Label>
-                  <select
+                  <SelectOptionsRenderer
                     id="borderColor"
+                    options={colorOptions}
                     value={globalSettings.colors.border}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       updateGlobalSettings({
                         colors: { 
                           ...globalSettings.colors, 
-                          border: e.target.value 
+                          border: value 
                         }
                       })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  >
-                    <option value="@color.border">Border (@color.border)</option>
-                    <option value="@color.text">Text (@color.text)</option>
-                    <option value="@color.textMuted">Text Muted (@color.textMuted)</option>
-                    <option value="@color.primary">Primary (@color.primary)</option>
-                  </select>
+                  />
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Spacing Tab */}
-        <TabsContent value="spacing">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Move className="w-4 h-4" />
-                Global Spacing Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="containerPadding">Container Padding</Label>
-                <select
-                  id="containerPadding"
-                  value={globalSettings.spacing.containerPadding}
-                  onChange={(e) =>
-                    updateGlobalSettings({
-                      spacing: { 
-                        ...globalSettings.spacing, 
-                        containerPadding: e.target.value 
-                      }
-                    })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Default padding for the root container</p>
-              </div>
-
-              <div>
-                <Label htmlFor="componentGap">Component Gap</Label>
-                <select
-                  id="componentGap"
-                  value={globalSettings.spacing.componentGap}
-                  onChange={(e) =>
-                    updateGlobalSettings({
-                      spacing: { 
-                        ...globalSettings.spacing, 
-                        componentGap: e.target.value 
-                      }
-                    })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Default gap between components</p>
-              </div>
-
-              <div>
-                <Label htmlFor="sectionSpacing">Section Spacing</Label>
-                <select
-                  id="sectionSpacing"
-                  value={globalSettings.spacing.sectionSpacing}
-                  onChange={(e) =>
-                    updateGlobalSettings({
-                      spacing: { 
-                        ...globalSettings.spacing, 
-                        sectionSpacing: e.target.value 
-                      }
-                    })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Default spacing between major sections</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        
 
         {/* Layout Tab */}
         <TabsContent value="layout">
@@ -389,153 +292,121 @@ export const GlobalDesignTokensPanel: React.FC = () => {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="flexDirection">Layout Direction</Label>
-                <select
+                <SelectOptionsRenderer
                   id="flexDirection"
+                  options={layoutDirectionOptions}
                   value={globalSettings.layout.flexDirection}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       layout: { 
                         ...globalSettings.layout, 
-                        flexDirection: e.target.value as 'row' | 'column'
+                        flexDirection: value as 'row' | 'column'
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="column">Column (Vertical)</option>
-                  <option value="row">Row (Horizontal)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Default layout direction for the root container</p>
               </div>
 
               <div>
                 <Label htmlFor="justifyContent">Justify Content</Label>
-                <select
+                <SelectOptionsRenderer
                   id="justifyContent"
+                  options={justifyContentOptions}
                   value={globalSettings.layout.justifyContent}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       layout: { 
                         ...globalSettings.layout, 
-                        justifyContent: e.target.value 
+                        justifyContent: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="flex-start">Start</option>
-                  <option value="center">Center</option>
-                  <option value="flex-end">End</option>
-                  <option value="space-between">Space Between</option>
-                  <option value="space-around">Space Around</option>
-                  <option value="space-evenly">Space Evenly</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">How components are distributed along the main axis</p>
               </div>
 
               <div>
                 <Label htmlFor="alignItems">Align Items</Label>
-                <select
+                <SelectOptionsRenderer
                   id="alignItems"
+                  options={alignItemsOptions}
                   value={globalSettings.layout.alignItems}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       layout: { 
                         ...globalSettings.layout, 
-                        alignItems: e.target.value 
+                        alignItems: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="stretch">Stretch</option>
-                  <option value="flex-start">Start</option>
-                  <option value="center">Center</option>
-                  <option value="flex-end">End</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">How components are aligned along the cross axis</p>
               </div>
 
               <div>
                 <Label htmlFor="gap">Gap</Label>
-                <select
+                <SelectOptionsRenderer
                   id="gap"
+                  options={spacingOptions}
                   value={globalSettings.layout.gap}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       layout: { 
                         ...globalSettings.layout, 
-                        gap: e.target.value 
+                        gap: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@spacing.none">None (0px)</option>
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Gap between child components</p>
               </div>
 
               <div>
                 <Label htmlFor="gapX">Column Gap (Horizontal)</Label>
-                <select
+                <SelectOptionsRenderer
                   id="gapX"
+                  options={[
+                    { value: '', label: 'Use main gap', description: 'Inherit from main gap setting' },
+                    ...spacingOptions
+                  ]}
                   value={globalSettings.layout.gapX || ''}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       layout: { 
                         ...globalSettings.layout, 
-                        gapX: e.target.value || undefined
+                        gapX: value || undefined
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="">Use main gap</option>
-                  <option value="@spacing.none">None (0px)</option>
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Horizontal gap between components (overrides main gap)</p>
               </div>
 
               <div>
                 <Label htmlFor="gapY">Row Gap (Vertical)</Label>
-                <select
+                <SelectOptionsRenderer
                   id="gapY"
+                  options={[
+                    { value: '', label: 'Use main gap', description: 'Inherit from main gap setting' },
+                    ...spacingOptions
+                  ]}
                   value={globalSettings.layout.gapY || ''}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       layout: { 
                         ...globalSettings.layout, 
-                        gapY: e.target.value || undefined
+                        gapY: value || undefined
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="">Use main gap</option>
-                  <option value="@spacing.none">None (0px)</option>
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Vertical gap between components (overrides main gap)</p>
               </div>
             </CardContent>
@@ -554,134 +425,102 @@ export const GlobalDesignTokensPanel: React.FC = () => {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="maxWidth">Maximum Width</Label>
-                <select
+                <SelectOptionsRenderer
                   id="maxWidth"
+                  options={containerOptions}
                   value={globalSettings.container.maxWidth}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       container: { 
                         ...globalSettings.container, 
-                        maxWidth: e.target.value 
+                        maxWidth: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@container.sm">Small (640px)</option>
-                  <option value="@container.md">Medium (768px)</option>
-                  <option value="@container.lg">Large (1024px)</option>
-                  <option value="@container.xl">Extra Large (1280px)</option>
-                  <option value="@container.2xl">2X Large (1400px)</option>
-                  <option value="@container.full">Full Width</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Maximum width for the root container</p>
               </div>
 
               <div>
                 <Label htmlFor="padding">Padding</Label>
-                <select
+                <SelectOptionsRenderer
                   id="padding"
+                  options={spacingOptions}
                   value={globalSettings.container.padding}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       container: { 
                         ...globalSettings.container, 
-                        padding: e.target.value 
+                        padding: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@spacing.none">None (0px)</option>
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Internal padding for the root container</p>
               </div>
 
               <div>
                 <Label htmlFor="paddingX">Horizontal Padding (Left/Right)</Label>
-                <select
+                <SelectOptionsRenderer
                   id="paddingX"
+                  options={[
+                    { value: '', label: 'Use main padding', description: 'Inherit from main padding setting' },
+                    ...spacingOptions
+                  ]}
                   value={globalSettings.container.paddingX || ''}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       container: { 
                         ...globalSettings.container, 
-                        paddingX: e.target.value || undefined
+                        paddingX: value || undefined
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="">Use main padding</option>
-                  <option value="@spacing.none">None (0px)</option>
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Horizontal padding only (overrides main padding)</p>
               </div>
 
               <div>
                 <Label htmlFor="paddingY">Vertical Padding (Top/Bottom)</Label>
-                <select
+                <SelectOptionsRenderer
                   id="paddingY"
+                  options={[
+                    { value: '', label: 'Use main padding', description: 'Inherit from main padding setting' },
+                    ...spacingOptions
+                  ]}
                   value={globalSettings.container.paddingY || ''}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       container: { 
                         ...globalSettings.container, 
-                        paddingY: e.target.value || undefined
+                        paddingY: value || undefined
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="">Use main padding</option>
-                  <option value="@spacing.none">None (0px)</option>
-                  <option value="@spacing.xs">Extra Small (4px)</option>
-                  <option value="@spacing.sm">Small (8px)</option>
-                  <option value="@spacing.md">Medium (16px)</option>
-                  <option value="@spacing.lg">Large (24px)</option>
-                  <option value="@spacing.xl">Extra Large (32px)</option>
-                  <option value="@spacing.2xl">2X Large (40px)</option>
-                  <option value="@spacing.3xl">3X Large (48px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Vertical padding only (overrides main padding)</p>
               </div>
 
               <div>
                 <Label htmlFor="borderRadius">Border Radius</Label>
-                <select
+                <SelectOptionsRenderer
                   id="borderRadius"
+                  options={borderRadiusOptions}
                   value={globalSettings.container.borderRadius}
-                  onChange={(e) =>
+                  onChange={(value) =>
                     updateGlobalSettings({
                       container: { 
                         ...globalSettings.container, 
-                        borderRadius: e.target.value 
+                        borderRadius: value 
                       }
                     })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="@radius.none">None (0px)</option>
-                  <option value="@radius.sm">Small (2px)</option>
-                  <option value="@radius.md">Medium (6px)</option>
-                  <option value="@radius.lg">Large (8px)</option>
-                  <option value="@radius.xl">Extra Large (12px)</option>
-                  <option value="@radius.full">Full (9999px)</option>
-                </select>
+                />
                 <p className="text-xs text-gray-500 mt-1">Border radius for the root container</p>
               </div>
             </CardContent>

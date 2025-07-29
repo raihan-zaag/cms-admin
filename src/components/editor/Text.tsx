@@ -3,6 +3,7 @@ import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { TextSettings } from './settings/TextSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useDesignTokensStore } from '@/store/design-tokens';
 import { 
     type SpacingProps, 
     getContentStyles, 
@@ -68,8 +69,10 @@ export const Text: TextComponent = ({
     selected: state.events.selected,
   }));
 
-  // Use design tokens hook
+  // Use design tokens hook with automatic sync
   const { processToken } = useTheme();
+  // Subscribe to design token changes to trigger re-renders
+  useDesignTokensStore();
 
   const [isEditing, setIsEditing] = React.useState(false);
 

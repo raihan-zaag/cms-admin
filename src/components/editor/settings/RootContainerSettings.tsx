@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
 import { useGlobalDesignTokens } from '@/hooks/useGlobalDesignTokens';
+import { useDesignTokenOptions } from '@/lib/designTokenOptions';
+import { SelectOptionsRenderer } from '@/components/ui/SelectOptionsRenderer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -54,6 +56,18 @@ export const RootContainerSettings: React.FC = () => {
     }));
 
     const { globalSettings, updateGlobalSettings, resetGlobalSettings } = useGlobalDesignTokens();
+    
+    // Get dynamic design token options
+    const { 
+        fontFamilyOptions,
+        colorOptions,
+        spacingOptions,
+        borderRadiusOptions,
+        layoutDirectionOptions,
+        justifyContentOptions,
+        alignItemsOptions,
+        containerOptions
+    } = useDesignTokenOptions();
 
     return (
         <div className="space-y-4">
@@ -109,23 +123,19 @@ export const RootContainerSettings: React.FC = () => {
                     <CardContent className="space-y-3">
                         <div>
                             <Label htmlFor="primaryFont">Primary Font</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="primaryFont"
                                 value={globalSettings.fontFamily.primary}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         fontFamily: { 
                                             ...globalSettings.fontFamily, 
-                                            primary: e.target.value 
+                                            primary: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="@typography.primary">Primary Font (@typography.primary)</option>
-                                <option value="@typography.secondary">Secondary Font (@typography.secondary)</option>
-                                <option value="@typography.mono">Mono Font (@typography.mono)</option>
-                            </select>
+                                options={fontFamilyOptions}
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -143,46 +153,36 @@ export const RootContainerSettings: React.FC = () => {
                     <CardContent className="space-y-3">
                         <div>
                             <Label htmlFor="backgroundColor">Background Color</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="backgroundColor"
                                 value={globalSettings.colors.background}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         colors: { 
                                             ...globalSettings.colors, 
-                                            background: e.target.value 
+                                            background: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="@color.background">Background (@color.background)</option>
-                                <option value="@color.surface">Surface (@color.surface)</option>
-                                <option value="@color.primary">Primary (@color.primary)</option>
-                                <option value="@color.secondary">Secondary (@color.secondary)</option>
-                            </select>
+                                options={colorOptions}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="textColor">Text Color</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="textColor"
                                 value={globalSettings.colors.text}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         colors: { 
                                             ...globalSettings.colors, 
-                                            text: e.target.value 
+                                            text: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="@color.text">Text (@color.text)</option>
-                                <option value="@color.textMuted">Text Muted (@color.textMuted)</option>
-                                <option value="@color.primary">Primary (@color.primary)</option>
-                                <option value="@color.secondary">Secondary (@color.secondary)</option>
-                            </select>
+                                options={colorOptions}
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -200,68 +200,53 @@ export const RootContainerSettings: React.FC = () => {
                     <CardContent className="space-y-3">
                         <div>
                             <Label htmlFor="flexDirection">Layout Direction</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="flexDirection"
                                 value={globalSettings.layout.flexDirection}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         layout: { 
                                             ...globalSettings.layout, 
-                                            flexDirection: e.target.value as 'row' | 'column'
+                                            flexDirection: value as 'row' | 'column'
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="column">Column</option>
-                                <option value="row">Row</option>
-                            </select>
+                                options={layoutDirectionOptions}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="justifyContent">Justify Content</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="justifyContent"
                                 value={globalSettings.layout.justifyContent}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         layout: { 
                                             ...globalSettings.layout, 
-                                            justifyContent: e.target.value 
+                                            justifyContent: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="flex-start">Start</option>
-                                <option value="center">Center</option>
-                                <option value="flex-end">End</option>
-                                <option value="space-between">Space Between</option>
-                                <option value="space-around">Space Around</option>
-                                <option value="space-evenly">Space Evenly</option>
-                            </select>
+                                options={justifyContentOptions}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="alignItems">Align Items</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="alignItems"
                                 value={globalSettings.layout.alignItems}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         layout: { 
                                             ...globalSettings.layout, 
-                                            alignItems: e.target.value 
+                                            alignItems: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="stretch">Stretch</option>
-                                <option value="flex-start">Start</option>
-                                <option value="center">Center</option>
-                                <option value="flex-end">End</option>
-                            </select>
+                                options={alignItemsOptions}
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -279,50 +264,36 @@ export const RootContainerSettings: React.FC = () => {
                     <CardContent className="space-y-3">
                         <div>
                             <Label htmlFor="maxWidth">Max Width</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="maxWidth"
                                 value={globalSettings.container.maxWidth}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         container: { 
                                             ...globalSettings.container, 
-                                            maxWidth: e.target.value 
+                                            maxWidth: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="@container.sm">Small (640px)</option>
-                                <option value="@container.md">Medium (768px)</option>
-                                <option value="@container.lg">Large (1024px)</option>
-                                <option value="@container.xl">Extra Large (1280px)</option>
-                                <option value="@container.2xl">2X Large (1400px)</option>
-                                <option value="@container.full">Full Width</option>
-                            </select>
+                                options={containerOptions}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="borderRadius">Border Radius</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="borderRadius"
                                 value={globalSettings.container.borderRadius}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                     updateGlobalSettings({
                                         container: { 
                                             ...globalSettings.container, 
-                                            borderRadius: e.target.value 
+                                            borderRadius: value 
                                         }
                                     })
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="@radius.none">None</option>
-                                <option value="@radius.sm">Small</option>
-                                <option value="@radius.md">Medium</option>
-                                <option value="@radius.lg">Large</option>
-                                <option value="@radius.xl">Extra Large</option>
-                                <option value="@radius.full">Full</option>
-                            </select>
+                                options={borderRadiusOptions}
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -339,92 +310,62 @@ export const RootContainerSettings: React.FC = () => {
                 <CardContent className="space-y-3">
                     <div>
                         <Label htmlFor="gapX">Column Gap (Horizontal)</Label>
-                        <select
+                        <SelectOptionsRenderer
                             id="gapX"
                             value={gapX || ''}
-                            onChange={(e) =>
-                                setProp((props: RootContainerProps) => (props.gapX = e.target.value || undefined))
+                            onChange={(value) =>
+                                setProp((props: RootContainerProps) => (props.gapX = value || undefined))
                             }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        >
-                            <option value="">Use default gap</option>
-                            <option value="@spacing.none">None (0px)</option>
-                            <option value="@spacing.xs">Extra Small (4px)</option>
-                            <option value="@spacing.sm">Small (8px)</option>
-                            <option value="@spacing.md">Medium (16px)</option>
-                            <option value="@spacing.lg">Large (24px)</option>
-                            <option value="@spacing.xl">Extra Large (32px)</option>
-                            <option value="@spacing.2xl">2X Large (40px)</option>
-                            <option value="@spacing.3xl">3X Large (48px)</option>
-                        </select>
-                        
+                            options={[
+                                { value: '', label: 'Use default gap', description: 'Use inherited gap value' },
+                                ...spacingOptions
+                            ]}
+                        />
                     </div>
 
                     <div>
                         <Label htmlFor="gapY">Row Gap (Vertical)</Label>
-                        <select
+                        <SelectOptionsRenderer
                             id="gapY"
                             value={gapY || ''}
-                            onChange={(e) =>
-                                setProp((props: RootContainerProps) => (props.gapY = e.target.value || undefined))
+                            onChange={(value) =>
+                                setProp((props: RootContainerProps) => (props.gapY = value || undefined))
                             }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        >
-                            <option value="">Use default gap</option>
-                            <option value="@spacing.none">None (0px)</option>
-                            <option value="@spacing.xs">Extra Small (4px)</option>
-                            <option value="@spacing.sm">Small (8px)</option>
-                            <option value="@spacing.md">Medium (16px)</option>
-                            <option value="@spacing.lg">Large (24px)</option>
-                            <option value="@spacing.xl">Extra Large (32px)</option>
-                            <option value="@spacing.2xl">2X Large (40px)</option>
-                            <option value="@spacing.3xl">3X Large (48px)</option>
-                        </select>
-                        
+                            options={[
+                                { value: '', label: 'Use default gap', description: 'Use inherited gap value' },
+                                ...spacingOptions
+                            ]}
+                        />
                     </div>
 
                     <div>
                         <Label htmlFor="paddingX">Horizontal Padding</Label>
-                        <select
+                        <SelectOptionsRenderer
                             id="paddingX"
                             value={paddingX || ''}
-                            onChange={(e) =>
-                                setProp((props: RootContainerProps) => (props.paddingX = e.target.value || undefined))
+                            onChange={(value) =>
+                                setProp((props: RootContainerProps) => (props.paddingX = value || undefined))
                             }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        >
-                            <option value="">Use default padding</option>
-                            <option value="@spacing.none">None (0px)</option>
-                            <option value="@spacing.xs">Extra Small (4px)</option>
-                            <option value="@spacing.sm">Small (8px)</option>
-                            <option value="@spacing.md">Medium (16px)</option>
-                            <option value="@spacing.lg">Large (24px)</option>
-                            <option value="@spacing.xl">Extra Large (32px)</option>
-                            <option value="@spacing.2xl">2X Large (40px)</option>
-                            <option value="@spacing.3xl">3X Large (48px)</option>
-                        </select>
+                            options={[
+                                { value: '', label: 'Use default padding', description: 'Use inherited padding value' },
+                                ...spacingOptions
+                            ]}
+                        />
                     </div>
 
                     <div>
                         <Label htmlFor="paddingY">Vertical Padding</Label>
-                        <select
+                        <SelectOptionsRenderer
                             id="paddingY"
                             value={paddingY || ''}
-                            onChange={(e) =>
-                                setProp((props: RootContainerProps) => (props.paddingY = e.target.value || undefined))
+                            onChange={(value) =>
+                                setProp((props: RootContainerProps) => (props.paddingY = value || undefined))
                             }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        >
-                            <option value="">Use default padding</option>
-                            <option value="@spacing.none">None (0px)</option>
-                            <option value="@spacing.xs">Extra Small (4px)</option>
-                            <option value="@spacing.sm">Small (8px)</option>
-                            <option value="@spacing.md">Medium (16px)</option>
-                            <option value="@spacing.lg">Large (24px)</option>
-                            <option value="@spacing.xl">Extra Large (32px)</option>
-                            <option value="@spacing.2xl">2X Large (40px)</option>
-                            <option value="@spacing.3xl">3X Large (48px)</option>
-                        </select>
+                            options={[
+                                { value: '', label: 'Use default padding', description: 'Use inherited padding value' },
+                                ...spacingOptions
+                            ]}
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -438,19 +379,14 @@ export const RootContainerSettings: React.FC = () => {
                     <CardContent className="space-y-3">
                         <div>
                             <Label htmlFor="manualBackground">Background</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="manualBackground"
                                 value={background}
-                                onChange={(e) =>
-                                    setProp((props: RootContainerProps) => (props.background = e.target.value))
+                                onChange={(value) =>
+                                    setProp((props: RootContainerProps) => (props.background = value))
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="@color.background">Background (@color.background)</option>
-                                <option value="@color.surface">Surface (@color.surface)</option>
-                                <option value="@color.primary">Primary (@color.primary)</option>
-                                <option value="@color.secondary">Secondary (@color.secondary)</option>
-                            </select>
+                                options={colorOptions}
+                            />
                         </div>
 
                         <div>
@@ -469,61 +405,44 @@ export const RootContainerSettings: React.FC = () => {
 
                         <div>
                             <Label htmlFor="manualFlexDirection">Layout Direction</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="manualFlexDirection"
                                 value={flexDirection}
-                                onChange={(e) =>
-                                    setProp((props: RootContainerProps) => (props.flexDirection = e.target.value as 'row' | 'column'))
+                                onChange={(value) =>
+                                    setProp((props: RootContainerProps) => (props.flexDirection = value as 'row' | 'column'))
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="column">Column</option>
-                                <option value="row">Row</option>
-                            </select>
+                                options={layoutDirectionOptions}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="manualGap">Gap</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="manualGap"
                                 value={gap || ''}
-                                onChange={(e) =>
-                                    setProp((props: RootContainerProps) => (props.gap = e.target.value))
+                                onChange={(value) =>
+                                    setProp((props: RootContainerProps) => (props.gap = value))
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="">Default</option>
-                                <option value="@spacing.none">None (0px)</option>
-                                <option value="@spacing.xs">Extra Small (4px)</option>
-                                <option value="@spacing.sm">Small (8px)</option>
-                                <option value="@spacing.md">Medium (16px)</option>
-                                <option value="@spacing.lg">Large (24px)</option>
-                                <option value="@spacing.xl">Extra Large (32px)</option>
-                                <option value="@spacing.2xl">2X Large (40px)</option>
-                                <option value="@spacing.3xl">3X Large (48px)</option>
-                            </select>
+                                options={[
+                                    { value: '', label: 'Default', description: 'Use default gap value' },
+                                    ...spacingOptions
+                                ]}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="manualPadding">Padding</Label>
-                            <select
+                            <SelectOptionsRenderer
                                 id="manualPadding"
                                 value={padding || ''}
-                                onChange={(e) =>
-                                    setProp((props: RootContainerProps) => (props.padding = e.target.value))
+                                onChange={(value) =>
+                                    setProp((props: RootContainerProps) => (props.padding = value))
                                 }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="">Default</option>
-                                <option value="@spacing.none">None (0px)</option>
-                                <option value="@spacing.xs">Extra Small (4px)</option>
-                                <option value="@spacing.sm">Small (8px)</option>
-                                <option value="@spacing.md">Medium (16px)</option>
-                                <option value="@spacing.lg">Large (24px)</option>
-                                <option value="@spacing.xl">Extra Large (32px)</option>
-                                <option value="@spacing.2xl">2X Large (40px)</option>
-                                <option value="@spacing.3xl">3X Large (48px)</option>
-                            </select>
+                                options={[
+                                    { value: '', label: 'Default', description: 'Use default padding value' },
+                                    ...spacingOptions
+                                ]}
+                            />
                         </div>
                     </CardContent>
                 </Card>

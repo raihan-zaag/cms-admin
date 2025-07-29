@@ -96,8 +96,10 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
         selected: state.events.selected,
     }));
 
-    // Access theme processing and global design tokens
+    // Access theme processing and global design tokens with automatic sync
     const { processToken } = useTheme();
+    // Subscribe to design token changes to trigger re-renders
+    useDesignTokensStore();
     const { globalSettings } = useGlobalDesignTokens();
     const designTokensStore = useDesignTokensStore();
 

@@ -4,6 +4,7 @@ import { Resizer } from '../common/Resizer';
 import { ContainerSettings } from './settings/ContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useDesignTokensStore } from '@/store/design-tokens';
 
 export type ContainerProps = {
     background?: string;
@@ -91,8 +92,10 @@ export const Container = (props: Partial<ContainerProps>) => {
         selected: state.events.selected,
     }));
 
-    // Use design tokens hook
+    // Use design tokens hook with automatic sync
     const { processToken } = useTheme();
+    // Subscribe to design token changes to trigger re-renders
+    useDesignTokensStore();
 
     // Process design tokens or use raw values
     const processedBackground = useDesignTokens && typeof background === 'string' && background.startsWith('@')

@@ -3,6 +3,7 @@ import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { Image as ImageIcon } from 'lucide-react';
 import { ImageSettings } from './settings/ImageSettings';
+import { useDesignTokensStore } from '@/store/design-tokens';
 import {
     type SpacingProps,
     getContentStyles,
@@ -70,6 +71,9 @@ export const ImageComponent: React.FC<ImageComponentProps> & {
         } = useNode((state) => ({
             selected: state.events.selected,
         }));
+
+        // Subscribe to design token changes to trigger re-renders
+        useDesignTokensStore();
 
         const contentSpacing = getContentStyles({
             paddingTop,

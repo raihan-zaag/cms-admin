@@ -3,6 +3,7 @@ import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { ButtonSettings } from './settings/ButtonSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useDesignTokensStore } from '@/store/design-tokens';
 import { 
     type SpacingProps, 
     getContentStyles, 
@@ -65,8 +66,10 @@ export const Button: ButtonComponent = ({
     selected: state.events.selected,
   }));
 
-  // Use design tokens hook
+  // Use design tokens hook with automatic sync
   const { processToken } = useTheme();
+  // Subscribe to design token changes to trigger re-renders
+  useDesignTokensStore();
 
   // Process design tokens or use raw values
   const processedBackgroundColor = useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@')
