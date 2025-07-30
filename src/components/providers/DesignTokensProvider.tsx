@@ -42,7 +42,6 @@ export const DesignTokensProvider: React.FC<DesignTokensProviderProps> = ({ chil
         }
       });
       
-      console.log('Updated global settings:', newSettings);
       return newSettings;
     });
   }, []);

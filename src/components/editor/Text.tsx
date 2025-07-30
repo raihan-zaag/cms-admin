@@ -92,14 +92,6 @@ export const Text: TextComponent = ({
     ? processToken(fontFamily)
     : fontFamily;
 
-  console.log('Font family processing:', {
-    original: fontFamily,
-    processed: processedFontFamily,
-    useDesignTokens,
-    isTokenString: typeof fontFamily === 'string' && fontFamily.startsWith('@'),
-    directTokenTest: processToken('@font.mono'),
-    directFontPrimary: processToken('@font.primary')
-  });
 
   const processedLineHeight = useDesignTokens && typeof lineHeight === 'string' && lineHeight.startsWith('@')
     ? processToken(lineHeight)
@@ -153,19 +145,6 @@ export const Text: TextComponent = ({
     borderRadius: '4px',
     overflow: 'hidden',
   };
-
-  console.log('Text component processing:', {
-    original: { fontSize, fontFamily, color, backgroundColor },
-    processed: { 
-      processedFontSize, 
-      processedFontFamily, 
-      processedColor, 
-      processedBackgroundColor 
-    },
-    useGlobalColor,
-    useDesignTokens
-  });
-  console.log('Text rendered with styles:', textStyle);
 
   return (
     <Resizer

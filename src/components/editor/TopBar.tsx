@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import LayoutManager from "./LayoutManager";
 import SaveModal from "./SaveModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
+import FixedDemoTemplates from "../demo/FixedDemoTemplates";
 import { 
   Eye, 
   Undo2, 
@@ -14,7 +15,8 @@ import {
   Save, 
   FolderOpen,
   Download,
-  Keyboard
+  Keyboard,
+  Layout
 } from "lucide-react";
 
 /**
@@ -46,6 +48,7 @@ const TopBar = () => {
   const [showLayoutManager, setShowLayoutManager] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showDemoTemplates, setShowDemoTemplates] = useState(false);
 
   // Auto-save to history when nodes change
   useEffect(() => {
@@ -158,6 +161,15 @@ const TopBar = () => {
             </button>
           </div>
 
+          {/* Demo Templates Button */}
+          <button
+            onClick={() => setShowDemoTemplates(true)}
+            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors flex items-center gap-2"
+          >
+            <Layout className="h-4 w-4" />
+            Templates
+          </button>
+
           {/* Preview Button */}
           <button
             onClick={handlePreview}
@@ -221,6 +233,10 @@ const TopBar = () => {
       <KeyboardShortcutsModal 
         isOpen={showKeyboardShortcuts} 
         onClose={() => setShowKeyboardShortcuts(false)} 
+      />
+      <FixedDemoTemplates
+        isOpen={showDemoTemplates}
+        onClose={() => setShowDemoTemplates(false)}
       />
     </>
   );
