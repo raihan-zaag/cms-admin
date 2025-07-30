@@ -18,6 +18,7 @@ interface TextProps {
   minWidth?: number;
   minHeight?: number;
   useDesignTokens?: boolean;
+  useGlobalColor?: boolean; // NEW: Toggle for global vs individual settings
 }
 
 export const TextSettings: React.FC = () => {
@@ -33,6 +34,7 @@ export const TextSettings: React.FC = () => {
     minWidth,
     minHeight,
     useDesignTokens,
+    useGlobalColor,
   } = useNode((node) => ({
     text: node.data.props.text,
     fontSize: node.data.props.fontSize,
@@ -44,6 +46,7 @@ export const TextSettings: React.FC = () => {
     minWidth: node.data.props.minWidth,
     minHeight: node.data.props.minHeight,
     useDesignTokens: node.data.props.useDesignTokens,
+    useGlobalColor: node.data.props.useGlobalColor,
   }));
 
   const tokens = useDesignTokensStore();
@@ -62,6 +65,26 @@ export const TextSettings: React.FC = () => {
           />
           <span className="text-sm font-medium text-gray-700">Use Design Tokens</span>
         </label>
+      </div>
+
+      <div className="border-t pt-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={useGlobalColor}
+            onChange={(e) =>
+              setProp((props: TextProps) => (props.useGlobalColor = e.target.checked))
+            }
+            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          />
+          <span className="text-sm font-medium text-gray-700">Use Global Settings</span>
+        </label>
+        <p className="text-xs text-gray-500 mt-1">
+          {useGlobalColor 
+            ? "Text inherits color and font from global design tokens" 
+            : "Text uses its own individual color and font settings"
+          }
+        </p>
       </div>
 
       <div>
@@ -129,11 +152,14 @@ export const TextSettings: React.FC = () => {
             onChange={(e) =>
               setProp((props: TextProps) => (props.fontFamily = e.target.value))
             }
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            disabled={useGlobalColor}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+              useGlobalColor ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+            }`}
           >
-            <option value="@typography.primary">Primary Font</option>
-            <option value="@typography.secondary">Secondary Font</option>
-            <option value="@typography.mono">Monospace Font</option>
+            <option value="@font.primary">Primary Font</option>
+            <option value="@font.secondary">Secondary Font</option>
+            <option value="@font.mono">Monospace Font</option>
           </select>
         ) : (
           <select
@@ -141,7 +167,10 @@ export const TextSettings: React.FC = () => {
             onChange={(e) =>
               setProp((props: TextProps) => (props.fontFamily = e.target.value))
             }
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            disabled={useGlobalColor}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+              useGlobalColor ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+            }`}
           >
             <option value="inherit">Inherit</option>
             <option value="Arial, sans-serif">Arial</option>
@@ -149,6 +178,11 @@ export const TextSettings: React.FC = () => {
             <option value="'Times New Roman', serif">Times New Roman</option>
             <option value="'Courier New', monospace">Courier New</option>
           </select>
+        )}
+        {useGlobalColor && (
+          <p className="text-xs text-gray-500 mt-1">
+            Font family is inherited from global settings
+          </p>
         )}
       </div>
 
@@ -161,52 +195,62 @@ export const TextSettings: React.FC = () => {
           onChange={(e) =>
             setProp((props: TextProps) => (props.fontWeight = e.target.value))
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          disabled={useGlobalColor}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            useGlobalColor ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+          }`}
         >
           <option value="normal">Normal</option>
           <option value="bold">Bold</option>
           <option value="lighter">Lighter</option>
           <option value="bolder">Bolder</option>
         </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Text Color {useDesignTokens && '(or Token)'}
-        </label>
-        {useDesignTokens ? (
-          <select
-            value={color}
-            onChange={(e) =>
-              setProp((props: TextProps) => (props.color = e.target.value))
-            }
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-          >
-            <option value="@color.text">Text Color</option>
-            <option value="@color.primary">Primary Color</option>
-            <option value="@color.secondary">Secondary Color</option>
-            <option value="@color.success">Success Color</option>
-            <option value="@color.warning">Warning Color</option>
-            <option value="@color.error">Error Color</option>
-            <option value="@color.accent">Accent Color</option>
-            <option value="@color.muted">Muted Color</option>
-            {Object.keys(tokens.tokens.colors.light).map(colorKey => (
-              <option key={colorKey} value={`@color.${colorKey}`}>
-                {colorKey} Token
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            type="color"
-            value={color}
-            onChange={(e) =>
-              setProp((props: TextProps) => (props.color = e.target.value))
-            }
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-          />
+        {useGlobalColor && (
+          <p className="text-xs text-gray-500 mt-1">
+            Font weight is inherited from global settings
+          </p>
         )}
       </div>
+
+      {!useGlobalColor && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Text Color {useDesignTokens && '(or Token)'}
+          </label>
+          {useDesignTokens ? (
+            <select
+              value={color}
+              onChange={(e) =>
+                setProp((props: TextProps) => (props.color = e.target.value))
+              }
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            >
+              <option value="@color.text">Text Color</option>
+              <option value="@color.primary">Primary Color</option>
+              <option value="@color.secondary">Secondary Color</option>
+              <option value="@color.success">Success Color</option>
+              <option value="@color.warning">Warning Color</option>
+              <option value="@color.error">Error Color</option>
+              <option value="@color.accent">Accent Color</option>
+              <option value="@color.muted">Muted Color</option>
+              {Object.keys(tokens.tokens.colors.light).map(colorKey => (
+                <option key={colorKey} value={`@color.${colorKey}`}>
+                  {colorKey} Token
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="color"
+              value={color}
+              onChange={(e) =>
+                setProp((props: TextProps) => (props.color = e.target.value))
+              }
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          )}
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700">

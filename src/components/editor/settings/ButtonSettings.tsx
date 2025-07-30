@@ -13,11 +13,13 @@ interface ButtonProps {
   padding?: number;
   fontSize?: string | number;
   fontWeight?: string;
+  fontFamily?: string;
   width?: string;
   height?: string;
   minWidth?: number;
   minHeight?: number;
   useDesignTokens?: boolean;
+  useGlobalColor?: boolean; // NEW: Toggle for global vs individual color
   onClick?: () => void;
 }
 
@@ -31,7 +33,9 @@ export const ButtonSettings: React.FC = () => {
     borderRadius,
     fontSize,
     fontWeight,
+    fontFamily,
     useDesignTokens,
+    useGlobalColor,
   } = useNode((node) => ({
     text: node.data.props.text,
     backgroundColor: node.data.props.backgroundColor,
@@ -40,7 +44,9 @@ export const ButtonSettings: React.FC = () => {
     borderRadius: node.data.props.borderRadius,
     fontSize: node.data.props.fontSize,
     fontWeight: node.data.props.fontWeight,
+    fontFamily: node.data.props.fontFamily,
     useDesignTokens: node.data.props.useDesignTokens,
+    useGlobalColor: node.data.props.useGlobalColor,
   }));
 
   const { buttonOptions } = useCraftDesignTokenOptions();
@@ -53,6 +59,26 @@ export const ButtonSettings: React.FC = () => {
           setProp((props: ButtonProps) => (props.useDesignTokens = enabled))
         }
       />
+
+      <div className="border-t pt-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={useGlobalColor}
+            onChange={(e) =>
+              setProp((props: ButtonProps) => (props.useGlobalColor = e.target.checked))
+            }
+            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          />
+          <span className="text-sm font-medium text-gray-700">Use Global Text Color</span>
+        </label>
+        <p className="text-xs text-gray-500 mt-1">
+          {useGlobalColor 
+            ? "Button inherits text color from global settings" 
+            : "Button uses its own individual text color"
+          }
+        </p>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
@@ -76,7 +102,7 @@ export const ButtonSettings: React.FC = () => {
         }
         options={buttonOptions.backgrounds}
         useDesignTokens={useDesignTokens}
-        colorInput={true}
+        colorInput={!useDesignTokens}
         description="Choose a background color for the button"
       />
 
@@ -94,17 +120,19 @@ export const ButtonSettings: React.FC = () => {
         </label>
       </div>
 
-      <CraftDesignTokenSelect
-        label="Text Color"
-        value={color}
-        onChange={(value) =>
-          setProp((props: ButtonProps) => (props.color = value))
-        }
-        options={buttonOptions.textColors}
-        useDesignTokens={useDesignTokens}
-        colorInput={true}
-        description="Choose the text color for the button"
-      />
+      {!useGlobalColor && (
+        <CraftDesignTokenSelect
+          label="Text Color"
+          value={color}
+          onChange={(value) =>
+            setProp((props: ButtonProps) => (props.color = value))
+          }
+          options={buttonOptions.textColors}
+          useDesignTokens={useDesignTokens}
+          colorInput={!useDesignTokens}
+          description="Choose the text color for the button"
+        />
+      )}
 
       <CraftDesignTokenSelect
         label="Border Radius"
@@ -114,10 +142,11 @@ export const ButtonSettings: React.FC = () => {
         }
         options={buttonOptions.borders}
         useDesignTokens={useDesignTokens}
-        rangeInput={true}
+        rangeInput={!useDesignTokens}
         rangeMin={0}
         rangeMax={50}
         rangeStep={1}
+        placeholder="e.g., 8px, 1rem"
         description="Set the border radius for rounded corners"
       />
 
@@ -129,10 +158,11 @@ export const ButtonSettings: React.FC = () => {
         }
         options={buttonOptions.sizes}
         useDesignTokens={useDesignTokens}
-        rangeInput={true}
+        rangeInput={!useDesignTokens}
         rangeMin={10}
         rangeMax={32}
         rangeStep={1}
+        placeholder="e.g., 16px, 1rem"
         description="Set the font size for the button text"
       />
 
@@ -144,9 +174,22 @@ export const ButtonSettings: React.FC = () => {
         }
         options={buttonOptions.weights}
         useDesignTokens={useDesignTokens}
-        textInput={true}
+        textInput={!useDesignTokens}
         placeholder="e.g., normal, bold, 400, 600"
         description="Set the font weight for the button text"
+      />
+
+      <CraftDesignTokenSelect
+        label="Font Family"
+        value={fontFamily}
+        onChange={(value) =>
+          setProp((props: ButtonProps) => (props.fontFamily = value))
+        }
+        options={buttonOptions.fonts}
+        useDesignTokens={useDesignTokens}
+        textInput={!useDesignTokens}
+        placeholder="e.g., Arial, sans-serif"
+        description="Set the font family for the button text"
       />
 
       <SpacingSettings />

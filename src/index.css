@@ -118,17 +118,51 @@ code {
   z-index: 1;
 }
 
-/* Global Design Tokens - Force text color inheritance */
-.global-design-tokens-root * {
-  /* Force inheritance for most text elements, but allow explicit overrides */
+/* Global Design Tokens - Force text color inheritance for specific elements */
+.global-design-tokens-root h1,
+.global-design-tokens-root h2,
+.global-design-tokens-root h3,
+.global-design-tokens-root h4,
+.global-design-tokens-root h5,
+.global-design-tokens-root h6,
+.global-design-tokens-root p,
+.global-design-tokens-root span,
+.global-design-tokens-root div:not(.craft-button):not([data-button-id]),
+.global-design-tokens-root a,
+.global-design-tokens-root li,
+.global-design-tokens-root td,
+.global-design-tokens-root th {
+  /* Force inheritance for text elements, but exclude craft buttons */
   color: inherit !important;
 }
 
-.global-design-tokens-root button,
-.global-design-tokens-root .button,
-.global-design-tokens-root [role="button"] {
-  /* Buttons should inherit text color unless explicitly overridden */
+.global-design-tokens-root button:not(.craft-button),
+.global-design-tokens-root .button:not(.craft-button),
+.global-design-tokens-root [role="button"]:not(.craft-button) {
+  /* Only non-craft buttons should inherit text color */
   color: inherit !important;
+}
+
+/* Craft.js buttons that use global color inherit from parent */
+.global-design-tokens-root button.craft-button.use-global-color {
+  color: inherit !important;
+}
+
+/* Craft.js buttons that use individual color override inheritance */
+.global-design-tokens-root button.craft-button.use-individual-color[data-button-id] {
+  color: var(--craft-button-color, currentColor) !important;
+}
+
+/* Craft.js text components that use global color inherit from parent */
+.global-design-tokens-root .craft-text.use-global-color {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+/* Craft.js text components that use individual color override inheritance */
+.global-design-tokens-root .craft-text.use-individual-color[data-text-id] {
+  color: var(--craft-text-color, currentColor) !important;
+  font-family: var(--craft-text-font-family, inherit) !important;
 }
 
 .global-design-tokens-root input,
@@ -136,3 +170,5 @@ code {
   /* Form elements can keep their own colors */
   color: initial !important;
 }
+
+/* Note: Craft.js Button and Text Components can use either global or individual colors */

@@ -48,6 +48,7 @@ export const useCraftDesignTokenOptions = () => {
     borders: borderRadiusOptions,
     sizes: typographyOptions,
     weights: fontWeightOptions,
+    fonts: fontFamilyOptions,
     spacing: spacingOptions,
   };
 

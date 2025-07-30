@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { TextSettings } from './settings/TextSettings';
@@ -23,6 +23,7 @@ interface TextProps extends SpacingProps {
   width?: string;
   height?: string;
   useDesignTokens?: boolean; // Toggle for using design tokens
+  useGlobalColor?: boolean; // NEW: Toggle for using global settings vs individual settings
 }
 
 interface TextComponent extends React.FC<TextProps> {
@@ -45,7 +46,7 @@ export const Text: TextComponent = ({
   text = 'Click to edit text',
   fontSize = '@typography.base',
   fontWeight = 'normal',
-  fontFamily = '@typography.primary',
+  fontFamily = '@font.primary', // ✅ Fixed: Use @font.primary instead of @typography.primary
   lineHeight = 'normal',
   letterSpacing = 'normal',
   color = '@color.text',
@@ -53,6 +54,7 @@ export const Text: TextComponent = ({
   textAlign = 'left',
   height = 'auto',
   useDesignTokens = true,
+  useGlobalColor = true, // NEW: Default to using global settings
   paddingTop = 8,
   paddingRight = 8,
   paddingBottom = 8,
@@ -64,10 +66,15 @@ export const Text: TextComponent = ({
 }) => {
   const {
     selected,
-    actions: { setProp }
+    actions: { setProp },
+    id,
   } = useNode((state) => ({
     selected: state.events.selected,
+    id: state.id,
   }));
+
+  // Create unique identifier for this text instance
+  const textId = useMemo(() => `text-${id}`, [id]);
 
   // Use design tokens hook with automatic sync
   const { processToken } = useTheme();
@@ -85,6 +92,15 @@ export const Text: TextComponent = ({
     ? processToken(fontFamily)
     : fontFamily;
 
+  console.log('Font family processing:', {
+    original: fontFamily,
+    processed: processedFontFamily,
+    useDesignTokens,
+    isTokenString: typeof fontFamily === 'string' && fontFamily.startsWith('@'),
+    directTokenTest: processToken('@font.mono'),
+    directFontPrimary: processToken('@font.primary')
+  });
+
   const processedLineHeight = useDesignTokens && typeof lineHeight === 'string' && lineHeight.startsWith('@')
     ? processToken(lineHeight)
     : lineHeight;
@@ -93,24 +109,29 @@ export const Text: TextComponent = ({
     ? processToken(letterSpacing)
     : letterSpacing;
 
-  const processedColor = useDesignTokens && typeof color === 'string' && color.startsWith('@')
-    ? processToken(color)
-    : color;
+  const processedColor = useGlobalColor 
+    ? 'inherit' // This will inherit from the global design tokens root
+    : (useDesignTokens && typeof color === 'string' && color.startsWith('@'))
+      ? processToken(color)
+      : color;
 
+  const processedBackgroundColor = useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@')
+    ? processToken(backgroundColor)
+    : backgroundColor;
+
+  
   const textStyle: React.CSSProperties = {
     ...getContentStyles(
       { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
       height,
       {
-        backgroundColor: backgroundColor,
+        backgroundColor: processedBackgroundColor,
       }
     ),
     fontSize: processedFontSize,
-    fontFamily: processedFontFamily,
     fontWeight,
     lineHeight: processedLineHeight,
     letterSpacing: processedLetterSpacing,
-    color: processedColor,
     textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
     cursor: 'text',
     width: '100%',
@@ -118,6 +139,13 @@ export const Text: TextComponent = ({
     border: 'none',
     outline: 'none',
     resize: 'none',
+    // Only set individual styles if not using global mode
+    ...(useGlobalColor ? {} : { 
+      '--craft-text-color': processedColor,
+      color: processedColor,
+      '--craft-text-font-family': processedFontFamily,
+      fontFamily: processedFontFamily
+    }),
   };
 
   const resizerStyle: React.CSSProperties = {
@@ -126,14 +154,28 @@ export const Text: TextComponent = ({
     overflow: 'hidden',
   };
 
+  console.log('Text component processing:', {
+    original: { fontSize, fontFamily, color, backgroundColor },
+    processed: { 
+      processedFontSize, 
+      processedFontFamily, 
+      processedColor, 
+      processedBackgroundColor 
+    },
+    useGlobalColor,
+    useDesignTokens
+  });
+  console.log('Text rendered with styles:', textStyle);
+
   return (
     <Resizer
       propKey={{ width: 'width', height: 'height' }}
       style={resizerStyle}
     >
       <div
-        className="cursor-text"
+        className={`cursor-text craft-text ${useGlobalColor ? 'use-global-color' : 'use-individual-color'}`}
         style={textStyle}
+        data-text-id={textId}
         onClick={() => setIsEditing(true)}
         onBlur={() => setIsEditing(false)}
       >
@@ -146,9 +188,12 @@ export const Text: TextComponent = ({
             autoFocus
             className="w-full h-full resize-none border-none outline-none bg-transparent"
             style={{
-              fontSize: `${fontSize}px`,
+              fontSize: processedFontSize,
+              fontFamily: useGlobalColor ? 'inherit' : processedFontFamily,
               fontWeight,
-              color,
+              lineHeight: processedLineHeight,
+              letterSpacing: processedLetterSpacing,
+              color: useGlobalColor ? 'inherit' : processedColor,
               textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
               backgroundColor: 'transparent',
             }}
@@ -157,9 +202,12 @@ export const Text: TextComponent = ({
           <div
             className="w-full h-full"
             style={{
-              fontSize: `${fontSize}px`,
+              fontSize: processedFontSize,
+              fontFamily: useGlobalColor ? 'inherit' : processedFontFamily,
               fontWeight,
-              color,
+              lineHeight: processedLineHeight,
+              letterSpacing: processedLetterSpacing,
+              color: useGlobalColor ? 'inherit' : processedColor,
               textAlign: textAlign as 'left' | 'center' | 'right' | 'justify',
               whiteSpace: 'pre-wrap',
             }}
@@ -176,7 +224,7 @@ Text.craft = {
   props: {
     text: 'Click to edit text',
     fontSize: '@typography.base',
-    fontFamily: '@typography.primary',
+    fontFamily: '@font.primary', // ✅ Fixed: Use @font.primary instead of @typography.primary
     fontWeight: 'normal',
     lineHeight: 'normal',
     letterSpacing: 'normal',
@@ -186,6 +234,7 @@ Text.craft = {
     width: 'auto',
     height: 'auto',
     useDesignTokens: true,
+    useGlobalColor: true, // Default to using global settings
     ...getDefaultCraftSpacing(),
   },
   rules: {

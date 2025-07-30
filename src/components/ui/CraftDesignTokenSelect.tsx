@@ -73,7 +73,7 @@ export const CraftDesignTokenSelect: React.FC<CraftSelectProps> = ({
             <input
               id={inputId}
               type="color"
-              value={value || '#000000'}
+              value={value && value.startsWith('#') ? value : '#000000'}
               onChange={(e) => onChange(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />

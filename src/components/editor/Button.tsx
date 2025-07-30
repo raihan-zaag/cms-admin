@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNode } from '@craftjs/core';
 import { Resizer } from '../common/Resizer';
 import { ButtonSettings } from './settings/ButtonSettings';
@@ -18,10 +18,12 @@ interface ButtonProps extends SpacingProps {
   borderRadius?: number | string; // Allow both number and token string
   fontSize?: number | string; // Allow both number and token string
   fontWeight?: string;
+  fontFamily?: string; // Add font family support
   width?: string;
   height?: string;
   onClick?: () => void;
   useDesignTokens?: boolean; // Toggle for using design tokens
+  useGlobalColor?: boolean; // NEW: Toggle for using global color vs individual color
 }
 
 interface ButtonComponent extends React.FC<ButtonProps> {
@@ -48,9 +50,11 @@ export const Button: ButtonComponent = ({
   borderRadius = '@radius.md',
   fontSize = '@typography.base',
   fontWeight = 'normal',
+  fontFamily = '@font.primary',
   height = 'auto',
   onClick,
   useDesignTokens = true,
+  useGlobalColor = true, // NEW: Default to using global color
   paddingTop = 12,
   paddingRight = 12,
   paddingBottom = 12,
@@ -62,9 +66,14 @@ export const Button: ButtonComponent = ({
 }) => {
   const {
     selected,
+    id,
   } = useNode((state) => ({
     selected: state.events.selected,
+    id: state.id,
   }));
+
+  // Create unique identifier for this button instance
+  const buttonId = useMemo(() => `button-${id}`, [id]);
 
   // Use design tokens hook with automatic sync
   const { processToken } = useTheme();
@@ -72,21 +81,28 @@ export const Button: ButtonComponent = ({
   useDesignTokensStore();
 
   // Process design tokens or use raw values
-  const processedBackgroundColor = useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@')
+  const processedBackgroundColor = (useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@'))
     ? processToken(backgroundColor)
     : backgroundColor;
 
-  const processedColor = useDesignTokens && typeof color === 'string' && color.startsWith('@')
-    ? processToken(color)
-    : color;
+  // For color: Use global inheritance if useGlobalColor is true, otherwise use individual color
+  const processedColor = useGlobalColor 
+    ? 'inherit' // This will inherit from the global design tokens root
+    : (useDesignTokens && typeof color === 'string' && color.startsWith('@'))
+      ? processToken(color)
+      : color;
 
-  const processedBorderRadius = useDesignTokens && typeof borderRadius === 'string' && borderRadius.startsWith('@')
+  const processedBorderRadius = (useDesignTokens && typeof borderRadius === 'string' && borderRadius.startsWith('@'))
     ? processToken(borderRadius)
-    : typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
+    : typeof borderRadius === 'number' ? `${borderRadius}px` : `${borderRadius}px`;
 
-  const processedFontSize = useDesignTokens && typeof fontSize === 'string' && fontSize.startsWith('@')
+  const processedFontSize = (useDesignTokens && typeof fontSize === 'string' && fontSize.startsWith('@'))
     ? processToken(fontSize)
-    : typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
+    : typeof fontSize === 'number' ? `${fontSize}px` : `${fontSize}px`;
+
+  const processedFontFamily = (useDesignTokens && typeof fontFamily === 'string' && fontFamily.startsWith('@'))
+    ? processToken(fontFamily)
+    : fontFamily;
 
   const buttonStyle: React.CSSProperties = {
     ...getContentStyles(
@@ -94,14 +110,19 @@ export const Button: ButtonComponent = ({
       height,
       {
         backgroundColor: isTransparent ? 'transparent' : processedBackgroundColor,
-        color: processedColor,
         borderRadius: processedBorderRadius,
         fontSize: processedFontSize,
         fontWeight,
+        fontFamily: processedFontFamily,
         border: 'none',
         cursor: 'pointer',
         width: '100%',
         height: '100%',
+        // Only set individual color if not using global color
+        ...(useGlobalColor ? {} : { 
+          '--craft-button-color': processedColor,
+          color: processedColor 
+        }),
       }
     ),
   };
@@ -112,14 +133,17 @@ export const Button: ButtonComponent = ({
     overflow: 'hidden',
   };
 
+  
+
   return (
     <Resizer
       propKey={{ width: 'width', height: 'height' }}
       style={resizerStyle}
     >
       <button
-        className="transition-all duration-200 hover:opacity-80"
+        className={`craft-button transition-all duration-200 hover:opacity-80 ${useGlobalColor ? 'use-global-color' : 'use-individual-color'}`}
         style={buttonStyle}
+        data-button-id={buttonId}
         onClick={onClick}
       >
         {text}
@@ -137,9 +161,11 @@ Button.craft = {
     borderRadius: '@radius.md',
     fontSize: '@typography.base',
     fontWeight: 'normal',
+    fontFamily: '@font.primary',
     width: 'auto',
     height: 'auto',
     useDesignTokens: true,
+    useGlobalColor: true,
     ...getDefaultCraftSpacing(),
   },
   rules: {
