@@ -51,9 +51,56 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({ isOpen, onClose })
   const handleLoadLayout = (layoutId: string) => {
     const layout = loadLayout(layoutId);
     if (layout) {
-      // Clear current content and load the layout
-      actions.deserialize(JSON.stringify(layout.craftJson));
-      onClose();
+      try {
+        // Get the current editor state
+        const currentState = JSON.parse(query.serialize());
+        
+        // Check if the layout should be loaded as content inside RootContainer
+        // or if it should replace the entire editor state
+        if (layout.type === 'section' || layout.type === 'header' || layout.type === 'footer') {
+          // For sections/headers/footers, add them as children to the RootContainer
+          const layoutNodes = layout.craftJson;
+          const rootNodeId = 'ROOT';
+          
+          if (currentState[rootNodeId] && layoutNodes.ROOT) {
+            // Extract non-ROOT nodes from the layout
+            const nodesToAdd = Object.fromEntries(
+              Object.entries(layoutNodes).filter(([nodeId]) => nodeId !== 'ROOT')
+            );
+            
+            // Get child nodes from layout ROOT
+            const layoutChildNodes = layoutNodes.ROOT.nodes || [];
+            
+            // Merge the nodes into current state
+            const mergedState = {
+              ...currentState,
+              ...nodesToAdd
+            };
+            
+            // Add layout child nodes to current ROOT
+            const existingChildNodes = currentState[rootNodeId].nodes || [];
+            mergedState[rootNodeId] = {
+              ...currentState[rootNodeId],
+              nodes: [...existingChildNodes, ...layoutChildNodes]
+            };
+            
+            actions.deserialize(JSON.stringify(mergedState));
+          } else {
+            // Fallback to complete replacement
+            actions.deserialize(JSON.stringify(layout.craftJson));
+          }
+        } else {
+          // For complete pages, replace the entire editor state
+          actions.deserialize(JSON.stringify(layout.craftJson));
+        }
+        
+        onClose();
+      } catch (error) {
+        console.error('Error loading layout:', error);
+        // Fallback to original method
+        actions.deserialize(JSON.stringify(layout.craftJson));
+        onClose();
+      }
     }
   };
 

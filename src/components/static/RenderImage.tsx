@@ -25,6 +25,10 @@ interface RenderImageProps {
   marginRight?: number;
   marginBottom?: number;
   marginLeft?: number;
+  position?: string;
+  top?: string;
+  left?: string;
+  zIndex?: string | number;
 }
 
 export const RenderImage: React.FC<RenderImageProps> = ({
@@ -52,27 +56,39 @@ export const RenderImage: React.FC<RenderImageProps> = ({
   marginRight = 0,
   marginBottom = 0,
   marginLeft = 0,
+  position,
+  top,
+  left,
+  zIndex,
 }) => {
   const paddingValue = `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`;
   const marginValue = `${marginTop}px ${marginRight}px ${marginBottom}px ${marginLeft}px`;
+
+  const commonStyles = {
+    width: isFullWidth ? '100%' : width,
+    height,
+    borderRadius: `${borderRadius}px`,
+    opacity,
+    border,
+    boxShadow,
+    padding: paddingValue,
+    margin: marginValue,
+    position: position as any,
+    top,
+    left,
+    zIndex,
+  };
 
   // If we have a backgroundImage, render as a div with background
   if (backgroundImage) {
     return (
       <div
         style={{
-          width: isFullWidth ? '100%' : width,
-          height,
+          ...commonStyles,
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize,
           backgroundPosition,
           backgroundRepeat,
-          borderRadius: `${borderRadius}px`,
-          opacity,
-          border,
-          boxShadow,
-          padding: paddingValue,
-          margin: marginValue,
           position: 'relative',
         }}
       >
@@ -85,19 +101,13 @@ export const RenderImage: React.FC<RenderImageProps> = ({
   if (src) {
     return (
       <img
+        className="craft-image"
         src={src}
         alt={alt}
         style={{
-          width: isFullWidth ? '100%' : width,
-          height,
+          ...commonStyles,
           objectFit: objectFit as any,
           objectPosition,
-          borderRadius: `${borderRadius}px`,
-          opacity,
-          border,
-          boxShadow,
-          padding: paddingValue,
-          margin: marginValue,
         }}
       />
     );
@@ -106,15 +116,9 @@ export const RenderImage: React.FC<RenderImageProps> = ({
   // Fallback - render empty div
   return (
     <div
+      className="craft-image"
       style={{
-        width: isFullWidth ? '100%' : width,
-        height,
-        borderRadius: `${borderRadius}px`,
-        opacity,
-        border,
-        boxShadow,
-        padding: paddingValue,
-        margin: marginValue,
+        ...commonStyles,
         backgroundColor: '#f0f0f0',
         display: 'flex',
         alignItems: 'center',

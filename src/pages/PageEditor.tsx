@@ -1,5 +1,5 @@
 import React from 'react';
-import { Editor, Frame, Element,  } from '@craftjs/core';
+import { Editor, Frame, Element } from '@craftjs/core';
 import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
@@ -15,7 +15,7 @@ import TopBar from '@/components/editor/TopBar';
 import KeyboardShortcutsHandler from '@/components/editor/KeyboardShortcutsHandler';
 
 export const PageEditor: React.FC = () => {
- 
+
   return (
     <DesignTokensProvider>
       <Editor
@@ -30,65 +30,71 @@ export const PageEditor: React.FC = () => {
       >
         {/* Enable keyboard shortcuts inside Editor context */}
         <KeyboardShortcutsHandler />
-      
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <TopBar/>
-      </div>
 
-      {/* Main content container - 3 column layout */}
-      <div className="h-[calc(100vh-191px)]">
-        {/* 3-column grid: Toolbox | Canvas | Settings */}
-        <div className="grid grid-cols-[280px_1fr_300px] h-full">
-          {/* Left Sidebar - Toolbox */}
-          <div className="bg-gray-50 border-r border-gray-200 overflow-y-auto">
-           <Toolbox />
-          </div>
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <TopBar />
+        </div>
 
-          {/* Center - Canvas Area */}
-          <div className="flex flex-col h-full">
-          {/* Canvas Header */}
-          <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-700">Canvas</h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  Keyboard shortcuts: Ctrl+Z (Undo), Ctrl+Y (Redo), Del (Delete)
-                </p>
+        {/* Main content container - 3 column layout */}
+        <div className="h-[calc(100vh-191px)]">
+          {/* 3-column grid: Toolbox | Canvas | Settings */}
+          <div className="grid grid-cols-[280px_1fr_300px] h-full">
+            {/* Left Sidebar - Toolbox */}
+            <div className="bg-gray-50 border-r border-gray-200 overflow-y-auto">
+              <Toolbox />
+            </div>
+
+            {/* Center - Canvas Area */}
+            <div className="flex flex-col h-full">
+              {/* Canvas Header */}
+              <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex-shrink-0">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Canvas</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Keyboard shortcuts: Ctrl+Z (Undo), Ctrl+Y (Redo), Del (Delete)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Canvas Content - Single scroll area */}
+              <div className="flex-1 bg-white overflow-auto">
+                <div className="min-h-full p-4">
+                  <Frame>
+                    <Element
+                      is={RootContainer}
+                      canvas
+                      useGlobalTokens={true}
+                      background="@color.background"
+                      width="100%"
+                      height="auto"
+                    >
+                    </Element>
+                  </Frame>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Sidebar - Settings & Layers */}
+            <div className="border-r border-gray-200 bg-white overflow-y-auto">
+              <div className="space-y-4 p-4">
+
+                <div className='h-[400px] overflow-y-auto'>
+                  <SettingsPanel/>
+                </div>
+
+                <div className='h-[400px] overflow-y-auto'>
+                  <LayersPanel />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Canvas Content - Single scroll area */}
-          <div className="flex-1 bg-white overflow-auto">
-            <div className="min-h-full p-4">
-              <Frame>
-                <Element
-                  is={RootContainer}
-                  canvas
-                  useGlobalTokens={true}
-                  background="@color.background"
-                  width="100%"
-                  height="auto"
-                >
-                </Element>
-              </Frame>
-            </div>
-          </div>
-          </div>
-
-          {/* Right Sidebar - Settings & Layers */}
-          <div className="border-r border-gray-200 bg-white overflow-y-auto">
-            <div className="space-y-4 p-4">
-              <LayersPanel />
-              <SettingsPanel />
-            </div>
-          </div>
+          {/* Design Tokens Modal - Floating Button */}
+          <DesignTokensModal />
         </div>
-        
-        {/* Design Tokens Modal - Floating Button */}
-        <DesignTokensModal />
-      </div>
-    </Editor>
+      </Editor>
     </DesignTokensProvider>
   );
 };

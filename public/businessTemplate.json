@@ -1,0 +1,642 @@
+{
+  "ROOT": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.background",
+      "width": "100%",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "flex-start",
+      "alignItems": "stretch",
+      "gap": "@spacing.xl",
+      "paddingTop": "@spacing.lg",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.lg",
+      "paddingLeft": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "business-hero",
+      "business-services",
+      "business-about",
+      "business-contact"
+    ],
+    "linkedNodes": {}
+  },
+  "business-hero": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.primary",
+      "width": "100%",
+      "height": "600px",
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "gap": "@spacing.lg",
+      "paddingTop": "@spacing.xl",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.xl",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "hero-title",
+      "hero-subtitle",
+      "hero-cta"
+    ],
+    "linkedNodes": {}
+  },
+  "hero-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Your Business Success Awaits",
+      "fontSize": "@typography.4xl",
+      "fontWeight": "bold",
+      "color": "@color.background",
+      "textAlign": "center",
+      "marginBottom": "@spacing.md",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "hero-subtitle": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Transform your business with our proven strategies and expert guidance. We help companies achieve sustainable growth and lasting success.",
+      "fontSize": "@typography.xl",
+      "color": "@color.background",
+      "textAlign": "center",
+      "opacity": 0.9,
+      "maxWidth": "600px",
+      "marginBottom": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "hero-cta": {
+    "type": {
+      "resolvedName": "Button"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Get Started Today",
+      "backgroundColor": "@color.background",
+      "color": "@color.primary",
+      "paddingTop": "@spacing.md",
+      "paddingRight": "@spacing.xl",
+      "paddingBottom": "@spacing.md",
+      "paddingLeft": "@spacing.xl",
+      "borderRadius": "@radius.md",
+      "fontSize": "@typography.lg",
+      "fontWeight": "600",
+      "useDesignTokens": true
+    },
+    "displayName": "Button",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "business-services": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.background",
+      "width": "100%",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "flex-start",
+      "alignItems": "center",
+      "gap": "@spacing.xl",
+      "paddingTop": "@spacing.xl",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.xl",
+      "paddingLeft": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "services-title",
+      "services-grid"
+    ],
+    "linkedNodes": {}
+  },
+  "services-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Our Services",
+      "fontSize": "@typography.3xl",
+      "fontWeight": "bold",
+      "color": "@color.text",
+      "textAlign": "center",
+      "marginBottom": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "services-grid": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "transparent",
+      "width": "100%",
+      "height": "auto",
+      "flexDirection": "row",
+      "justifyContent": "space-between",
+      "alignItems": "stretch",
+      "flexWrap": "wrap",
+      "gap": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "service-1",
+      "service-2",
+      "service-3"
+    ],
+    "linkedNodes": {}
+  },
+  "service-1": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.background",
+      "width": "300px",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "flex-start",
+      "alignItems": "center",
+      "gap": "@spacing.md",
+      "paddingTop": "@spacing.lg",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.lg",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.md",
+      "boxShadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "service-1-title",
+      "service-1-desc"
+    ],
+    "linkedNodes": {}
+  },
+  "service-1-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Strategy Consulting",
+      "fontSize": "@typography.xl",
+      "fontWeight": "600",
+      "color": "@color.text",
+      "textAlign": "center",
+      "marginBottom": "@spacing.sm",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "service-1-desc": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Develop comprehensive business strategies that drive growth and competitive advantage.",
+      "fontSize": "@typography.base",
+      "color": "@color.text",
+      "textAlign": "center",
+      "opacity": 0.8,
+      "lineHeight": "1.6",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "service-2": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.background",
+      "width": "300px",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "flex-start",
+      "alignItems": "center",
+      "gap": "@spacing.md",
+      "paddingTop": "@spacing.lg",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.lg",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.md",
+      "boxShadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "service-2-title",
+      "service-2-desc"
+    ],
+    "linkedNodes": {}
+  },
+  "service-2-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Digital Transformation",
+      "fontSize": "@typography.xl",
+      "fontWeight": "600",
+      "color": "@color.text",
+      "textAlign": "center",
+      "marginBottom": "@spacing.sm",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "service-2-desc": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Modernize your operations with cutting-edge technology solutions and digital workflows.",
+      "fontSize": "@typography.base",
+      "color": "@color.text",
+      "textAlign": "center",
+      "opacity": 0.8,
+      "lineHeight": "1.6",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "service-3": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.background",
+      "width": "300px",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "flex-start",
+      "alignItems": "center",
+      "gap": "@spacing.md",
+      "paddingTop": "@spacing.lg",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.lg",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.md",
+      "boxShadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "service-3-title",
+      "service-3-desc"
+    ],
+    "linkedNodes": {}
+  },
+  "service-3-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Performance Analytics",
+      "fontSize": "@typography.xl",
+      "fontWeight": "600",
+      "color": "@color.text",
+      "textAlign": "center",
+      "marginBottom": "@spacing.sm",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "service-3-desc": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Track and optimize your business performance with advanced analytics and insights.",
+      "fontSize": "@typography.base",
+      "color": "@color.text",
+      "textAlign": "center",
+      "opacity": 0.8,
+      "lineHeight": "1.6",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "business-about": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.muted",
+      "width": "100%",
+      "height": "auto",
+      "flexDirection": "row",
+      "justifyContent": "space-between",
+      "alignItems": "center",
+      "gap": "@spacing.xl",
+      "paddingTop": "@spacing.xl",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.xl",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "about-content",
+      "about-image"
+    ],
+    "linkedNodes": {}
+  },
+  "about-content": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "transparent",
+      "width": "50%",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "flex-start",
+      "alignItems": "flex-start",
+      "gap": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "about-title",
+      "about-text",
+      "about-button"
+    ],
+    "linkedNodes": {}
+  },
+  "about-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "About Our Company",
+      "fontSize": "@typography.3xl",
+      "fontWeight": "bold",
+      "color": "@color.text",
+      "marginBottom": "@spacing.md",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "about-text": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "With over 15 years of experience, we've helped hundreds of businesses transform their operations and achieve remarkable growth. Our team of experts combines industry knowledge with innovative solutions to deliver results that matter.",
+      "fontSize": "@typography.lg",
+      "color": "@color.text",
+      "lineHeight": "1.7",
+      "marginBottom": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "about-button": {
+    "type": {
+      "resolvedName": "Button"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Learn More",
+      "backgroundColor": "@color.primary",
+      "color": "@color.background",
+      "paddingTop": "@spacing.sm",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.sm",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.md",
+      "fontSize": "@typography.base",
+      "fontWeight": "500",
+      "useDesignTokens": true
+    },
+    "displayName": "Button",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "about-image": {
+    "type": {
+      "resolvedName": "ImageComponent"
+    },
+    "isCanvas": false,
+    "props": {
+      "src": "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=400&fit=crop",
+      "alt": "Business team collaboration",
+      "width": "45%",
+      "height": "400px",
+      "objectFit": "cover",
+      "borderRadius": "@radius.md",
+      "useDesignTokens": true
+    },
+    "displayName": "ImageComponent",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "business-contact": {
+    "type": {
+      "resolvedName": "Container"
+    },
+    "isCanvas": true,
+    "props": {
+      "background": "@color.primary",
+      "width": "100%",
+      "height": "auto",
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "gap": "@spacing.lg",
+      "paddingTop": "@spacing.xl",
+      "paddingRight": "@spacing.lg",
+      "paddingBottom": "@spacing.xl",
+      "paddingLeft": "@spacing.lg",
+      "borderRadius": "@radius.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Container",
+    "custom": {},
+    "hidden": false,
+    "nodes": [
+      "contact-title",
+      "contact-subtitle",
+      "contact-button"
+    ],
+    "linkedNodes": {}
+  },
+  "contact-title": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Ready to Transform Your Business?",
+      "fontSize": "@typography.3xl",
+      "fontWeight": "bold",
+      "color": "@color.background",
+      "textAlign": "center",
+      "marginBottom": "@spacing.md",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "contact-subtitle": {
+    "type": {
+      "resolvedName": "Text"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Get in touch with our experts today and discover how we can help you achieve your business goals.",
+      "fontSize": "@typography.xl",
+      "color": "@color.background",
+      "textAlign": "center",
+      "opacity": 0.9,
+      "maxWidth": "600px",
+      "marginBottom": "@spacing.lg",
+      "useDesignTokens": true
+    },
+    "displayName": "Text",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  },
+  "contact-button": {
+    "type": {
+      "resolvedName": "Button"
+    },
+    "isCanvas": false,
+    "props": {
+      "text": "Contact Us",
+      "backgroundColor": "@color.background",
+      "color": "@color.primary",
+      "paddingTop": "@spacing.md",
+      "paddingRight": "@spacing.xl",
+      "paddingBottom": "@spacing.md",
+      "paddingLeft": "@spacing.xl",
+      "borderRadius": "@radius.md",
+      "fontSize": "@typography.lg",
+      "fontWeight": "600",
+      "useDesignTokens": true
+    },
+    "displayName": "Button",
+    "custom": {},
+    "hidden": false,
+    "nodes": [],
+    "linkedNodes": {}
+  }
+}

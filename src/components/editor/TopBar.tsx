@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import LayoutManager from "./LayoutManager";
 import SaveModal from "./SaveModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
-import FixedDemoTemplates from "../demo/FixedDemoTemplates";
+import { loadTravelTemplate, loadBusinessTemplate, loadPortfolioTemplate } from "@/lib/templateLoader";
 import { 
   Eye, 
   Undo2, 
@@ -16,7 +16,7 @@ import {
   FolderOpen,
   Download,
   Keyboard,
-  Layout
+  ChevronDown
 } from "lucide-react";
 
 /**
@@ -48,7 +48,56 @@ const TopBar = () => {
   const [showLayoutManager, setShowLayoutManager] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
-  const [showDemoTemplates, setShowDemoTemplates] = useState(false);
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+
+  // Template loading handlers
+  const handleLoadTravelTemplate = async () => {
+    try {
+      await loadTravelTemplate(actions, query);
+      console.log('Travel template loaded successfully');
+      setShowTemplateDropdown(false);
+    } catch (error) {
+      console.error('Failed to load travel template:', error);
+    }
+  };
+
+  const handleLoadBusinessTemplate = async () => {
+    try {
+      await loadBusinessTemplate(actions, query);
+      console.log('Business template loaded successfully');
+      setShowTemplateDropdown(false);
+    } catch (error) {
+      console.error('Failed to load business template:', error);
+    }
+  };
+
+  const handleLoadPortfolioTemplate = async () => {
+    try {
+      await loadPortfolioTemplate(actions, query);
+      console.log('Portfolio template loaded successfully');
+      setShowTemplateDropdown(false);
+    } catch (error) {
+      console.error('Failed to load portfolio template:', error);
+    }
+  };
+
+  // Auto-save to history when nodes change
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showTemplateDropdown && !(event.target as Element).closest('.template-dropdown')) {
+        setShowTemplateDropdown(false);
+      }
+    };
+
+    if (showTemplateDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTemplateDropdown]);
 
   // Auto-save to history when nodes change
   useEffect(() => {
@@ -71,7 +120,7 @@ const TopBar = () => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [enabled, addToHistory, query, nodes]); // Include nodes in dependencies to track changes
+  }, [enabled, addToHistory, query, nodes]);
 
   const handleUndo = () => {
     logger.debug('Undo clicked, can undo:', storeCanUndo());
@@ -161,14 +210,39 @@ const TopBar = () => {
             </button>
           </div>
 
-          {/* Demo Templates Button */}
-          <button
-            onClick={() => setShowDemoTemplates(true)}
-            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors flex items-center gap-2"
-          >
-            <Layout className="h-4 w-4" />
-            Templates
-          </button>
+          {/* Templates Dropdown */}
+          <div className="relative template-dropdown">
+            <button
+              onClick={() => setShowTemplateDropdown(!showTemplateDropdown)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2"
+            >
+              Templates
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            
+            {showTemplateDropdown && (
+              <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[180px]">
+                <button
+                  onClick={handleLoadTravelTemplate}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                >
+                  Travel Template
+                </button>
+                <button
+                  onClick={handleLoadBusinessTemplate}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                >
+                  Business Template
+                </button>
+                <button
+                  onClick={handleLoadPortfolioTemplate}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                >
+                  Portfolio Template
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Preview Button */}
           <button
@@ -233,10 +307,6 @@ const TopBar = () => {
       <KeyboardShortcutsModal 
         isOpen={showKeyboardShortcuts} 
         onClose={() => setShowKeyboardShortcuts(false)} 
-      />
-      <FixedDemoTemplates
-        isOpen={showDemoTemplates}
-        onClose={() => setShowDemoTemplates(false)}
       />
     </>
   );
