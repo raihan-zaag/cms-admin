@@ -13,6 +13,7 @@
     "@craftjs/core": "^0.2.12",
     "@craftjs/layers": "^0.2.7",
     "@craftjs/utils": "^0.2.5",
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",

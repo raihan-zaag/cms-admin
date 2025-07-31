@@ -4,10 +4,11 @@ import { Resizer } from '../common/Resizer';
 import { TextSettings } from './settings/TextSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useDesignTokensStore } from '@/store/design-tokens';
-import { 
-    type SpacingProps, 
-    getContentStyles, 
-    getDefaultCraftSpacing 
+import AIContentGenerator from './AIContentGenerator';
+import {
+  type SpacingProps,
+  getContentStyles,
+  getDefaultCraftSpacing
 } from '../../lib/spacingUtils';
 
 interface TextProps extends SpacingProps {
@@ -22,6 +23,8 @@ interface TextProps extends SpacingProps {
   textAlign?: string;
   width?: string;
   height?: string;
+  minWidth?: string; // Add min width support
+  maxWidth?: string; // Add max width support
   useDesignTokens?: boolean; // Toggle for using design tokens
   useGlobalColor?: boolean; // NEW: Toggle for using global settings vs individual settings
 }
@@ -53,6 +56,8 @@ export const Text: TextComponent = ({
   backgroundColor = 'transparent',
   textAlign = 'left',
   height = 'auto',
+  minWidth = '100px',
+  maxWidth = '800px',
   useDesignTokens = true,
   useGlobalColor = true, // NEW: Default to using global settings
   paddingTop = 8,
@@ -101,7 +106,7 @@ export const Text: TextComponent = ({
     ? processToken(letterSpacing)
     : letterSpacing;
 
-  const processedColor = useGlobalColor 
+  const processedColor = useGlobalColor
     ? 'inherit' // This will inherit from the global design tokens root
     : (useDesignTokens && typeof color === 'string' && color.startsWith('@'))
       ? processToken(color)
@@ -111,7 +116,7 @@ export const Text: TextComponent = ({
     ? processToken(backgroundColor)
     : backgroundColor;
 
-  
+
   const textStyle: React.CSSProperties = {
     ...getContentStyles(
       { paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft },
@@ -128,11 +133,13 @@ export const Text: TextComponent = ({
     cursor: 'text',
     width: '100%',
     height: '100%',
+    minWidth,
+    maxWidth,
     border: 'none',
     outline: 'none',
     resize: 'none',
     // Only set individual styles if not using global mode
-    ...(useGlobalColor ? {} : { 
+    ...(useGlobalColor ? {} : {
       '--craft-text-color': processedColor,
       color: processedColor,
       '--craft-text-font-family': processedFontFamily,
@@ -143,7 +150,12 @@ export const Text: TextComponent = ({
   const resizerStyle: React.CSSProperties = {
     border: selected ? '2px dashed #3b82f6' : '2px solid #e5e7eb',
     borderRadius: '4px',
-    overflow: 'hidden',
+    overflow: 'visible', // Changed from 'hidden' to allow AI button to show
+    position: 'relative',
+  };
+
+  const handleGeneratedContent = (generatedText: string) => {
+    setProp((props: TextProps) => (props.text = generatedText));
   };
 
   return (
@@ -195,7 +207,18 @@ export const Text: TextComponent = ({
           </div>
         )}
       </div>
+
+      {/* AI Content Generator - show when selected - moved inside Resizer */}
+      {selected && !isEditing && (
+        <div className="absolute -bottom-2 right-[30%] z-50">
+          <AIContentGenerator
+            onContentGenerated={handleGeneratedContent}
+            placeholder="Describe the text content you want to generate..."
+          />
+        </div>
+      )}
     </Resizer>
+
   );
 };
 
@@ -212,6 +235,8 @@ Text.craft = {
     textAlign: 'left',
     width: 'auto',
     height: 'auto',
+    minWidth: '100px',
+    maxWidth: '800px',
     useDesignTokens: true,
     useGlobalColor: true, // Default to using global settings
     ...getDefaultCraftSpacing(),

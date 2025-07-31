@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import LayoutManager from "./LayoutManager";
 import SaveModal from "./SaveModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
+import ChatAssistant from "./ChatAssistant";
 import { loadTravelTemplate, loadBusinessTemplate, loadPortfolioTemplate } from "@/lib/templateLoader";
 import { 
   Eye, 
@@ -16,7 +17,8 @@ import {
   FolderOpen,
   Download,
   Keyboard,
-  ChevronDown
+  ChevronDown,
+  MessageCircle
 } from "lucide-react";
 
 /**
@@ -49,6 +51,7 @@ const TopBar = () => {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const [showChatAssistant, setShowChatAssistant] = useState(false);
 
   // Template loading handlers
   const handleLoadTravelTemplate = async () => {
@@ -244,6 +247,15 @@ const TopBar = () => {
             )}
           </div>
 
+          {/* Chat Assistant Button */}
+          <button
+            onClick={() => setShowChatAssistant(true)}
+            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors flex items-center gap-2"
+          >
+            <MessageCircle className="h-4 w-4" />
+            AI Assistant
+          </button>
+
           {/* Preview Button */}
           <button
             onClick={handlePreview}
@@ -307,6 +319,10 @@ const TopBar = () => {
       <KeyboardShortcutsModal 
         isOpen={showKeyboardShortcuts} 
         onClose={() => setShowKeyboardShortcuts(false)} 
+      />
+      <ChatAssistant 
+        isOpen={showChatAssistant} 
+        onClose={() => setShowChatAssistant(false)} 
       />
     </>
   );
