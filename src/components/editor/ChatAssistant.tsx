@@ -10,6 +10,11 @@ interface Message {
   content: string;
   timestamp: Date;
   isError?: boolean;
+  contextData?: {
+    addedComponents?: string[]; // IDs of components that were just added
+    lastAction?: string; // 'add' | 'modify' | 'delete'
+    componentTypes?: string[]; // Types of components that were added/modified
+  };
 }
 
 interface ChatAssistantProps {
@@ -200,13 +205,23 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
     {
       id: '1',
       type: 'assistant',
-      content: 'Hi! I can help you add components to your page using natural language. I\'ll add new elements to your existing layout. Try prompts like:\n\n• "Add a hero section with title and button"\n• "Add a contact form with email and message fields"\n• "Add a product card with image and description"\n\nNote: I add components to your current page without replacing existing content.',
+      content: 'Hi! I can help you create and modify components using natural language. Here\'s how it works:\n\n**🎨 Create Components:**\n• "Add a hero section with title and button"\n• "Create a contact form with email field"\n• "Add a product card with image"\n\n**🔄 Modify Last Response:**\n• "Make it blue" \n• "Update the text to be larger"\n• "Change the background color"\n• "Make it centered"\n\n**Key:** Use keywords like "update", "modify", "change", "make it" to modify your last creation!\n\n*I always store your last response and can modify it precisely!*',
       timestamp: new Date()
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [apiAvailable, setApiAvailable] = useState(true);
+  const [lastAddedComponents, setLastAddedComponents] = useState<string[]>([]);
+  const [conversationContext, setConversationContext] = useState<{
+    lastAction?: string;
+    lastComponentTypes?: string[];
+    canModifyLast?: boolean;
+    originalPrompt?: string; // Save the original prompt for regeneration
+    lastGenerationContext?: string; // Save the context used for generation
+    lastAIResponse?: any; // Store the complete last AI response for modifications
+    lastCraftJSComponents?: Record<string, any>; // Store the last generated components
+  }>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -222,15 +237,147 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const addMessage = (type: 'user' | 'assistant', content: string, isError = false) => {
+  // Helper function to detect modification requests using keywords
+  const isModificationRequest = (prompt: string): boolean => {
+    const modificationKeywords = [
+      'update', 'modify', 'change', 'edit', 'alter', 'adjust', 
+      'make it', 'make them', 'make the', 'convert', 'transform'
+    ];
+    
+    const lowerPrompt = prompt.toLowerCase();
+    return modificationKeywords.some(keyword => lowerPrompt.includes(keyword));
+  };
+
+  // Enhanced addMessage function with context support
+  const addMessage = (type: 'user' | 'assistant', content: string, isError = false, contextData?: any) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       type,
       content,
       timestamp: new Date(),
-      isError
+      isError,
+      contextData
     };
     setMessages(prev => [...prev, newMessage]);
+  };
+
+  // Handle modifications by using stored previous response and applying changes
+  const handleModificationRequest = async (userPrompt: string, currentState: any) => {
+    try {
+      // Check if we have a previous response to modify
+      if (!conversationContext.lastAIResponse || !conversationContext.lastCraftJSComponents) {
+        throw new Error('No previous response found to modify. Please create something first.');
+      }
+
+      // Remove existing components first
+      const updatedState = { ...currentState };
+      
+      // Remove the last added components from the state
+      lastAddedComponents.forEach(componentId => {
+        delete updatedState[componentId];
+      });
+      
+      // Remove component IDs from ROOT node
+      if (updatedState.ROOT && updatedState.ROOT.nodes) {
+        updatedState.ROOT.nodes = updatedState.ROOT.nodes.filter(
+          (nodeId: string) => !lastAddedComponents.includes(nodeId)
+        );
+      }
+      
+      // Create modification prompt using the stored previous response
+      const modificationPrompt = `Based on this previous response: "${conversationContext.originalPrompt}", now ${userPrompt}. 
+      
+Previous components created: ${conversationContext.lastComponentTypes?.join(', ') || 'components'}
+      
+Please generate the modified version according to the user's request.`;
+      
+      logger.info('Modifying previous response', {
+        originalPrompt: conversationContext.originalPrompt,
+        modificationRequest: userPrompt,
+        lastComponentTypes: conversationContext.lastComponentTypes
+      });
+      
+      // Generate modified components
+      const response = await generateCraftJSFromPrompt({
+        prompt: modificationPrompt,
+        context: `Modifying previous response. Original context: ${conversationContext.lastGenerationContext || 'Previous generation'}`
+      });
+      
+      const newCraftJSComponents = response.craftJson;
+      
+      if (newCraftJSComponents && typeof newCraftJSComponents === 'object') {
+        // Add the new modified components
+        const newNodeIds: string[] = [];
+        Object.keys(newCraftJSComponents).forEach(nodeId => {
+          updatedState[nodeId] = newCraftJSComponents[nodeId];
+          if (newCraftJSComponents[nodeId].parent === "ROOT") {
+            newNodeIds.push(nodeId);
+          }
+        });
+        
+        // Update ROOT node with new component IDs
+        if (updatedState.ROOT && newNodeIds.length > 0) {
+          const currentRootNodes = updatedState.ROOT.nodes || [];
+          updatedState.ROOT.nodes = [...currentRootNodes, ...newNodeIds];
+        }
+        
+        // Apply the updated state
+        actions.deserialize(JSON.stringify(updatedState));
+        
+        // Update conversation context with new response (this becomes the new "last response")
+        const componentTypes = response.componentsAdded?.map((c: any) => c.type) || [];
+        setLastAddedComponents(newNodeIds);
+        setConversationContext({
+          lastAction: 'modify',
+          lastComponentTypes: componentTypes,
+          canModifyLast: true,
+          originalPrompt: conversationContext.originalPrompt, // Keep original prompt
+          lastGenerationContext: `Modified: ${userPrompt}`,
+          lastAIResponse: response, // Store the new response
+          lastCraftJSComponents: newCraftJSComponents // Store the new components
+        });
+        
+        // Success message for modifications
+        const explanation = response.explanation || `Modified components based on your request`;
+        const componentDetails = response.componentsAdded?.map((c: any) => `• **${c.type}**: ${c.description}`).join('\n') || '';
+        
+        addMessage('assistant', `🔄 **${explanation}**
+
+${componentDetails}
+
+**Modified based on:** "${userPrompt}"
+
+💡 **Want to make more changes?** Try:
+• "Make it even bigger"
+• "Change the color to green"
+• "Add more elements"
+• "Center align everything"
+
+*Previous components deleted and replaced with modified version!*`);
+        
+        logger.info('Successfully modified previous response', { 
+          newComponentCount: Object.keys(newCraftJSComponents).length,
+          newNodeIds,
+          removedComponents: lastAddedComponents
+        });
+      } else {
+        throw new Error('Invalid response format from AI service');
+      }
+      
+    } catch (error: any) {
+      logger.error('Error in modification request:', error);
+      addMessage('assistant', `❌ **Modification failed**: ${error.message}
+
+💡 **Try:**
+• "Make the text blue"
+• "Make it larger" 
+• "Change background to red"
+• Or create something new first, then modify it
+
+*I need a previous response to modify.*`, true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -241,29 +388,58 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
     setInputValue('');
     setIsLoading(true);
 
-    // Add user message
-    addMessage('user', userPrompt);
+    // Check if this is a modification request using keywords
+    const isModification = isModificationRequest(userPrompt);
+
+    // Add user message with modification indicator
+    const userMessageContent = isModification ? 
+      `🔄 ${userPrompt}` : userPrompt;
+    addMessage('user', userMessageContent);
 
     try {
       // Get current page state for context
       const currentState = query.serialize();
       const parsedState = JSON.parse(currentState);
       
+      // Handle modification requests - modify previous response
+      if (isModification && conversationContext.lastAIResponse && lastAddedComponents.length > 0) {
+        await handleModificationRequest(userPrompt, parsedState);
+        return;
+      }
+      
+      // If it's a modification request but no previous response, inform user
+      if (isModification) {
+        addMessage('assistant', `🤔 **No previous response to modify**
+
+You asked to "${userPrompt}" but I don't have a previous response stored to modify.
+
+💡 **Try creating something first:**
+• "Create a hero section"
+• "Add a contact form"
+• "Create a product card"
+
+Then you can modify it with:
+• "Make it blue"
+• "Make it larger"
+• "Update the text"`);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Handle new component generation
       // Analyze current layout
       const layoutAnalysis = analyzeCurrentLayout(parsedState);
       
-      // Check if this is a modification request
-      const isModification = /\b(modify|change|update|edit|alter)\b/i.test(userPrompt);
       let contextPrompt = userPrompt;
       
-      if (isModification && layoutAnalysis.componentCount > 2) {
-        contextPrompt = `Current page has: ${layoutAnalysis.description}. User wants to: ${userPrompt}. Please modify or add to the existing layout appropriately.`;
+      // Enhanced context for new requests
+      if (layoutAnalysis.componentCount > 2) {
+        contextPrompt = `Current page has: ${layoutAnalysis.description}. User wants to: ${userPrompt}. Please add complementary components to the existing layout.`;
       }
 
-      logger.info('Generating CraftJS components', { 
+      logger.info('Generating new CraftJS components', { 
         prompt: contextPrompt,
-        currentLayout: layoutAnalysis,
-        isModification 
+        currentLayout: layoutAnalysis
       });
 
       const response = await generateCraftJSFromPrompt({
@@ -297,17 +473,43 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
         // Apply the updated state
         actions.deserialize(JSON.stringify(updatedData));
 
-        // Success message
-        addMessage('assistant', `✅ **Components Added Successfully!**
+        // Enhanced success message with specific feedback
+        const explanation = response.explanation || `Added ${Object.keys(craftJSComponents).length} component(s)`;
+        const componentDetails = response.componentsAdded?.map((c: any) => `• **${c.type}**: ${c.description}`).join('\n') || '';
+        const suggestions = response.suggestions?.length ? 
+          `\n**Next steps:**\n${response.suggestions.map((s: any) => `• ${s}`).join('\n')}` : 
+          `\n**What you can do now:**\n• Select any component to customize its properties\n• Drag components to reposition them\n• Ask me to add more elements or modify existing ones`;
 
-Added ${Object.keys(craftJSComponents).length} new component(s) to your page. You can now:
+        // Add modification suggestion for the newly added components
+        const modificationSuggestion = `\n\n💡 **Want to modify these components?** Try saying:\n• "Make it larger"\n• "Change the color to blue"\n• "Update the text"\n• "Make it centered"`;
 
-• **Select and edit** any component by clicking on it
-• **Drag to reposition** components as needed  
-• **Use the settings panel** to customize properties
-• **Ask for more components** or modifications
+        // Store this response and context for future modifications
+        const componentTypes = response.componentsAdded?.map((c: any) => c.type) || [];
+        setLastAddedComponents(newNodeIds);
+        setConversationContext({
+          lastAction: 'add',
+          lastComponentTypes: componentTypes,
+          canModifyLast: true,
+          originalPrompt: userPrompt, // Store the original prompt
+          lastGenerationContext: `Creating ${componentTypes.join(', ')} components`,
+          lastAIResponse: response, // Store the complete AI response
+          lastCraftJSComponents: craftJSComponents // Store the generated components
+        });
 
-*Tip: Try asking me to modify existing components or add complementary elements!*`);
+        // Add context data to the assistant message
+        const contextData = {
+          addedComponents: newNodeIds,
+          lastAction: 'add',
+          componentTypes: componentTypes
+        };
+
+        addMessage('assistant', `✅ **${explanation}**
+
+${componentDetails}
+
+${suggestions}${modificationSuggestion}
+
+*Tip: Use "update" or "modify" keywords to change these components!*`, false, contextData);
 
         logger.info('Successfully added CraftJS components', { 
           componentCount: Object.keys(craftJSComponents).length,

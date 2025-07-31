@@ -80,7 +80,7 @@ const AIContentGenerator: React.FC<AIContentGeneratorProps> = ({
               setError(null);
             }}
           />
-          <div className="absolute top-full left-0 mt-2 z-[9999]">
+          <div className="absolute top-full left-0 mt-2 z-[99999]">
             <div className="bg-white border border-gray-200 rounded-lg shadow-xl w-96 max-w-[90vw] max-h-[90vh] overflow-y-auto p-4">
               <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-medium text-gray-900">AI Content Generator</h4>

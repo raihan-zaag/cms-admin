@@ -8,14 +8,128 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
+/**
+ * Analyze generated CraftJS components to provide meaningful feedback
+ */
+const analyzeCraftJSComponents = (craftJson: any) => {
+  const components: ComponentAnalysis[] = [];
+  const suggestions: string[] = [];
+  
+  // Analyze each component
+  Object.entries(craftJson).forEach(([key, component]: [string, any]) => {
+    const componentType = component.type?.resolvedName;
+    let description = '';
+    
+    switch (componentType) {
+      case 'Container': {
+        const hasBackground = component.props?.background;
+        const hasColumns = component.nodes?.length > 1 && component.props?.flexDirection === 'row';
+        const hasCards = component.props?.boxShadow || component.props?.borderRadius;
+        
+        if (hasColumns) {
+          description = `${component.nodes.length}-column layout container`;
+        } else if (hasCards) {
+          description = 'Card-style container with styling';
+        } else if (hasBackground) {
+          description = 'Styled container with background';
+        } else {
+          description = 'Layout container for organizing content';
+        }
+        break;
+      }
+        
+      case 'Text': {
+        const fontSize = component.props?.fontSize || 16;
+        const isBold = component.props?.fontWeight === 'bold';
+        const text = component.props?.text || '';
+        
+        if (isBold && fontSize >= 18) {
+          description = 'Heading text element';
+        } else if (fontSize >= 18) {
+          description = 'Large text element';
+        } else if (text.length > 100) {
+          description = 'Paragraph text content';
+        } else {
+          description = 'Text element';
+        }
+        break;
+      }
+        
+      case 'Button': {
+        const buttonText = component.props?.text || 'Button';
+        description = `Interactive button: "${buttonText}"`;
+        break;
+      }
+        
+      case 'ImageComponent': {
+        const alt = component.props?.alt || 'image';
+        description = `Image placeholder for ${alt}`;
+        break;
+      }
+        
+      default:
+        description = `${componentType} component`;
+    }
+    
+    components.push({
+      type: componentType,
+      description,
+      key
+    });
+  });
+  
+  // Generate contextual suggestions
+  const hasText = components.some(c => c.type === 'Text');
+  const hasImages = components.some(c => c.type === 'ImageComponent');
+  const hasButtons = components.some(c => c.type === 'Button');
+  const hasContainers = components.some(c => c.type === 'Container');
+  
+  if (hasImages && !hasText) {
+    suggestions.push('Add descriptive text to complement your images');
+  }
+  
+  if (hasText && !hasImages) {
+    suggestions.push('Consider adding images to make your content more visual');
+  }
+  
+  if (hasContainers && !hasButtons) {
+    suggestions.push('Add call-to-action buttons to encourage user interaction');
+  }
+  
+  if (components.length === 1) {
+    suggestions.push('Ask me to add more components to build out your page');
+  }
+  
+  // Generate explanation based on what was actually created
+  const componentTypes = [...new Set(components.map(c => c.type))];
+  const explanation = `Created ${components.length} component${components.length > 1 ? 's' : ''}: ${componentTypes.join(', ')}. ${components.map(c => c.description).join(', ')}.`;
+  
+  return {
+    explanation,
+    components,
+    suggestions
+  };
+};
+
 export interface CraftJSGenerationRequest {
   prompt: string;
   context?: string;
+  isFollowUp?: boolean;
+  lastComponentIds?: string[];
+  lastComponentTypes?: string[];
 }
 
 export interface CraftJSGenerationResponse {
   craftJson: any;
   explanation?: string;
+  componentsAdded?: ComponentAnalysis[];
+  suggestions?: string[];
+}
+
+export interface ComponentAnalysis {
+  type: string;
+  description: string;
+  key: string;
 }
 
 /**
@@ -30,15 +144,26 @@ export const generateCraftJSFromPrompt = async (
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       const timestamp = Date.now();
+      
+      // Enhanced system prompt with follow-up support
+      const isFollowUpRequest = request.isFollowUp && request.lastComponentTypes?.length;
+      const followUpContext = isFollowUpRequest ? 
+        `\n\n🔄 FOLLOW-UP REQUEST CONTEXT:
+- User just added: ${request.lastComponentTypes?.join(', ')} components
+- This is a modification/refinement request for recently added components
+- Focus on creating components that complement or modify the recent additions
+- Consider the user's request in context of what was just added\n` : '';
+      
       const systemPrompt = `You are a CraftJS component generator. Your task is to generate individual CraftJS components that can be added to an existing page.
 
-IMPORTANT: Generate ONLY the new components to be added, NOT a complete page structure. Do not include ROOT container.
+IMPORTANT: Generate ONLY the new components to be added, NOT a complete page structure. Do not include ROOT container.${followUpContext}
 
 CONTEXT UNDERSTANDING:
 - If user wants to MODIFY existing layout, generate components that work well with the current structure
 - If current page has multi-column layout, consider adding compatible components
 - If current page has cards, consider similar styling for consistency
 - If current page is simple, you can add more complex structures
+${isFollowUpRequest ? '- FOLLOW-UP REQUEST: User is refining recently added components - create complementary or replacement components' : ''}
 
 CraftJS Component Structure Guidelines:
 - Each component has: type, isCanvas, props, displayName, custom, parent, nodes
@@ -433,9 +558,15 @@ Generate CraftJS components to add:`;
 
       try {
         const craftJson = JSON.parse(cleanedText);
+        
+        // Analyze the generated components to provide meaningful feedback
+        const componentAnalysis = analyzeCraftJSComponents(craftJson);
+        
         return {
           craftJson,
-          explanation: `Generated components based on: "${request.prompt}"`
+          explanation: componentAnalysis.explanation,
+          componentsAdded: componentAnalysis.components,
+          suggestions: componentAnalysis.suggestions
         };
       } catch (parseError) {
         console.error('Failed to parse generated JSON:', parseError);
