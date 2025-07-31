@@ -56,8 +56,6 @@ export const Text: TextComponent = ({
   backgroundColor = 'transparent',
   textAlign = 'left',
   height = 'auto',
-  minWidth = '100px',
-  maxWidth = '800px',
   useDesignTokens = true,
   useGlobalColor = true, // NEW: Default to using global settings
   paddingTop = 8,
@@ -133,8 +131,6 @@ export const Text: TextComponent = ({
     cursor: 'text',
     width: '100%',
     height: '100%',
-    minWidth,
-    maxWidth,
     border: 'none',
     outline: 'none',
     resize: 'none',

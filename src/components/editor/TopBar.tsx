@@ -168,8 +168,8 @@ const TopBar = () => {
     
     // Open preview in new tab with the current editor state
     const json = query.serialize();
-    logger.debug('Previewing state:', json);
-    
+    logger.debug('Previewing state:', JSON.parse(json));
+
     // Store the current state temporarily (in a real app, you'd save to database)
     sessionStorage.setItem(`preview-${tempId}`, json);
     
