@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizer } from '../common/Resizer';
-import { ContainerSettings } from './settings/ContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useDesignTokensStore } from '@/store/design-tokens';
+import { Resizer } from '@/components/common/Resizer';
+import { ContainerSettings } from '../settings';
 
 export type ContainerProps = {
     background?: string;

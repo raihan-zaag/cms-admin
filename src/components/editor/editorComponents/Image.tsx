@@ -1,14 +1,11 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizer } from '../common/Resizer';
 import { Image as ImageIcon } from 'lucide-react';
-import { ImageSettings } from './settings/ImageSettings';
 import { useDesignTokensStore } from '@/store/design-tokens';
-import {
-    type SpacingProps,
-    getContentStyles,
-    getDefaultCraftSpacing,
-} from '../../lib/spacingUtils';
+import { getContentStyles, getDefaultCraftSpacing, type SpacingProps } from '@/lib/spacingUtils';
+import { Resizer } from '@/components/common/Resizer';
+import { ImageSettings } from '../settings';
+
 
 interface ImageComponentProps extends SpacingProps {
     src?: string;

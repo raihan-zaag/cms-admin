@@ -4,15 +4,15 @@ import { Toolbox } from '../components/editor/Toolbox';
 import { SettingsPanel } from '../components/editor/SettingsPanel';
 import { LayersPanel } from '../components/editor/LayersPanel';
 import { DesignTokensModal } from '../components/editor/design-tokens/DesignTokensModal';
-import { Container } from '../components/editor/Container';
-import { RootContainer } from '../components/editor/RootContainer';
-import { GridContainer } from '../components/editor/GridContainer';
-import { Text } from '../components/editor/Text';
-import { Button } from '../components/editor/Button';
-import { ImageComponent } from '../components/editor/Image';
 import { DesignTokensProvider } from '../components/providers/DesignTokensProvider';
 import TopBar from '@/components/editor/TopBar';
 import KeyboardShortcutsHandler from '@/components/editor/KeyboardShortcutsHandler';
+import { Container } from '@/components/editor/editorComponents/Container';
+import { RootContainer } from '@/components/editor/editorComponents/RootContainer';
+import { GridContainer } from '@/components/editor/editorComponents/GridContainer';
+import { Text } from '@/components/editor/editorComponents/Text';
+import { Button } from '@/components/editor/editorComponents/Button';
+import { ImageComponent } from '@/components/editor/editorComponents/Image';
 
 export const PageEditor: React.FC = () => {
 

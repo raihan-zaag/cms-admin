@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizer } from '../common/Resizer';
-import { ButtonSettings } from './settings/ButtonSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useDesignTokensStore } from '@/store/design-tokens';
-import { 
-    type SpacingProps, 
-    getContentStyles, 
-    getDefaultCraftSpacing 
-} from '../../lib/spacingUtils';
+import { getContentStyles, getDefaultCraftSpacing, type SpacingProps } from '@/lib/spacingUtils';
+import { Resizer } from '@/components/common/Resizer';
+import { ButtonSettings } from '../settings';
+
 
 interface ButtonProps extends SpacingProps {
   text?: string;

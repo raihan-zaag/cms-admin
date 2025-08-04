@@ -1,15 +1,13 @@
 import React, { useMemo } from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizer } from '../common/Resizer';
-import { TextSettings } from './settings/TextSettings';
+
 import { useTheme } from '@/hooks/useTheme';
 import { useDesignTokensStore } from '@/store/design-tokens';
-import AIContentGenerator from './AIContentGenerator';
-import {
-  type SpacingProps,
-  getContentStyles,
-  getDefaultCraftSpacing
-} from '../../lib/spacingUtils';
+import { getContentStyles, getDefaultCraftSpacing, type SpacingProps } from '@/lib/spacingUtils';
+import { Resizer } from '@/components/common/Resizer';
+import AIContentGenerator from '../AIContentGenerator';
+import { TextSettings } from '../settings';
+
 
 interface TextProps extends SpacingProps {
   text?: string;

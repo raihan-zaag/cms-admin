@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizer } from '../common/Resizer';
-import { RootContainerSettings } from './settings/RootContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useGlobalDesignTokens } from '@/hooks/useGlobalDesignTokens';
 import { useDesignTokensStore } from '@/store/design-tokens';
+import { Resizer } from '@/components/common/Resizer';
+import { RootContainerSettings } from '../settings/RootContainerSettings';
 
 export type RootContainerProps = {
     children?: React.ReactNode;

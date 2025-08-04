@@ -2,14 +2,15 @@ import React from 'react';
 import { useEditor, Element } from '@craftjs/core';
 
 // Editor Components
-import { Container } from './Container';
-import { GridContainer } from './GridContainer';
-import { Text } from './Text';
-import { Button } from './Button';
-import { ImageComponent } from './Image';
+
 
 // Icons
 import { Box, Type, Square, Image, Grid3X3 } from 'lucide-react';
+import { Container } from './editorComponents/Container';
+import { GridContainer } from './editorComponents/GridContainer';
+import { Button } from './editorComponents/Button';
+import { ImageComponent } from './editorComponents/Image';
+import { Text } from './editorComponents/Text';
 
 /**
  * Component definition for the toolbox

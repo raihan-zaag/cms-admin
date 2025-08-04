@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNode } from '@craftjs/core';
-import { Resizer } from '../common/Resizer';
-import { GridContainerSettings } from './settings/GridContainerSettings';
 import { EDITOR_SETTINGS } from '@/constants/editor';
+import { Resizer } from '@/components/common/Resizer';
+import { GridContainerSettings } from '../settings/GridContainerSettings';
 
 export type GridContainerProps = {
     background?: string;
