@@ -6,7 +6,6 @@ import { getContentStyles, getDefaultCraftSpacing, type SpacingProps } from '@/l
 import { Resizer } from '@/components/common/Resizer';
 import { ButtonSettings } from '../settings';
 
-
 interface ButtonProps extends SpacingProps {
   text?: string;
   backgroundColor?: string;
@@ -83,7 +82,7 @@ export const Button: ButtonComponent = ({
     : backgroundColor;
 
   // For color: Use global inheritance if useGlobalColor is true, otherwise use individual color
-  const processedColor = useGlobalColor 
+  const processedColor = useGlobalColor
     ? 'inherit' // This will inherit from the global design tokens root
     : (useDesignTokens && typeof color === 'string' && color.startsWith('@'))
       ? processToken(color)
@@ -116,9 +115,9 @@ export const Button: ButtonComponent = ({
         width: '100%',
         height: '100%',
         // Only set individual color if not using global color
-        ...(useGlobalColor ? {} : { 
+        ...(useGlobalColor ? {} : {
           '--craft-button-color': processedColor,
-          color: processedColor 
+          color: processedColor
         }),
       }
     ),
@@ -130,7 +129,7 @@ export const Button: ButtonComponent = ({
     overflow: 'hidden',
   };
 
-  
+
 
   return (
     <Resizer

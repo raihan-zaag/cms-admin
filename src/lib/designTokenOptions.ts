@@ -33,6 +33,7 @@ export const useDesignTokenOptions = () => {
 
   // Color options - dynamically generated from current theme
   const themeColors = currentTheme === 'auto' ? tokens.colors.light : tokens.colors[currentTheme];
+  
   const colorOptions: SelectOption[] = Object.entries(themeColors).map(([key, token]) => ({
     value: `@color.${key}`,
     label: `${token.name}`,

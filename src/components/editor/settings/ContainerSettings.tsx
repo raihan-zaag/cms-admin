@@ -82,12 +82,6 @@ export const ContainerSettings: React.FC = () => {
                         }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
-                        <option value="@container.xs">Extra Small (320px)</option>
-                        <option value="@container.sm">Small (480px)</option>
-                        <option value="@container.md">Medium (768px)</option>
-                        <option value="@container.lg">Large (1024px)</option>
-                        <option value="@container.xl">Extra Large (1280px)</option>
-                        <option value="@container.full">Full Width (100%)</option>
                         {Object.keys(tokens.tokens.containers).map(containerKey => (
                             <option key={containerKey} value={`@container.${containerKey}`}>
                                 {containerKey} Token
@@ -119,15 +113,9 @@ export const ContainerSettings: React.FC = () => {
                         }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
-                        <option value="transparent">Transparent</option>
-                        <option value="@color.background">Background Color</option>
-                        <option value="@color.primary">Primary Color</option>
-                        <option value="@color.secondary">Secondary Color</option>
-                        <option value="@color.accent">Accent Color</option>
-                        <option value="@color.muted">Muted Color</option>
                         {Object.keys(tokens.tokens.colors.light).map(colorKey => (
                             <option key={colorKey} value={`@color.${colorKey}`}>
-                                {colorKey} Token
+                                {colorKey}
                             </option>
                         ))}
                     </select>
@@ -170,12 +158,6 @@ export const ContainerSettings: React.FC = () => {
                         }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
-                        <option value="@radius.none">None (0px)</option>
-                        <option value="@radius.sm">Small (4px)</option>
-                        <option value="@radius.md">Medium (8px)</option>
-                        <option value="@radius.lg">Large (12px)</option>
-                        <option value="@radius.xl">Extra Large (16px)</option>
-                        <option value="@radius.full">Full (50%)</option>
                         {Object.keys(tokens.tokens.borderRadius).map(radiusKey => (
                             <option key={radiusKey} value={`@radius.${radiusKey}`}>
                                 {radiusKey} Token
@@ -211,12 +193,6 @@ export const ContainerSettings: React.FC = () => {
                         }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
-                        <option value="@spacing.xs">Extra Small (4px)</option>
-                        <option value="@spacing.sm">Small (8px)</option>
-                        <option value="@spacing.md">Medium (16px)</option>
-                        <option value="@spacing.lg">Large (24px)</option>
-                        <option value="@spacing.xl">Extra Large (32px)</option>
-                        <option value="@spacing.2xl">2X Large (48px)</option>
                         {Object.keys(tokens.tokens.spacing).map(spacingKey => (
                             <option key={spacingKey} value={`@spacing.${spacingKey}`}>
                                 {spacingKey} Token
