@@ -37,6 +37,7 @@ export function PagePreview() {
   const [error, setError] = useState<string | null>(null);
   const [currentDevice, setCurrentDevice] = useState<DeviceType>('desktop');
   const [zoom, setZoom] = useState(ZOOM_SETTINGS.DEFAULT);
+  const [showInfo, setShowInfo] = useState(true);
 
   useEffect(() => {
     const loadPage = async () => {
@@ -46,7 +47,18 @@ export function PagePreview() {
           const tempData = sessionStorage.getItem(STORAGE_KEYS.PREVIEW_DATA(pageId));
           if (tempData) {
             try {
-              const craftJson = JSON.parse(tempData);
+              const previewData = JSON.parse(tempData);
+              
+              // Handle new format with craft JSON and global design tokens
+              let craftJson;
+              if (previewData.craftJson) {
+                // New format: { craftJson: {...}, globalDesignTokens: {...} }
+                craftJson = previewData.craftJson;
+              } else {
+                // Old format: direct craft JSON
+                craftJson = previewData;
+              }
+              
               setPageData({
                 id: pageId,
                 title: 'Preview',
@@ -79,7 +91,18 @@ export function PagePreview() {
           const tempData = sessionStorage.getItem(STORAGE_KEYS.PREVIEW_DATA(pageId));
           if (tempData) {
             try {
-              const craftJson = JSON.parse(tempData);
+              const previewData = JSON.parse(tempData);
+              
+              // Handle new format with craft JSON and global design tokens
+              let craftJson;
+              if (previewData.craftJson) {
+                // New format: { craftJson: {...}, globalDesignTokens: {...} }
+                craftJson = previewData.craftJson;
+              } else {
+                // Old format: direct craft JSON
+                craftJson = previewData;
+              }
+              
               setPageData({
                 id: pageId,
                 title: 'Preview',
@@ -105,21 +128,87 @@ export function PagePreview() {
   }, [pageId]);
 
   const getDeviceStyles = () => {
-    const baseStyles = `transition-all duration-300 mx-auto bg-white shadow-xl h-[${PREVIEW_DIMENSIONS.HEIGHT}px]`;
-    
+    const baseStyle: React.CSSProperties = {
+      transition: 'all 0.3s',
+      margin: '0 auto',
+      backgroundColor: 'white',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      minHeight: `${PREVIEW_DIMENSIONS.HEIGHT}px`, // Changed from height to minHeight
+      overflow: 'visible', // Changed from hidden to visible
+      position: 'relative',
+    };
+
     switch (currentDevice) {
       case 'mobile': {
         const mobile = DEVICE_BREAKPOINTS.MOBILE;
-        return `${baseStyles} w-[${mobile.WIDTH}px] max-w-[${mobile.MAX_WIDTH}px] border-${mobile.BORDER_WIDTH} ${mobile.BORDER_COLOR} rounded-[${mobile.BORDER_RADIUS}px] overflow-hidden`;
+        return {
+          ...baseStyle,
+          width: `${mobile.WIDTH}px`,
+          maxWidth: `${mobile.MAX_WIDTH}px`,
+          // borderWidth: `${mobile.BORDER_WIDTH}px`,
+          // borderColor: '#e5e7eb', // gray-800
+          // borderStyle: 'solid',
+          // borderRadius: `${mobile.BORDER_RADIUS}px`,
+        };
       }
       case 'tablet': {
         const tablet = DEVICE_BREAKPOINTS.TABLET;
-        return `${baseStyles} w-[${tablet.WIDTH}px] max-w-[${tablet.MAX_WIDTH}px] border-${tablet.BORDER_WIDTH} ${tablet.BORDER_COLOR} rounded-[${tablet.BORDER_RADIUS}px] overflow-hidden`;
+        return {
+          ...baseStyle,
+          width: `${tablet.WIDTH}px`,
+          // maxWidth: `${tablet.MAX_WIDTH}px`,
+          // borderWidth: `${tablet.BORDER_WIDTH}px`,
+          // borderColor: '#e5e7eb', // gray-600
+          // borderStyle: 'solid',
+          // borderRadius: `${tablet.BORDER_RADIUS}px`,
+        };
       }
       case 'desktop':
       default: {
         const desktop = DEVICE_BREAKPOINTS.DESKTOP;
-        return `${baseStyles} w-full max-w-[${desktop.WIDTH}px] border ${desktop.BORDER_COLOR} rounded-xl overflow-hidden`;
+        return {
+          ...baseStyle,
+          width: '100%',
+          maxWidth: `${desktop.WIDTH}px`,
+          // borderWidth: '1px',
+          // borderColor: '#e5e7eb', // gray-200
+          // borderStyle: 'solid',
+          // borderRadius: '12px',
+        };
+      }
+    }
+  };
+
+  // Helper function to get current device info
+  const getCurrentDeviceInfo = () => {
+    switch (currentDevice) {
+      case 'mobile': {
+        const mobile = DEVICE_BREAKPOINTS.MOBILE;
+        return {
+          ...mobile,
+          currentWidth: `${mobile.WIDTH}px`,
+          containerMaxWidth: `${mobile.MAX_WIDTH}px`,
+          aspectRatio: (mobile.WIDTH / PREVIEW_DIMENSIONS.HEIGHT).toFixed(2),
+        };
+      }
+      case 'tablet': {
+        const tablet = DEVICE_BREAKPOINTS.TABLET;
+        return {
+          ...tablet,
+          currentWidth: `${tablet.WIDTH}px`,
+          containerMaxWidth: `${tablet.MAX_WIDTH}px`,
+          aspectRatio: (tablet.WIDTH / PREVIEW_DIMENSIONS.HEIGHT).toFixed(2),
+        };
+      }
+      case 'desktop':
+      default: {
+        const desktop = DEVICE_BREAKPOINTS.DESKTOP;
+        return {
+          ...desktop,
+          currentWidth: 'responsive',
+          containerMaxWidth: `${desktop.WIDTH}px`,
+          aspectRatio: (desktop.WIDTH / PREVIEW_DIMENSIONS.HEIGHT).toFixed(2),
+        };
       }
     }
   };
@@ -165,6 +254,11 @@ export function PagePreview() {
             e.preventDefault();
             window.location.reload();
           }
+          break;
+        case 'i':
+        case 'I':
+          e.preventDefault();
+          setShowInfo(prev => !prev);
           break;
       }
     };
@@ -215,7 +309,21 @@ export function PagePreview() {
   let htmlContent = '';
   try {
     if (pageData.content && typeof pageData.content === 'object') {
-      htmlContent = convertCraftJsonToHtml(pageData.content);
+      // Check if we have global design tokens in session storage for temp previews
+      let globalDesignTokens = null;
+      if (pageId?.startsWith('temp-')) {
+        const tempData = sessionStorage.getItem(STORAGE_KEYS.PREVIEW_DATA(pageId));
+        if (tempData) {
+          try {
+            const previewData = JSON.parse(tempData);
+            globalDesignTokens = previewData.globalDesignTokens;
+          } catch (parseError) {
+            console.log('No global design tokens found in preview data:', parseError);
+          }
+        }
+      }
+      
+      htmlContent = convertCraftJsonToHtml(pageData.content, globalDesignTokens);
     } else if (typeof pageData.content === 'string') {
       htmlContent = pageData.content;
     }
@@ -255,13 +363,16 @@ export function PagePreview() {
                     ? 'bg-white text-blue-600 shadow-sm scale-105' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
-                title={`${DEVICE_BREAKPOINTS.DESKTOP.LABEL} (${DEVICE_BREAKPOINTS.DESKTOP.WIDTH}px)`}
+                title={`${DEVICE_BREAKPOINTS.DESKTOP.LABEL} (${DEVICE_BREAKPOINTS.DESKTOP.WIDTH}px max)`}
               >
                 <Monitor className="h-5 w-5" />
+                {currentDevice === 'desktop' && (
+                  <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 rounded-full"></span>
+                )}
               </button>
               <button
                 onClick={() => setCurrentDevice('tablet')}
-                className={`p-3 rounded-md transition-all duration-200 ${
+                className={`p-3 rounded-md transition-all duration-200 relative ${
                   currentDevice === 'tablet' 
                     ? 'bg-white text-blue-600 shadow-sm scale-105' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -269,10 +380,13 @@ export function PagePreview() {
                 title={`${DEVICE_BREAKPOINTS.TABLET.LABEL} (${DEVICE_BREAKPOINTS.TABLET.WIDTH}px)`}
               >
                 <Tablet className="h-5 w-5" />
+                {currentDevice === 'tablet' && (
+                  <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 rounded-full"></span>
+                )}
               </button>
               <button
                 onClick={() => setCurrentDevice('mobile')}
-                className={`p-3 rounded-md transition-all duration-200 ${
+                className={`p-3 rounded-md transition-all duration-200 relative ${
                   currentDevice === 'mobile' 
                     ? 'bg-white text-blue-600 shadow-sm scale-105' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -280,6 +394,9 @@ export function PagePreview() {
                 title={`${DEVICE_BREAKPOINTS.MOBILE.LABEL} (${DEVICE_BREAKPOINTS.MOBILE.WIDTH}px)`}
               >
                 <Smartphone className="h-5 w-5" />
+                {currentDevice === 'mobile' && (
+                  <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 rounded-full"></span>
+                )}
               </button>
             </div>
 
@@ -319,6 +436,23 @@ export function PagePreview() {
               >
                 <RotateCcw className="h-5 w-5" />
               </button>
+
+              <button
+                onClick={() => setShowInfo(!showInfo)}
+                className="p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                title={showInfo ? "Hide Info Panels" : "Show Info Panels"}
+              >
+                {showInfo ? (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M14.12 14.12l1.415 1.415" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -327,44 +461,81 @@ export function PagePreview() {
       {/* Preview Content */}
       <div className="py-12 px-4">
         <div 
-          className={getDeviceStyles()}
           style={{ 
+            ...getDeviceStyles(),
             transform: `scale(${zoom / 100})`,
             transformOrigin: 'top center'
           }}
         >
-          <div 
-            className={`min-h-[${PREVIEW_DIMENSIONS.HEIGHT}px] overflow-auto`}
-            dangerouslySetInnerHTML={{ __html: htmlContent }} 
-          />
+          <div className="w-full">
+            <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          </div>
         </div>
       </div>
 
       {/* Device Info */}
-      <div className="fixed bottom-6 left-6 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-3 rounded-lg shadow-lg border border-gray-200">
-        <div className="text-sm font-medium">
-          {currentDevice === 'desktop' && `${DEVICE_BREAKPOINTS.DESKTOP.ICON} ${DEVICE_BREAKPOINTS.DESKTOP.LABEL}`}
-          {currentDevice === 'tablet' && `${DEVICE_BREAKPOINTS.TABLET.ICON} ${DEVICE_BREAKPOINTS.TABLET.LABEL}`}
-          {currentDevice === 'mobile' && `${DEVICE_BREAKPOINTS.MOBILE.ICON} ${DEVICE_BREAKPOINTS.MOBILE.LABEL}`}
+      {showInfo && (
+        <div className="fixed bottom-6 left-6 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-3 rounded-lg shadow-lg border border-gray-200 min-w-[200px] transition-all duration-300">
+          <div className="text-sm font-medium mb-2">
+            {getCurrentDeviceInfo().ICON} {getCurrentDeviceInfo().LABEL}
+          </div>
+          <div className="text-xs text-gray-600 space-y-1">
+            <div className="flex justify-between">
+              <span>Current Width:</span>
+              <span className="font-mono">{getCurrentDeviceInfo().currentWidth}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Container Width:</span>
+              <span className="font-mono">{getCurrentDeviceInfo().containerMaxWidth}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Height:</span>
+              <span className="font-mono">{PREVIEW_DIMENSIONS.HEIGHT}px</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Aspect Ratio:</span>
+              <span className="font-mono">{getCurrentDeviceInfo().aspectRatio}</span>
+            </div>
+            <div className="flex justify-between border-t border-gray-200 pt-1 mt-2">
+              <span>Zoom:</span>
+              <span className="font-mono text-blue-600">{zoom}%</span>
+            </div>
+          </div>
         </div>
-        <div className="text-xs text-gray-600 mt-1">
-          {currentDevice === 'desktop' && `${DEVICE_BREAKPOINTS.DESKTOP.WIDTH}px max width`}
-          {currentDevice === 'tablet' && `${DEVICE_BREAKPOINTS.TABLET.WIDTH}px width`}
-          {currentDevice === 'mobile' && `${DEVICE_BREAKPOINTS.MOBILE.WIDTH}px width`}
-          {' • Zoom: '}{zoom}%
-        </div>
-      </div>
+      )}
 
       {/* Keyboard Shortcuts Help */}
-      <div className="fixed bottom-6 right-6 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-3 rounded-lg shadow-lg border border-gray-200">
-        <div className="text-sm font-medium mb-2">⌨️ Keyboard Shortcuts</div>
-        <div className="text-xs text-gray-600 space-y-1">
-          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.DESKTOP}</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.TABLET}</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.MOBILE}</kbd> Switch devices</div>
-          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">+</kbd>, <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">-</kbd> Zoom in/out</div>
-          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.RESET_ZOOM}</kbd> Reset zoom</div>
-          <div><kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">R</kbd> Refresh page</div>
+      {showInfo && (
+        <div className="fixed bottom-6 right-6 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-3 rounded-lg shadow-lg border border-gray-200 max-w-[280px] transition-all duration-300">
+          <div className="text-sm font-medium mb-2">⌨️ Shortcuts</div>
+          <div className="text-xs text-gray-600 space-y-1">
+            <div className="flex justify-between items-center">
+              <span>Devices:</span>
+              <div className="flex gap-1">
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.DESKTOP}</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.TABLET}</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.MOBILE}</kbd>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Zoom:</span>
+              <div className="flex gap-1">
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">+</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">-</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{KEYBOARD_SHORTCUTS.RESET_ZOOM}</kbd>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Refresh:</span>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">R</kbd>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Toggle Info:</span>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">I</kbd>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

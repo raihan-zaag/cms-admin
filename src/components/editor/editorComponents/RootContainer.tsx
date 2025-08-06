@@ -376,6 +376,8 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
         width: '100%',
     };
 
+
+    console.log('RootContainer ', containerStyle);
     return (
         <Resizer
             propKey={{ width: 'width', height: 'height' }}

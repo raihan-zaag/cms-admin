@@ -1,3 +1,8 @@
+/**
+ * Improved convertCraftJsonToHtml with better architecture
+ * 
+ * Uses React Context instead of global state for better isolation
+ */
 
 import { RenderButton } from '@/components/static/RenderButton';
 import { RenderContainer } from '@/components/static/RenderContainer';
@@ -7,26 +12,11 @@ import { RenderImage } from '@/components/static/RenderImage';
 import { RenderText } from '@/components/static/RenderText';
 import { TokenProcessor } from '@/lib/token-processor';
 import { useDesignTokensStore } from '@/store/design-tokens';
+import { PreviewProvider } from '@/contexts/PreviewContext';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import beautify from 'js-beautify';
-
-
-// Store global design tokens for use by render components
-let currentGlobalDesignTokens: any = null;
-
-export function setGlobalDesignTokensForRender(tokens: any) {
-  currentGlobalDesignTokens = tokens;
-  
-  // Auto-cleanup after 5 minutes to prevent memory leaks
-  setTimeout(() => {
-    currentGlobalDesignTokens = null;
-  }, 5 * 60 * 1000);
-}
-
-export function getGlobalDesignTokensForRender() {
-  return currentGlobalDesignTokens;
-}
+import type { GlobalDesignTokenSettings } from '@/hooks/useGlobalDesignTokens';
 
 type CraftNodeType = {
   id?: string;
@@ -48,9 +38,9 @@ type CraftJson = Record<string, CraftNodeType>;
 // Maps resolved component names to actual React components
 const componentMap: Record<string, React.ElementType> = {
   Container: RenderContainer,
-  RootContainer: RenderRootContainer, // Use specific RootContainer component
+  RootContainer: RenderRootContainer,
   ContainerCopy: RenderContainer,
-  GridContainer: RenderGridContainer, // Add GridContainer mapping
+  GridContainer: RenderGridContainer,
   Text: RenderText,
   Button: RenderButton,
   ImageComponent: RenderImage
@@ -79,37 +69,41 @@ function renderNode(node: CraftNodeType, allNodes: CraftJson, nodeId?: string): 
   );
 }
 
-export function convertCraftJsonToHtml(json: CraftJson, globalDesignTokens?: any): string {
+export function convertCraftJsonToHtmlV2(
+  json: CraftJson, 
+  globalDesignTokens?: GlobalDesignTokenSettings
+): string {
   const rootNode = json['ROOT'];
   if (!rootNode) {
     throw new Error('Missing ROOT node in JSON');
   }
 
   try {
-    // Store global design tokens for render components to access
-    setGlobalDesignTokensForRender(globalDesignTokens);
-    
     // Ensure TokenProcessor is updated with current design tokens
     const store = useDesignTokensStore.getState();
     const tokenProcessor = TokenProcessor.getInstance();
     tokenProcessor.updateState(store.tokens, store.currentTheme);
     
-    // Debug: Log some token processing to ensure it's working
-    console.log('Token processing test:');
-    console.log('@spacing.md ->', tokenProcessor.processToken('@spacing.md'));
-    console.log('@spacing.lg ->', tokenProcessor.processToken('@spacing.lg'));
-    console.log('@container.xl ->', tokenProcessor.processToken('@container.xl'));
-    console.log('@color.background ->', tokenProcessor.processToken('@color.background'));
+    // Debug: Log token processing
+    if (globalDesignTokens) {
+      console.log('Processing preview with global design tokens:', globalDesignTokens);
+    }
 
-    const tree = renderNode(rootNode, json, 'ROOT');
-    if (!tree) {
+    // Wrap the tree with PreviewProvider for context
+    const wrappedTree = (
+      <PreviewProvider globalDesignTokens={globalDesignTokens}>
+        {renderNode(rootNode, json, 'ROOT')}
+      </PreviewProvider>
+    );
+
+    if (!wrappedTree) {
       throw new Error('Failed to render root node');
     }
     
-    // Generate minimal CSS for the HTML output - respect original spacing from Craft.js JSON
+    // Generate CSS (same as before)
     const cssStyles = `
       <style>
-        /* Reset and base styles only */
+        /* Reset and base styles */
         body { 
           margin: 0; 
           padding: 0; 
@@ -120,8 +114,8 @@ export function convertCraftJsonToHtml(json: CraftJson, globalDesignTokens?: any
           box-sizing: border-box; 
         }
         
-        /* Basic container styles - preserve original layout */
-        .craft-container {
+        /* Container styles */
+        .craft-container, .craft-root-container {
           display: flex;
         }
         
@@ -129,19 +123,16 @@ export function convertCraftJsonToHtml(json: CraftJson, globalDesignTokens?: any
           display: grid;
         }
         
-        /* Basic responsive utilities */
         .responsive-container {
           width: 100%;
           max-width: 100%;
         }
         
-        /* Image responsiveness */
         .craft-image {
           max-width: 100%;
           height: auto;
         }
         
-        /* Button base styles */
         .craft-button {
           display: inline-block;
           text-decoration: none;
@@ -150,36 +141,26 @@ export function convertCraftJsonToHtml(json: CraftJson, globalDesignTokens?: any
           outline: none;
         }
         
-        /* Text base styles */
         .craft-text {
           word-wrap: break-word;
           overflow-wrap: break-word;
         }
         
-        /* Minimal responsive adjustments - only for extreme mobile cases */
         @media (max-width: 480px) {
-          /* Only force column layout for very small screens if flex direction is row */
           .craft-container[style*="flex-direction: row"] {
             flex-direction: column;
           }
           
-          /* Grid containers get single column on very small screens */
           .craft-grid-container[style*="repeat("] {
             grid-template-columns: 1fr;
-          }
-          
-          /* Images remain responsive */
-          .craft-image {
-            width: 100%;
           }
         }
       </style>
     `;
     
-    const htmlContent = ReactDOMServer.renderToStaticMarkup(tree);
+    const htmlContent = ReactDOMServer.renderToStaticMarkup(wrappedTree);
     const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${cssStyles}</head><body><div class="responsive-container">${htmlContent}</div></body></html>`;
     
-    // Beautify the HTML output
     return beautify.html(fullHtml, {
       indent_size: 2,
       indent_char: ' ',

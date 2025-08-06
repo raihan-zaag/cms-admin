@@ -3,6 +3,7 @@ import { downloadHtmlFile, generateFullHtmlDocument } from "@/lib/utils";
 import { logger } from "@/lib/logger";
 import { useEditor } from "@craftjs/core";
 import { useLayoutStore } from "@/store/layout";
+import { useGlobalDesignTokens } from "@/hooks/useGlobalDesignTokens";
 import { useState, useEffect } from "react";
 import LayoutManager from "./LayoutManager";
 import SaveModal from "./SaveModal";
@@ -46,6 +47,9 @@ const TopBar = () => {
     canUndo: storeCanUndo, 
     canRedo: storeCanRedo 
   } = useLayoutStore();
+  
+  // Access global design tokens
+  const { globalSettings } = useGlobalDesignTokens();
   
   const [showLayoutManager, setShowLayoutManager] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -168,10 +172,18 @@ const TopBar = () => {
     
     // Open preview in new tab with the current editor state
     const json = query.serialize();
-    logger.debug('Previewing state:', JSON.parse(json));
+   
+
+    // Create preview data that includes both craft JSON and global design tokens
+    const previewData = {
+      craftJson: JSON.parse(json),
+      globalDesignTokens: globalSettings
+    };
 
     // Store the current state temporarily (in a real app, you'd save to database)
-    sessionStorage.setItem(`preview-${tempId}`, json);
+    sessionStorage.setItem(`preview-${tempId}`, JSON.stringify(previewData));
+
+     logger.debug('Previewing state:', previewData);
     
     // Open preview route in new tab
     window.open(`/preview/${tempId}`, '_blank');
