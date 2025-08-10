@@ -48,10 +48,10 @@ export const RenderButton: React.FC<RenderButtonProps> = ({
   marginBottom = 0,
   marginLeft = 0,
   useDesignTokens = true,
+  useGlobalColor = true,
 }) => {
   const tokenProcessor = TokenProcessor.getInstance();
 
-  // Helper function to process values that might be design tokens
   const processValue = (value: any): any => {
     if (typeof value === 'string' && value.startsWith('@') && useDesignTokens) {
       return tokenProcessor.processToken(value);
@@ -59,32 +59,36 @@ export const RenderButton: React.FC<RenderButtonProps> = ({
     return value;
   };
 
-  // Process all token-based values
   const processedBackgroundColor = processValue(backgroundColor);
   const processedColor = processValue(color);
   const processedBorderRadius = processValue(borderRadius);
   const processedFontSize = processValue(fontSize);
   const processedFontFamily = processValue(fontFamily);
-  const processedPaddingTop = processValue(paddingTop);
-  const processedPaddingRight = processValue(paddingRight);
-  const processedPaddingBottom = processValue(paddingBottom);
-  const processedPaddingLeft = processValue(paddingLeft);
 
-  const paddingValue = (processedPaddingTop !== undefined || processedPaddingRight !== undefined || 
-                       processedPaddingBottom !== undefined || processedPaddingLeft !== undefined) 
-    ? `${processedPaddingTop || 0} ${processedPaddingRight || 0} ${processedPaddingBottom || 0} ${processedPaddingLeft || 0}`
-    : '10px';
+  // Spacing helpers
+  const toCss = (v: any): string | undefined => {
+    if (v === undefined || v === null) return undefined;
+    if (typeof v === 'number') return `${v}px`;
+    if (/^\d+$/.test(v)) return `${v}px`;
+    return v; // assume already has unit or token processed
+  };
+
+  const allPaddingUndefined = [paddingTop, paddingRight, paddingBottom, paddingLeft].every(v => v === undefined);
+  const finalPaddingTop = toCss(allPaddingUndefined ? 8 : paddingTop);
+  const finalPaddingRight = toCss(allPaddingUndefined ? 16 : paddingRight);
+  const finalPaddingBottom = toCss(allPaddingUndefined ? 8 : paddingBottom);
+  const finalPaddingLeft = toCss(allPaddingUndefined ? 16 : paddingLeft);
 
   const marginValue = `${marginTop}px ${marginRight}px ${marginBottom}px ${marginLeft}px`;
 
   return (
     <button
-      className="craft-button"
+      className={`craft-button ${useGlobalColor ? 'use-global-color' : 'use-individual-color'}`}
       style={{
         backgroundColor: isTransparent ? 'transparent' : processedBackgroundColor,
-        color: processedColor,
+        color: useGlobalColor ? 'inherit' : processedColor,
+        ...(useGlobalColor ? {} : { '--craft-button-color': processedColor } as any),
         borderRadius: processedBorderRadius,
-        padding: paddingValue,
         fontSize: processedFontSize,
         fontWeight,
         fontFamily: processedFontFamily,
@@ -93,6 +97,10 @@ export const RenderButton: React.FC<RenderButtonProps> = ({
         minWidth,
         minHeight,
         margin: marginValue,
+        paddingTop: finalPaddingTop,
+        paddingRight: finalPaddingRight,
+        paddingBottom: finalPaddingBottom,
+        paddingLeft: finalPaddingLeft,
         border: 'none',
         cursor: 'pointer',
       }}

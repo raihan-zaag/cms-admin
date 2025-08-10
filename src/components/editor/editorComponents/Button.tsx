@@ -50,11 +50,12 @@ export const Button: ButtonComponent = ({
   height = 'auto',
   onClick,
   useDesignTokens = true,
-  useGlobalColor = true, // NEW: Default to using global color
-  paddingTop = 12,
-  paddingRight = 12,
-  paddingBottom = 12,
-  paddingLeft = 12,
+  useGlobalColor = true,
+  // Default padding (8px vertical, 16px horizontal)
+  paddingTop = 8,
+  paddingRight = 16,
+  paddingBottom = 8,
+  paddingLeft = 16,
   marginTop = 0,
   marginRight = 0,
   marginBottom = 0,
@@ -129,8 +130,6 @@ export const Button: ButtonComponent = ({
     overflow: 'hidden',
   };
 
-
-
   return (
     <Resizer
       propKey={{ width: 'width', height: 'height' }}
@@ -150,6 +149,17 @@ export const Button: ButtonComponent = ({
 
 Button.craft = {
   props: {
+    ...getDefaultCraftSpacing(), // start with zeros
+    // override with desired default padding
+    paddingTop: 8,
+    paddingRight: 16,
+    paddingBottom: 8,
+    paddingLeft: 16,
+    // margins remain zero
+    marginTop: 0,
+    marginRight: 0,
+    marginBottom: 0,
+    marginLeft: 0,
     text: 'Click me',
     backgroundColor: '@color.primary',
     isTransparent: false,
@@ -162,7 +172,6 @@ Button.craft = {
     height: 'auto',
     useDesignTokens: true,
     useGlobalColor: true,
-    ...getDefaultCraftSpacing(),
   },
   rules: {
     canDrag: () => true,
