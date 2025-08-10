@@ -40,6 +40,17 @@ export function PagePreview() {
   const [showInfo, setShowInfo] = useState(true);
 
   useEffect(() => {
+    // Cleanup any stale preview entries older than 1 hour
+    const now = Date.now();
+    Object.keys(sessionStorage).forEach(k => {
+      if (k.startsWith('preview-temp-')) {
+        const ts = parseInt(k.replace('preview-temp-', ''), 10);
+        if (!isNaN(ts) && now - ts > 3600000) sessionStorage.removeItem(k);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     const loadPage = async () => {
       if (!pageId) {
         // Check if it's a temporary preview

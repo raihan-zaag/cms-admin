@@ -78,9 +78,11 @@ export const Button: ButtonComponent = ({
   useDesignTokensStore();
 
   // Process design tokens or use raw values
-  const processedBackgroundColor = (useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@'))
-    ? processToken(backgroundColor)
-    : backgroundColor;
+  const processedBackgroundColor = (useGlobalColor)
+    ? 'var(--global-primary-color)' // always reflect updated global primary color
+    : (useDesignTokens && typeof backgroundColor === 'string' && backgroundColor.startsWith('@'))
+      ? processToken(backgroundColor)
+      : backgroundColor;
 
   // For color: Use global inheritance if useGlobalColor is true, otherwise use individual color
   const processedColor = useGlobalColor
@@ -91,15 +93,17 @@ export const Button: ButtonComponent = ({
 
   const processedBorderRadius = (useDesignTokens && typeof borderRadius === 'string' && borderRadius.startsWith('@'))
     ? processToken(borderRadius)
-    : typeof borderRadius === 'number' ? `${borderRadius}px` : `${borderRadius}px`;
+    : typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
 
   const processedFontSize = (useDesignTokens && typeof fontSize === 'string' && fontSize.startsWith('@'))
     ? processToken(fontSize)
-    : typeof fontSize === 'number' ? `${fontSize}px` : `${fontSize}px`;
+    : typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
 
-  const processedFontFamily = (useDesignTokens && typeof fontFamily === 'string' && fontFamily.startsWith('@'))
-    ? processToken(fontFamily)
-    : fontFamily;
+  const processedFontFamily = (useGlobalColor && fontFamily === '@font.primary')
+    ? 'inherit' // inherit from root container global token
+    : (useDesignTokens && typeof fontFamily === 'string' && fontFamily.startsWith('@'))
+      ? processToken(fontFamily)
+      : fontFamily;
 
   const buttonStyle: React.CSSProperties = {
     ...getContentStyles(
@@ -115,11 +119,8 @@ export const Button: ButtonComponent = ({
         cursor: 'pointer',
         width: '100%',
         height: '100%',
-        // Only set individual color if not using global color
-        ...(useGlobalColor ? {} : {
-          '--craft-button-color': processedColor,
-          color: processedColor
-        }),
+        // Force inherit to pick up global text color + font unless explicitly overridden
+        color: useGlobalColor ? 'inherit' : processedColor,
       }
     ),
   };

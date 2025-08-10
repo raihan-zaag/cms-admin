@@ -158,22 +158,22 @@ export const RenderRootContainer: React.FC<RenderRootContainerProps> = ({
   // Build complex values using global design tokens if available
   const processedPadding = (() => {
     if (globalDesignTokens) {
-      const globalPadding = globalDesignTokens.container?.padding;
+      const globalPadding = globalDesignTokens.container?.padding || '@spacing.0';
       const globalPaddingX = globalDesignTokens.container?.paddingX;
       const globalPaddingY = globalDesignTokens.container?.paddingY;
-      return buildPaddingString(globalPadding || padding, globalPaddingX || paddingX, globalPaddingY || paddingY);
+      return buildPaddingString(globalPadding || padding || '@spacing.0', globalPaddingX || paddingX, globalPaddingY || paddingY);
     }
-    return buildPaddingString(padding, paddingX, paddingY);
+    return buildPaddingString(padding || '@spacing.0', paddingX, paddingY);
   })();
 
   const gapStyles = (() => {
     if (globalDesignTokens) {
-      const globalGap = globalDesignTokens.layout?.gap;
+      const globalGap = globalDesignTokens.layout?.gap || '@spacing.0';
       const globalGapX = globalDesignTokens.layout?.gapX;
       const globalGapY = globalDesignTokens.layout?.gapY;
-      return buildGapValues(globalGap || gap, globalGapX || gapX, globalGapY || gapY);
+      return buildGapValues(globalGap || gap || '@spacing.0', globalGapX || gapX, globalGapY || gapY);
     }
-    return buildGapValues(gap, gapX, gapY);
+    return buildGapValues(gap || '@spacing.0', gapX, gapY);
   })();
 
   // Get layout values from global design tokens if available
@@ -204,6 +204,14 @@ export const RenderRootContainer: React.FC<RenderRootContainerProps> = ({
     boxSizing: 'border-box',
     overflow: 'visible',
     position: 'relative',
+    ...( {
+      '--global-primary-color': tokenProcessor.processToken(globalDesignTokens?.colors?.primary || '@color.primary'),
+      '--global-text-color': tokenProcessor.processToken(globalDesignTokens?.colors?.text || '@color.text'),
+      '--global-gap': (gapStyles as any).gap || '',
+      '--global-row-gap': (gapStyles as any).rowGap || '',
+      '--global-column-gap': (gapStyles as any).columnGap || '',
+      '--global-padding': processedPadding,
+    } as any),
     ...rest.style,
   };
 

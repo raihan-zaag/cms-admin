@@ -59,7 +59,9 @@ export const RenderButton: React.FC<RenderButtonProps> = ({
     return value;
   };
 
-  const processedBackgroundColor = processValue(backgroundColor);
+  const processedBackgroundColor = useGlobalColor
+    ? 'var(--global-primary-color)'
+    : processValue(backgroundColor);
   const processedColor = processValue(color);
   const processedBorderRadius = processValue(borderRadius);
   const processedFontSize = processValue(fontSize);

@@ -70,7 +70,7 @@ export const defaultGlobalSettings: GlobalDesignTokenSettings = {
   },
   container: {
     maxWidth: '@container.xl',
-    padding: '@spacing.lg',
+    padding: '@spacing.0',
     paddingX: undefined,
     paddingY: undefined,
     borderRadius: '@radius.md',
@@ -79,7 +79,7 @@ export const defaultGlobalSettings: GlobalDesignTokenSettings = {
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    gap: '@spacing.md',
+    gap: '@spacing.0',
     gapX: undefined,
     gapY: undefined,
   },

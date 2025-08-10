@@ -310,62 +310,114 @@ export const RootContainerSettings: React.FC = () => {
                 <CardContent className="space-y-3">
                     <div>
                         <Label htmlFor="gapX">Column Gap (Horizontal)</Label>
-                        <SelectOptionsRenderer
-                            id="gapX"
-                            value={gapX || ''}
-                            onChange={(value) =>
-                                setProp((props: RootContainerProps) => (props.gapX = value || undefined))
-                            }
-                            options={[
-                                { value: '', label: 'Use default gap', description: 'Use inherited gap value' },
-                                ...spacingOptions
-                            ]}
-                        />
+                        {(() => {
+                            const effectiveGapX = useGlobalTokens 
+                                ? (globalSettings.layout.gapX ?? '@spacing.0') 
+                                : (gapX ?? '@spacing.0');
+                            return (
+                                <SelectOptionsRenderer
+                                    id="gapX"
+                                    value={effectiveGapX}
+                                    onChange={(value) => {
+                                        if (useGlobalTokens) {
+                                            updateGlobalSettings({
+                                                layout: {
+                                                    ...globalSettings.layout,
+                                                    gapX: value === '@spacing.0' ? undefined : value
+                                                }
+                                            });
+                                        } else {
+                                            setProp((props: RootContainerProps) => (props.gapX = value));
+                                        }
+                                    }}
+                                    options={spacingOptions}
+                                />
+                            );
+                        })()}
                     </div>
 
                     <div>
                         <Label htmlFor="gapY">Row Gap (Vertical)</Label>
-                        <SelectOptionsRenderer
-                            id="gapY"
-                            value={gapY || ''}
-                            onChange={(value) =>
-                                setProp((props: RootContainerProps) => (props.gapY = value || undefined))
-                            }
-                            options={[
-                                { value: '', label: 'Use default gap', description: 'Use inherited gap value' },
-                                ...spacingOptions
-                            ]}
-                        />
+                        {(() => {
+                            const effectiveGapY = useGlobalTokens 
+                                ? (globalSettings.layout.gapY ?? '@spacing.0') 
+                                : (gapY ?? '@spacing.0');
+                            return (
+                                <SelectOptionsRenderer
+                                    id="gapY"
+                                    value={effectiveGapY}
+                                    onChange={(value) => {
+                                        if (useGlobalTokens) {
+                                            updateGlobalSettings({
+                                                layout: {
+                                                    ...globalSettings.layout,
+                                                    gapY: value === '@spacing.0' ? undefined : value
+                                                }
+                                            });
+                                        } else {
+                                            setProp((props: RootContainerProps) => (props.gapY = value));
+                                        }
+                                    }}
+                                    options={spacingOptions}
+                                />
+                            );
+                        })()}
                     </div>
 
                     <div>
                         <Label htmlFor="paddingX">Horizontal Padding</Label>
-                        <SelectOptionsRenderer
-                            id="paddingX"
-                            value={paddingX || ''}
-                            onChange={(value) =>
-                                setProp((props: RootContainerProps) => (props.paddingX = value || undefined))
-                            }
-                            options={[
-                                { value: '', label: 'Use default padding', description: 'Use inherited padding value' },
-                                ...spacingOptions
-                            ]}
-                        />
+                        {(() => {
+                            const effectivePaddingX = useGlobalTokens 
+                                ? (globalSettings.container.paddingX ?? '@spacing.0') 
+                                : (paddingX ?? '@spacing.0');
+                            return (
+                                <SelectOptionsRenderer
+                                    id="paddingX"
+                                    value={effectivePaddingX}
+                                    onChange={(value) => {
+                                        if (useGlobalTokens) {
+                                            updateGlobalSettings({
+                                                container: {
+                                                    ...globalSettings.container,
+                                                    paddingX: value === '@spacing.0' ? undefined : value
+                                                }
+                                            });
+                                        } else {
+                                            setProp((props: RootContainerProps) => (props.paddingX = value));
+                                        }
+                                    }}
+                                    options={spacingOptions}
+                                />
+                            );
+                        })()}
                     </div>
 
                     <div>
                         <Label htmlFor="paddingY">Vertical Padding</Label>
-                        <SelectOptionsRenderer
-                            id="paddingY"
-                            value={paddingY || ''}
-                            onChange={(value) =>
-                                setProp((props: RootContainerProps) => (props.paddingY = value || undefined))
-                            }
-                            options={[
-                                { value: '', label: 'Use default padding', description: 'Use inherited padding value' },
-                                ...spacingOptions
-                            ]}
-                        />
+                        {(() => {
+                            const effectivePaddingY = useGlobalTokens 
+                                ? (globalSettings.container.paddingY ?? '@spacing.0') 
+                                : (paddingY ?? '@spacing.0');
+                            return (
+                                <SelectOptionsRenderer
+                                    id="paddingY"
+                                    value={effectivePaddingY}
+                                    onChange={(value) => {
+                                        if (useGlobalTokens) {
+                                            updateGlobalSettings({
+                                                container: {
+                                                    ...globalSettings.container,
+                                                    paddingY: value === '@spacing.0' ? undefined : value
+                                                }
+                                            });
+                                        } else {
+                                            setProp((props: RootContainerProps) => (props.paddingY = value));
+                                        }
+                                    }}
+                                    options={spacingOptions}
+                                />
+                            );
+                        })()}
                     </div>
                 </CardContent>
             </Card>
@@ -419,14 +471,11 @@ export const RootContainerSettings: React.FC = () => {
                             <Label htmlFor="manualGap">Gap</Label>
                             <SelectOptionsRenderer
                                 id="manualGap"
-                                value={gap || ''}
+                                value={gap || '@spacing.0'}
                                 onChange={(value) =>
                                     setProp((props: RootContainerProps) => (props.gap = value))
                                 }
-                                options={[
-                                    { value: '', label: 'Default', description: 'Use default gap value' },
-                                    ...spacingOptions
-                                ]}
+                                options={spacingOptions}
                             />
                         </div>
 
@@ -434,14 +483,11 @@ export const RootContainerSettings: React.FC = () => {
                             <Label htmlFor="manualPadding">Padding</Label>
                             <SelectOptionsRenderer
                                 id="manualPadding"
-                                value={padding || ''}
+                                value={padding || '@spacing.0'}
                                 onChange={(value) =>
                                     setProp((props: RootContainerProps) => (props.padding = value))
                                 }
-                                options={[
-                                    { value: '', label: 'Default', description: 'Use default padding value' },
-                                    ...spacingOptions
-                                ]}
+                                options={spacingOptions}
                             />
                         </div>
                     </CardContent>

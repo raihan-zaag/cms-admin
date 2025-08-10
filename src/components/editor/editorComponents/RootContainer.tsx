@@ -240,20 +240,28 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
 
     // Apply processed values - wrapped in useMemo for proper re-rendering
     const processedBackground = React.useMemo(() => {
-        const result = isTransparent 
-            ? 'transparent' 
-            : getTokenValue(background, 'colors.background');
-        return result;
+        const val = isTransparent ? 'transparent' : getTokenValue(background, 'colors.background');
+        return val;
     }, [isTransparent, background, getTokenValue]);
+
+    const processedTextColor = React.useMemo(() => {
+        // prefer global text color token
+        if (useGlobalTokens && globalSettings.colors.text) {
+            const c = globalSettings.colors.text;
+            return c.startsWith('@') ? processToken(c) : c;
+        }
+        return getTextColor();
+    }, [useGlobalTokens, globalSettings.colors.text, getTextColor, processToken]);
     
     const processedGap = React.useMemo(() => {
         if (useGlobalTokens) {
-            const gapValue = globalSettings.layout.gap;
-            const gapXValue = globalSettings.layout.gapX;
-            const gapYValue = globalSettings.layout.gapY;
-            return buildGapValues(gapValue, gapXValue || gapX, gapYValue || gapY);
+            const gapValue = globalSettings.layout.gap || '@spacing.0';
+            const gapXValue = (globalSettings.layout.gapX ?? gapX) || undefined;
+            const gapYValue = (globalSettings.layout.gapY ?? gapY) || undefined;
+            return buildGapValues(gapValue, gapXValue, gapYValue);
         } else {
-            return buildGapValues(gap, gapX, gapY);
+            const baseGap = gap || '@spacing.0';
+            return buildGapValues(baseGap, gapX, gapY);
         }
     }, [useGlobalTokens, globalSettings.layout.gap, globalSettings.layout.gapX, globalSettings.layout.gapY, gap, gapX, gapY, buildGapValues]);
     
@@ -264,12 +272,13 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
     
     const processedPadding = React.useMemo(() => {
         if (useGlobalTokens) {
-            const paddingValue = globalSettings.container.padding;
-            const paddingXValue = globalSettings.container.paddingX;
-            const paddingYValue = globalSettings.container.paddingY;
-            return buildPaddingString(paddingValue, paddingXValue || paddingX, paddingYValue || paddingY);
+            const paddingValue = globalSettings.container.padding || '@spacing.0';
+            const paddingXValue = (globalSettings.container.paddingX ?? paddingX) || undefined;
+            const paddingYValue = (globalSettings.container.paddingY ?? paddingY) || undefined;
+            return buildPaddingString(paddingValue, paddingXValue, paddingYValue);
         } else {
-            return buildPaddingString(padding, paddingX, paddingY);
+            const basePadding = padding || '@spacing.0';
+            return buildPaddingString(basePadding, paddingX, paddingY);
         }
     }, [useGlobalTokens, globalSettings.container.padding, globalSettings.container.paddingX, globalSettings.container.paddingY, padding, paddingX, paddingY, buildPaddingString]);
     
@@ -302,10 +311,6 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
         
         return result;
     }, [fontFamily, useGlobalTokens, globalSettings.fontFamily.primary, processToken]);
-    
-    const processedTextColor = React.useMemo(() => {
-        return getTextColor();
-    }, [getTextColor]);
     
     const processedFlexDirection = React.useMemo(() => {
         return useGlobalTokens 
@@ -344,6 +349,12 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
             borderRadius: processedBorderRadius,
             fontFamily: processedFontFamily,
             color: processedTextColor, // Add text color for inheritance
+            '--global-primary-color': processToken(globalSettings.colors.primary || '@color.primary'),
+            '--global-gap': gapStyles.gap || '',
+            '--global-row-gap': (gapStyles as any).rowGap || '',
+            '--global-column-gap': (gapStyles as any).columnGap || '',
+            '--global-padding': processedPadding,
+            '--global-font-family': processedFontFamily,
             boxShadow: boxShadow,
             boxSizing: 'border-box',
             overflow: 'visible',
@@ -364,7 +375,9 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
         processedFontFamily, 
         processedTextColor, 
         boxShadow, 
-        selected
+        selected,
+        globalSettings.colors.primary,
+        processToken
     ]);
 
     const resizerStyle: React.CSSProperties = {
@@ -387,6 +400,8 @@ export const RootContainer = (props: Partial<RootContainerProps>) => {
                 key={useGlobalTokens ? JSON.stringify(globalSettings) : 'static'}
                 style={containerStyle}
                 className={useGlobalTokens ? 'global-design-tokens-root' : ''}
+                data-gap={JSON.stringify(processedGap)}
+                data-padding={processedPadding}
             >
                 {children}
             </div>

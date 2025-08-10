@@ -10,6 +10,7 @@ import SaveModal from "./SaveModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
 import ChatAssistant from "./ChatAssistant";
 import { loadTravelTemplate, loadBusinessTemplate, loadPortfolioTemplate } from "@/lib/templateLoader";
+import { STORAGE_KEYS } from "@/constants/layout";
 import { 
   Eye, 
   Undo2, 
@@ -88,7 +89,6 @@ const TopBar = () => {
     }
   };
 
-  // Auto-save to history when nodes change
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -166,26 +166,19 @@ const TopBar = () => {
   };
 
   const handlePreview = () => {
-    // For now, we'll use a temporary ID. In a real app, you'd save the current state first
-    // and get the actual page ID from the save operation
+    try {
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('preview-'))
+        .forEach(k => sessionStorage.removeItem(k));
+    } catch (e) {
+      console.warn('Failed clearing old preview storage', e);
+    }
+
     const tempId = 'temp-' + Date.now();
-    
-    // Open preview in new tab with the current editor state
     const json = query.serialize();
-   
-
-    // Create preview data that includes both craft JSON and global design tokens
-    const previewData = {
-      craftJson: JSON.parse(json),
-      globalDesignTokens: globalSettings
-    };
-
-    // Store the current state temporarily (in a real app, you'd save to database)
-    sessionStorage.setItem(`preview-${tempId}`, JSON.stringify(previewData));
-
-     logger.debug('Previewing state:', previewData);
-    
-    // Open preview route in new tab
+    const previewData = { craftJson: JSON.parse(json), globalDesignTokens: globalSettings };
+    sessionStorage.setItem(STORAGE_KEYS.PREVIEW_DATA(tempId), JSON.stringify(previewData));
+    logger.debug('Previewing state:', { key: STORAGE_KEYS.PREVIEW_DATA(tempId), previewData });
     window.open(`/preview/${tempId}`, '_blank');
   };
 
